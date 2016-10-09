@@ -1,4 +1,5 @@
 #include <interpreter.hpp>
+#include <RFT.hpp>
 
 #include <iostream>
 
@@ -11,6 +12,9 @@ int main(int argc, char** argv) {
   dbt::Machine M;
   int loadStatus = M.loadELF(std::string(argv[1]));
 
+  dbt::NET Net;
+  Net.installRFT(M);
+
   if (!loadStatus) {
     std::cout << "Can't find or process ELF file " << argv[1] << std::endl;
     return 2;
@@ -19,7 +23,7 @@ int main(int argc, char** argv) {
   dbt::ITDInterpreter I;
   I.executeAll(M);
 
-  M.printRegions();
+  Net.printRegions(M);
 
   return 0;
 }
