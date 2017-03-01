@@ -13,7 +13,7 @@ namespace dbt {
   class ITDInterpreter : public Interpreter {
   private:
     struct DecodedInst {
-      uint8_t RS, RT, RD;
+      uint8_t RS, RT, RD, RV;
       int16_t Imm;
       uint32_t Addrs;
     };

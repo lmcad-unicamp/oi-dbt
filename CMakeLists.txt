@@ -6,6 +6,7 @@ SET(CMAKE_CXX_FLAGS "-O3 -Werror -std=c++11")
 include_directories(include)
 
 add_subdirectory(RFT)
+add_subdirectory(arglib)
 
 add_library(interpreter ITDInterpreter.cpp)
 add_library(machine machine.cpp)

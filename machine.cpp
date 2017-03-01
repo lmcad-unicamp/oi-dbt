@@ -6,7 +6,6 @@
 
 using namespace dbt;
 
-
 void
 copystr(std::unique_ptr<char[]>& Target, const char* Source, uint32_t Size) {
   for (uint32_t i = 0; i < Size; ++i)
@@ -38,9 +37,8 @@ uint32_t Machine::getPC() {
 }
 
 void Machine::incPC() {
-  ImplRFT.onNextInst(*this);
-
   PC += 4;
+  ImplRFT.onNextInst(*this);
 }
 
 void Machine::setPC(uint32_t NewPC) {
@@ -48,8 +46,8 @@ void Machine::setPC(uint32_t NewPC) {
       "Jumping for an address out of border!");
 
   ImplRFT.onBranch(*this, NewPC);
-
   PC = NewPC;
+  ImplRFT.onNextInst(*this);
 }
 
 Word Machine::getInstAt(uint32_t Addr) {
@@ -58,7 +56,7 @@ Word Machine::getInstAt(uint32_t Addr) {
 
   uint32_t CorrectAddr = Addr - CodeMemOffset;
 
-  return CodeMemory[CorrectAddr];
+  return CodeMemory[Addr - CodeMemOffset];
 }
 
 Word Machine::getInstAtPC() {
@@ -104,11 +102,11 @@ uint32_t Machine::getCodeEndAddrs() {
   return CodeMemLimit;
 }
 
-uint32_t Machine::getRegister(uint8_t R) {
+int32_t Machine::getRegister(uint8_t R) {
   return Register[R];
 }
 
-void Machine::setRegister(uint8_t R, uint32_t V) {
+void Machine::setRegister(uint8_t R, int32_t V) {
   Register[R] = V;
 }
 

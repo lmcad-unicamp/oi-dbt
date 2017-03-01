@@ -33,7 +33,7 @@ namespace dbt {
 
   class Machine {
   private:
-    uint32_t Register[64];
+    int32_t Register[64];
     double DoubleRegister[64];
     uptr<char[]> DataMemory;
     uptr<Word[]> CodeMemory;
@@ -71,8 +71,8 @@ namespace dbt {
     uint32_t getCodeStartAddrs();
     uint32_t getCodeEndAddrs();
 
-    uint32_t getRegister(uint8_t);
-    void setRegister(uint8_t, uint32_t);
+    int32_t getRegister(uint8_t);
+    void setRegister(uint8_t, int32_t);
 
     uint32_t getDoubleRegister(uint8_t);
     void setDoubleRegister(uint8_t, double);
