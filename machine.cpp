@@ -84,10 +84,10 @@ void Machine::setMemValueAt(uint32_t Addr, uint32_t Value) {
       "Trying to access an address out of border!");
 
   uint32_t CorrectAddr = Addr - DataMemOffset;
-  DataMemory[CorrectAddr] = (char) Value >> 24;
-  DataMemory[CorrectAddr+1] = (char) Value >> 16;
-  DataMemory[CorrectAddr+2] = (char) Value >> 8;
-  DataMemory[CorrectAddr+3] = (char) Value;
+  DataMemory[CorrectAddr]   = (Value >> 24) & 0xFF;
+  DataMemory[CorrectAddr+1] = (Value >> 16) & 0xFF;
+  DataMemory[CorrectAddr+2] = (Value >> 8) & 0xFF;
+  DataMemory[CorrectAddr+3] = (Value) & 0xFF;
 }
 
 uint32_t Machine::getNumInst() {
