@@ -13,6 +13,8 @@
 #ifndef MACHINE_HPP
 #define MACHINE_HPP
 
+#include "RFT.hpp"
+
 #include <cstdint>
 #include <unordered_map>
 #include <memory>
@@ -22,19 +24,11 @@
 #define uptr std::unique_ptr
 
 namespace dbt {
+  class RFT; 
+
   union Word {
     char asC_[4];
     uint32_t asI_;
-  };
-
-  class Machine;
-
-  struct BranchEventListener {
-    virtual void onBranch(Machine&, uint32_t) = 0;
-  };
-
-  struct NextInstEventListener {
-    virtual void onNextInst(Machine&) = 0;
   };
 
   class Machine {
@@ -52,9 +46,9 @@ namespace dbt {
 
     uint32_t PC;
 
-    std::vector<BranchEventListener*> BranchEventListeners;
-    std::vector<NextInstEventListener*> NextInstEventListeners;
+    RFT& ImplRFT;
   public:
+    Machine(RFT& R) : ImplRFT(R) {};
 
     void setCodeMemory(uint32_t, uint32_t, const char*);
     void setDataMemory(uint32_t, uint32_t, const char*);
@@ -82,9 +76,6 @@ namespace dbt {
 
     uint32_t getDoubleRegister(uint8_t);
     void setDoubleRegister(uint8_t, double);
-
-    void addBranchEventListener(BranchEventListener*);
-    void addNextInstEventListener(NextInstEventListener*);
 
     int loadELF(const std::string);
   };

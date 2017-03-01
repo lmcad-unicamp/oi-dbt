@@ -6,7 +6,6 @@
 
 using namespace dbt;
 
-#define NDEBUG
 
 void
 copystr(std::unique_ptr<char[]>& Target, const char* Source, uint32_t Size) {
@@ -39,9 +38,7 @@ uint32_t Machine::getPC() {
 }
 
 void Machine::incPC() {
-  if (NextInstEventListeners.size() != 0)
-    for (auto Listener : NextInstEventListeners)
-      NextInstEventListeners[0]->onNextInst(*this);
+  ImplRFT.onNextInst(*this);
 
   PC += 4;
 }
@@ -50,9 +47,7 @@ void Machine::setPC(uint32_t NewPC) {
   assert((NewPC >= CodeMemOffset && NewPC < CodeMemLimit) &&
       "Jumping for an address out of border!");
 
-  if (BranchEventListeners.size() != 0)
-    for (auto Listener : BranchEventListeners)
-      BranchEventListeners[0]->onBranch(*this, NewPC);
+  ImplRFT.onBranch(*this, NewPC);
 
   PC = NewPC;
 }
@@ -123,16 +118,6 @@ uint32_t Machine::getDoubleRegister(uint8_t R) {
 
 void Machine::setDoubleRegister(uint8_t R, double V) {
   DoubleRegister[R] = V;
-}
-
-void Machine::
-addBranchEventListener(BranchEventListener* Listener) {
-  BranchEventListeners.push_back(Listener);
-}
-
-void Machine::
-addNextInstEventListener(NextInstEventListener* Listener) {
-  NextInstEventListeners.push_back(Listener);
 }
 
 using namespace ELFIO;
