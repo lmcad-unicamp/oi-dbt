@@ -1,6 +1,7 @@
 #include <arglib/arglib.hpp>
 #include <interpreter.hpp>
 #include <RFT.hpp>
+#include <syscall.hpp>
 
 #include <iostream>
 #include <memory>
@@ -76,10 +77,13 @@ int main(int argc, char** argv) {
     return 2;
   }
 
-  dbt::ITDInterpreter I;
+  std::unique_ptr<dbt::SyscallManager> SyscallM;
+  SyscallM = std::make_unique<dbt::LinuxSyscallManager>();
+
+  dbt::ITDInterpreter I(*SyscallM.get());
   I.executeAll(M);
 
   RftChosen->printRegions(M);
 
-  return 0;
+  return SyscallM->getExitStatus();
 }

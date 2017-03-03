@@ -13,7 +13,7 @@
 #ifndef MACHINE_HPP
 #define MACHINE_HPP
 
-#include "RFT.hpp"
+#include <RFT.hpp>
 
 #include <cstdint>
 #include <unordered_map>
@@ -24,7 +24,7 @@
 #define uptr std::unique_ptr
 
 namespace dbt {
-  class RFT; 
+  class RFT;
 
   union Word {
     char asC_[4];

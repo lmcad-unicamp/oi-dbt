@@ -1,8 +1,18 @@
+#include <OIDecoder.hpp>
 #include <machine.hpp>
+#include <syscall.hpp>
+
+#include <memory>
+#include <array>
 
 namespace dbt {
   class Interpreter {
+  protected:
+    SyscallManager& SyscallM;
+
   public:
+    Interpreter(SyscallManager& SM) : SyscallM(SM) {}
+
     virtual void execute(Machine&, uint32_t, uint32_t) = 0;
 
     void executeAll(Machine& M) {
@@ -12,15 +22,9 @@ namespace dbt {
 
   class ITDInterpreter : public Interpreter {
   private:
-    struct DecodedInst {
-      uint8_t RS, RT, RD, RV;
-      int16_t Imm;
-      uint32_t Addrs;
-    };
-
     uint32_t LastStartAddrs, LastEndAddrs;
-    int** DispatchValues;
-    DecodedInst* DecodedInsts;
+    std::vector<int*> DispatchValues;
+    std::vector<OIDecoder::OIInst> DecodedInsts;
 
     bool isAddrsContainedIn(uint32_t, uint32_t);
 
@@ -29,11 +33,11 @@ namespace dbt {
     void* getDispatchValue(uint32_t);
     void setDispatchValue(uint32_t, int*);
 
-    DecodedInst getDecodedInst(uint32_t);
-    void setDecodedInst(uint32_t, DecodedInst);
+    OIDecoder::OIInst getDecodedInst(uint32_t);
+    void setDecodedInst(uint32_t, OIDecoder::OIInst);
   public:
-    void execute(Machine&, uint32_t, uint32_t);
+    ITDInterpreter(SyscallManager& SM) : Interpreter(SM) {}
 
-    ~ITDInterpreter() { free(DispatchValues); };
+    void execute(Machine&, uint32_t, uint32_t);
   };
 }
