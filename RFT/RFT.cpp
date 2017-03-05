@@ -4,6 +4,10 @@
 #include <iostream>
 #include <iomanip>
 
+void dbt::RFT::emitIR(uint32_t EntryAddr) {
+  IRRegions[EntryAddr] = LLVMEmitter.generateRegionIR(OIRegions[EntryAddr]);
+}
+
 void dbt::RFT::printRegions(Machine& M) {
   std::cout << std::endl << "\t\t NET\n";
   std::cout << std::endl << "Number of Regions: " << OIRegions.size() << '\n';

@@ -2,22 +2,25 @@
 #define OIDECODER_HPP
 
 #include <memory>
-#include <machine.hpp>
-
 #include <iostream>
 
 namespace dbt {
   namespace OIDecoder {
+    union Word {
+      char asC_[4];
+      uint32_t asI_;
+    };
+
     enum OIInstType
     { Absd, Add, And, Or, Ldi, Ldihi, Ldw, Addi, Call, Jumpr, Stw, Sltiu, Slti, Jeq, Jne, Jump, Mul, Syscall, Nop, 
       Shr, Shl, Jeqz, Sub, Slt, Div, Mod, Null };
 
-    struct OIInst {
+    typedef struct OIInst {
       OIInstType Type;
       uint8_t RS, RT, RD, RV;
       int16_t Imm;
       uint32_t Addrs;
-    };
+    } OIInst;
 
     constexpr uint8_t getRS(Word W) {
       return (W.asI_ >> 6) & 0x3F;
@@ -44,13 +47,6 @@ namespace dbt {
 
     static int16_t getImm1(Word W) {
       uint16_t x = (W.asI_ >> 12) & 0x3FFF;
-      return ((x >= (1 << 13))
-          ? -(16384 - x) 
-          : x);
-    }
-
-    static int16_t getImm2(Word W) {
-      uint16_t x = (W.asI_ >> 26) & 0x3FFF;
       return ((x >= (1 << 13))
           ? -(16384 - x) 
           : x);

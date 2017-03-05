@@ -54,8 +54,6 @@ Word Machine::getInstAt(uint32_t Addr) {
   assert((Addr >= CodeMemOffset && Addr < CodeMemLimit) &&
       "Trying to access an address out of border!");
 
-  uint32_t CorrectAddr = Addr - CodeMemOffset;
-
   return CodeMemory[Addr - CodeMemOffset];
 }
 

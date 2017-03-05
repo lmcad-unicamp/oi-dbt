@@ -14,15 +14,18 @@ void NET::onBranch(Machine& M, uint32_t NewPC) {
       }
     } else {
       Recording = false;
+      emitIR(RecordingEntry);
     }
   }
 }
 
 void NET::onNextInst(Machine& M) {
   if (Recording) {
-    if (OIRegions.count(M.getPC()) != 0) 
+    if (OIRegions.count(M.getPC()) != 0) { 
       Recording = false;
-    else 
+      emitIR(RecordingEntry);
+    } else {
       OIRegions[RecordingEntry].push_back(M.getPC());
+    }
   }
 }

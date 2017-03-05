@@ -22,14 +22,15 @@
 #include <functional>
 
 #define uptr std::unique_ptr
+#define OIInstList std::vector<uint32_t>
 
 namespace dbt {
-  class RFT;
-
   union Word {
     char asC_[4];
     uint32_t asI_;
   };
+
+  class RFT;
 
   class Machine {
   private:

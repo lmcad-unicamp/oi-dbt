@@ -2,11 +2,10 @@
 #define RFT_h
 
 #include <machine.hpp>
+#include <IREmitter.hpp>
 
 #include <unordered_map>
 #include <vector>
-
-#define OIInstList std::vector<uint32_t>
 
 namespace dbt {
   class Machine;
@@ -15,10 +14,15 @@ namespace dbt {
   protected:
     std::unordered_map<uint32_t, uint32_t> ExecFreq;
     std::unordered_map<uint32_t, OIInstList> OIRegions;
+    std::unordered_map<uint32_t, llvm::Function*> IRRegions;
+
     bool Recording = false;
     uint32_t RecordingEntry;
-
+    
+    IREmitter LLVMEmitter;
   public:
+    void emitIR(uint32_t); 
+
     void printRegions(Machine&);
 
     virtual void onBranch(dbt::Machine&, uint32_t) = 0;
