@@ -4,11 +4,13 @@
 #include <memory>
 #include <machine.hpp>
 
+#include <iostream>
+
 namespace dbt {
   namespace OIDecoder {
     enum OIInstType
     { Absd, Add, And, Or, Ldi, Ldihi, Ldw, Addi, Call, Jumpr, Stw, Sltiu, Slti, Jeq, Jne, Jump, Mul, Syscall, Nop, 
-      Shr, Null };
+      Shr, Shl, Jeqz, Sub, Slt, Div, Mod, Null };
 
     struct OIInst {
       OIInstType Type;
@@ -94,8 +96,11 @@ namespace dbt {
           I.Type = OIInstType::Ldihi;
           I.Addrs = getPL18(W);
         }
+        if (Ext == 0b10) I.Type = OIInstType::Sub;
+        if (Ext == 0b100) I.Type = OIInstType::Slt;
         if (Ext == 0b110) I.Type = OIInstType::And;
         if (Ext == 0b111) I.Type = OIInstType::Or;
+        if (Ext == 0b1010) I.Type = OIInstType::Shl;
         if (Ext == 0b1011) I.Type = OIInstType::Shr;
         I.RS = getRS(W);
         I.RT = getRT(W);
@@ -137,16 +142,20 @@ namespace dbt {
         I.Type = OIInstType::Sltiu;
         I.RS = getRS(W);
         I.RT = getRT(W);
-        I.Imm = getImm2(W);
+        I.Imm = getImm1(W);
         break;
       case 0b10000:
         I.Type = OIInstType::Slti;
         I.RS = getRS(W);
         I.RT = getRT(W);
-        I.Imm = getImm2(W);
+        I.Imm = getImm1(W);
         break;
       case 0b10101:
-        I.Type = OIInstType::Jeq;
+        if (I.RT == 0) 
+          I.Type = OIInstType::Jeqz;
+        else
+          I.Type = OIInstType::Jeq;
+
         I.RS = getRS(W);
         I.RT = getRT(W);
         I.Imm = getImm1(W);
@@ -162,7 +171,14 @@ namespace dbt {
         I.Addrs = getLAddr(W);
         break;
       case 0b011101:
-        I.Type = OIInstType::Mul;
+        Ext = (W.asI_ & OpMask) >> 24;
+        if (Ext == 0b00) I.Type = OIInstType::Mul;
+        if (Ext == 0b01) {
+          if (getRD(W) != 0)
+            I.Type = OIInstType::Div;
+          if (getRV(W) != 0)
+            I.Type = OIInstType::Mod;
+        }
         I.RV = getRV(W);
         I.RD = getRD(W);
         I.RS = getRS(W);

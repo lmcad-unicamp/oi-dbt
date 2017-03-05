@@ -107,6 +107,7 @@ int32_t Machine::getRegister(uint8_t R) {
 }
 
 void Machine::setRegister(uint8_t R, int32_t V) {
+  assert(R != 0 && "Trying to set $zero!\n");
   Register[R] = V;
 }
 
@@ -145,7 +146,7 @@ int Machine::loadELF(const std::string ElfPath) {
 
   setRegister(29, (DataMemLimit-DataMemOffset-STACK_SIZE)+(STACK_SIZE/2)); //StackPointer
   setRegister(30, (DataMemLimit-DataMemOffset-STACK_SIZE)+(STACK_SIZE/2)); //StackPointer
-  setRegister(0, 0);
+  
   setPC(reader.get_entry());
 
   return 1;

@@ -48,7 +48,7 @@ namespace dbt {
 
     RFT& ImplRFT;
   public:
-    Machine(RFT& R) : ImplRFT(R) {};
+    Machine(RFT& R) : ImplRFT(R) { Register[0] = 0; };
 
     void setCodeMemory(uint32_t, uint32_t, const char*);
     void setDataMemory(uint32_t, uint32_t, const char*);

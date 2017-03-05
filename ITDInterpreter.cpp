@@ -56,6 +56,9 @@ dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs) {
     case Add:
       setDispatchValue(Addrs, static_cast<int*>(&&add));
       break;
+    case Sub:
+      setDispatchValue(Addrs, static_cast<int*>(&&sub));
+      break;
     case Ldihi:
       setDispatchValue(Addrs, static_cast<int*>(&&ldihi));
       break;
@@ -89,8 +92,14 @@ dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs) {
     case Slti:
       setDispatchValue(Addrs, static_cast<int*>(&&slti));
       break;
+    case Slt:
+      setDispatchValue(Addrs, static_cast<int*>(&&slt));
+      break;
     case Jeq:
       setDispatchValue(Addrs, static_cast<int*>(&&jeq));
+      break;
+    case Jeqz:
+      setDispatchValue(Addrs, static_cast<int*>(&&jeqz));
       break;
     case Jne:
       setDispatchValue(Addrs, static_cast<int*>(&&jne));
@@ -101,17 +110,25 @@ dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs) {
     case Mul:
       setDispatchValue(Addrs, static_cast<int*>(&&mul));
       break;
+    case Div:
+      setDispatchValue(Addrs, static_cast<int*>(&&div));
+      break;
+    case Mod:
+      setDispatchValue(Addrs, static_cast<int*>(&&mod));
+      break;
     case Syscall:
       setDispatchValue(Addrs, static_cast<int*>(&&syscall));
       break;
     case Shr:
       setDispatchValue(Addrs, static_cast<int*>(&&shr));
       break;
+    case Shl:
+      setDispatchValue(Addrs, static_cast<int*>(&&shl));
+      break;
     case Nop:
       setDispatchValue(Addrs, static_cast<int*>(&&nop));
       break;
     case Null:
-      std::cout << "Something is bad! Instruction at 0x" << std::hex << Addrs << " was not implemented!\n";
       exit(1);
     }
 
@@ -143,6 +160,14 @@ add:
     goto next;
   }
 
+sub:
+  {
+    I = getDecodedInst(M.getPC());
+    M.setRegister(I.RD, M.getRegister(I.RS)-M.getRegister(I.RT));
+    M.incPC();
+    goto next;
+  }
+
 mul:
   {
     I = getDecodedInst(M.getPC());
@@ -151,6 +176,22 @@ mul:
       M.setRegister(I.RD, (Result & 0xFFFFFFFF));
     if (I.RV != 0)
       M.setRegister(I.RV, ((Result >> 32) & 0xFFFFFFFF));
+    M.incPC();
+    goto next;
+  }
+
+div:
+  {
+    I = getDecodedInst(M.getPC());
+    M.setRegister(I.RD, M.getRegister(I.RS) / M.getRegister(I.RT));
+    M.incPC();
+    goto next;
+  }
+
+mod:
+  {
+    I = getDecodedInst(M.getPC());
+    M.setRegister(I.RV, M.getRegister(I.RS) % M.getRegister(I.RT));
     M.incPC();
     goto next;
   }
@@ -212,6 +253,12 @@ shr:
   M.incPC();
   goto next;
 
+shl:
+  I = getDecodedInst(M.getPC());
+  M.setRegister(I.RD, M.getRegister(I.RT) << I.RS);
+  M.incPC();
+  goto next;
+
 call:
   {
     I = getDecodedInst(M.getPC());
@@ -240,7 +287,7 @@ sltiu:
     I = getDecodedInst(M.getPC());
     if (M.getRegister(I.RS) < (I.Imm & 0x3FFF))
       M.setRegister(I.RT, 1);
-    else 
+    else
       M.setRegister(I.RT, 0);
     M.incPC();
     goto next;
@@ -249,10 +296,21 @@ sltiu:
 slti:
   {
     I = getDecodedInst(M.getPC());
-    if ((int32_t)M.getRegister(I.RS) < (int32_t)(I.Imm & 0x3FFF))
+    if ((int32_t) M.getRegister(I.RS) < (int32_t) I.Imm)
       M.setRegister(I.RT, 1);
-    else 
+    else
       M.setRegister(I.RT, 0);
+    M.incPC();
+    goto next;
+  }
+
+slt:
+  {
+    I = getDecodedInst(M.getPC());
+    if (M.getRegister(I.RS) < M.getRegister(I.RT))
+      M.setRegister(I.RD, 1);
+    else
+      M.setRegister(I.RD, 0);
     M.incPC();
     goto next;
   }
@@ -261,29 +319,26 @@ jeq:
   {
     I = getDecodedInst(M.getPC());
     if (M.getRegister(I.RT) == M.getRegister(I.RS))
-      M.setPC(M.getPC() + (I.Imm << 2) + 4);
-    else
-      M.incPC();
+      M.setPC(M.getPC() + (I.Imm << 2));
+    M.incPC();
     goto next;
   }
 
-  /*jeqz:
-    {
+jeqz:
+  {
     I = getDecodedInst(M.getPC());
-    if (M.getRegister(I.RT == 0)
-    M.setPC(M.getPC() + (I.Imm << 2));
-    else
+    if (M.getRegister(I.RS) == 0)
+      M.setPC(M.getPC() + (I.Imm << 2));
     M.incPC();
     goto next;
-    }*/
+  }
 
 jne:
   {
     I = getDecodedInst(M.getPC());
     if (M.getRegister(I.RT) != M.getRegister(I.RS))
-      M.setPC(M.getPC() + ((I.Imm << 2) + 4));
-    else
-      M.incPC();
+      M.setPC(M.getPC() + ((I.Imm << 2)));
+    M.incPC();
     goto next;
   }
 

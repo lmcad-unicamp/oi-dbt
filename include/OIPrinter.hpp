@@ -18,6 +18,9 @@ namespace dbt {
       case Add:
         Out << "add";
         break;
+      case Sub:
+        Out << "sub";
+        break;
       case And:
         Out << "and";
         break;
@@ -51,8 +54,14 @@ namespace dbt {
       case Slti:
         Out << "slti";
         break;
+      case Slt:
+        Out<< "slt";
+        break;
       case Jeq:
         Out << "jeq";
+        break;
+      case Jeqz:
+        Out << "jeqz";
         break;
       case Jne:
         Out << "jne";
@@ -63,6 +72,12 @@ namespace dbt {
       case Mul:
         Out << "mul";
         break;
+      case Div:
+        Out << "div";
+        break;
+      case Mod:
+        Out << "mod";
+        break;
       case Syscall:
         Out << "sycall";
         break;
@@ -71,6 +86,9 @@ namespace dbt {
         break;
       case Shr:
         Out << "shr";
+        break;
+      case Shl:
+        Out << "shl";
         break;
       default:
         Out << "Null";
