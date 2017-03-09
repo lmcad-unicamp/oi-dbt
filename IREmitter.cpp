@@ -7,22 +7,43 @@
 #include "llvm/IR/DerivedTypes.h"
 #include "llvm/IR/Type.h"
 
-#include "llvm/IR/IRBuilder.h"
-#include "llvm/IR/LLVMContext.h"
-#include "llvm/IR/Module.h"
-#include "llvm/IR/Verifier.h"
+#include <cstdlib>
 
-using namespace dbt;
+using namespace llvm;
 
-static llvm::LLVMContext TheContext;
-static llvm::IRBuilder<> Builder(TheContext);
-static std::unique_ptr<llvm::Module> TheModule;
-static std::map<std::string, llvm::Value *> NamedValues;
-
-llvm::Function* IREmitter::generateRegionIR(const OIInstList OIRegion) {
+Value* genLoadRegister(uint8_t RegNum) {
   return nullptr;
 }
 
-llvm::Value* IREmitter::generateInstIR(const OIDecoder::OIInst Inst) {
+Value* genImm(uint16_t Imm) {
   return nullptr;
+}
+
+Value* dbt::IREmitter::generateInstIR(const dbt::OIDecoder::OIInst Inst) {
+  switch (Inst.Type) {
+  case dbt::OIDecoder::Addi:
+    return Builder->CreateAdd(genLoadRegister(Inst.RS), genImm(Inst.Imm));
+  default:
+    return nullptr;
+  }
+}
+
+StringRef dbt::IREmitter::generateUniqueName(StringRef Prefix) {
+  while (true) {
+    Twine PossibleName = Prefix + std::to_string(rand() % 1000);
+    if (NamedValues.count(PossibleName.str()) == 0) 
+      return PossibleName.str();
+  }
+}
+
+Function* dbt::IREmitter::generateRegionIR(const OIInstList OIRegion) {
+  FunctionType *FT = FunctionType::get(Type::getInt64Ty(TheContext), false);
+  StringRef NewRegionName = generateUniqueName("Region");
+  Function *F = Function::Create(FT, Function::ExternalLinkage, NewRegionName, TheModule.get());
+
+  for (uint32_t RawInst : OIRegion) {
+    OIDecoder::OIInst Inst = OIDecoder::decode(RawInst);
+    Value* V = generateInstIR(Inst);
+  }
+  return F;
 }

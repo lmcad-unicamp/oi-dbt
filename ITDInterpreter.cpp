@@ -285,10 +285,7 @@ stw:
 sltiu:
   {
     I = getDecodedInst(M.getPC());
-    if (M.getRegister(I.RS) < (I.Imm & 0x3FFF))
-      M.setRegister(I.RT, 1);
-    else
-      M.setRegister(I.RT, 0);
+    M.setRegister(I.RT, M.getRegister(I.RS) < (I.Imm & 0x3FFF));
     M.incPC();
     goto next;
   }
@@ -296,10 +293,7 @@ sltiu:
 slti:
   {
     I = getDecodedInst(M.getPC());
-    if ((int32_t) M.getRegister(I.RS) < (int32_t) I.Imm)
-      M.setRegister(I.RT, 1);
-    else
-      M.setRegister(I.RT, 0);
+    M.setRegister(I.RT, (int32_t) M.getRegister(I.RS) < (int32_t) I.Imm);
     M.incPC();
     goto next;
   }
@@ -307,10 +301,7 @@ slti:
 slt:
   {
     I = getDecodedInst(M.getPC());
-    if (M.getRegister(I.RS) < M.getRegister(I.RT))
-      M.setRegister(I.RD, 1);
-    else
-      M.setRegister(I.RD, 0);
+    M.setRegister(I.RD, M.getRegister(I.RS) < M.getRegister(I.RT));
     M.incPC();
     goto next;
   }
