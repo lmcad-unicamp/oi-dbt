@@ -22,7 +22,6 @@
 #include <functional>
 
 #define uptr std::unique_ptr
-#define OIInstList std::vector<uint32_t>
 
 namespace dbt {
   union Word {
@@ -71,6 +70,7 @@ namespace dbt {
     uint32_t getNumInst();
     uint32_t getCodeStartAddrs();
     uint32_t getCodeEndAddrs();
+    uint32_t getDataMemOffset();
 
     int32_t getRegister(uint8_t);
     void setRegister(uint8_t, int32_t);

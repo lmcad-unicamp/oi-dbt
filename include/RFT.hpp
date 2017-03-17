@@ -6,6 +6,9 @@
 
 #include <unordered_map>
 #include <vector>
+#include <array>
+
+#define OIInstList std::vector<std::array<uint32_t,2>>
 
 namespace dbt {
   class Machine;
@@ -21,9 +24,9 @@ namespace dbt {
     
     IREmitter LLVMEmitter;
   public:
-    void emitIR(uint32_t); 
+    void emitIR(uint32_t, uint32_t); 
 
-    void printRegions(Machine&);
+    void printRegions();
 
     virtual void onBranch(dbt::Machine&, uint32_t) = 0;
     virtual void onNextInst(dbt::Machine&) = 0;

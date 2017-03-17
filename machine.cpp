@@ -71,8 +71,7 @@ Word Machine::getMemValueAt(uint32_t Addr) {
       "Trying to access an address out of border!");
 
   uint32_t CorrectAddr = Addr - DataMemOffset;
-  Word Bytes = {DataMemory[CorrectAddr+3], DataMemory[CorrectAddr+2],
-    DataMemory[CorrectAddr+1], DataMemory[CorrectAddr]};
+  Word Bytes = {DataMemory[CorrectAddr], DataMemory[CorrectAddr+1], DataMemory[CorrectAddr+2], DataMemory[CorrectAddr+3]};
 
   return Bytes;
 }
@@ -82,10 +81,10 @@ void Machine::setMemValueAt(uint32_t Addr, uint32_t Value) {
       "Trying to access an address out of border!");
 
   uint32_t CorrectAddr = Addr - DataMemOffset;
-  DataMemory[CorrectAddr]   = (Value >> 24) & 0xFF;
-  DataMemory[CorrectAddr+1] = (Value >> 16) & 0xFF;
-  DataMemory[CorrectAddr+2] = (Value >> 8) & 0xFF;
-  DataMemory[CorrectAddr+3] = (Value) & 0xFF;
+  DataMemory[CorrectAddr+3]   = (Value >> 24) & 0xFF;
+  DataMemory[CorrectAddr+2] = (Value >> 16) & 0xFF;
+  DataMemory[CorrectAddr+1] = (Value >> 8) & 0xFF;
+  DataMemory[CorrectAddr] = (Value) & 0xFF;
 }
 
 uint32_t Machine::getNumInst() {
@@ -98,6 +97,10 @@ uint32_t Machine::getCodeStartAddrs() {
 
 uint32_t Machine::getCodeEndAddrs() {
   return CodeMemLimit;
+}
+
+uint32_t Machine::getDataMemOffset() {
+  return DataMemOffset;
 }
 
 int32_t Machine::getRegister(uint8_t R) {

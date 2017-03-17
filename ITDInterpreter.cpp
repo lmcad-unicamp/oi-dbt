@@ -172,7 +172,7 @@ mul:
   {
     I = getDecodedInst(M.getPC());
     int64_t Result = M.getRegister(I.RS) * M.getRegister(I.RT);
-    if (I.RD != 0)
+    if (I.RD != 0) //FIXME: Opt
       M.setRegister(I.RD, (Result & 0xFFFFFFFF));
     if (I.RV != 0)
       M.setRegister(I.RV, ((Result >> 32) & 0xFFFFFFFF));
@@ -318,8 +318,9 @@ jeq:
 jeqz:
   {
     I = getDecodedInst(M.getPC());
-    if (M.getRegister(I.RS) == 0)
+    if (M.getRegister(I.RS) == 0) { 
       M.setPC(M.getPC() + (I.Imm << 2));
+    }
     M.incPC();
     goto next;
   }

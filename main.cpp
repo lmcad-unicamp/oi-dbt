@@ -83,7 +83,7 @@ int main(int argc, char** argv) {
   dbt::ITDInterpreter I(*SyscallM.get());
   I.executeAll(M);
 
-  RftChosen->printRegions(M);
+  RftChosen->printRegions();
 
   return SyscallM->getExitStatus();
 }
