@@ -1,6 +1,7 @@
 #include <arglib/arglib.hpp>
 #include <interpreter.hpp>
 #include <RFT.hpp>
+#include <manager.hpp>
 #include <syscall.hpp>
 
 #include <iostream>
@@ -54,21 +55,9 @@ int main(int argc, char** argv) {
   if (validateArguments())
     return 1;
 
-  std::unique_ptr<dbt::RFT> RftChosen;
+  dbt::Manager TheManager(1, dbt::Manager::OptPolitic::Normal);
 
-  if (InterpreterFlag.was_set()) {
-    RftChosen = std::make_unique<dbt::NullRFT>();
-  } else {
-    std::string RFTName = RFTFlag.get_value();
-    if (RFTName == "net") {
-      RftChosen = std::make_unique<dbt::NET>();
-    } else {
-      std::cerr << "You should select a valid RFT!\n";
-      return 1;
-    }
-  }
-
-  dbt::Machine M(*RftChosen.get());
+  dbt::Machine M;
 
   int loadStatus = M.loadELF(BinaryFlag.get_value());
 
@@ -77,13 +66,32 @@ int main(int argc, char** argv) {
     return 2;
   }
 
+  std::unique_ptr<dbt::RFT> RftChosen;
+
+  if (InterpreterFlag.was_set()) {
+    RftChosen = std::make_unique<dbt::NullRFT>(TheManager);
+  } else {
+    std::string RFTName = RFTFlag.get_value();
+    if (RFTName == "net") {
+      RftChosen = std::make_unique<dbt::NET>(TheManager);
+    } else {
+      std::cerr << "You should select a valid RFT!\n";
+      return 1;
+    }
+  }
+
   std::unique_ptr<dbt::SyscallManager> SyscallM;
   SyscallM = std::make_unique<dbt::LinuxSyscallManager>();
 
-  dbt::ITDInterpreter I(*SyscallM.get());
+  dbt::ITDInterpreter I(*SyscallM.get(), *RftChosen.get());
   I.executeAll(M);
 
   RftChosen->printRegions();
 
   return SyscallM->getExitStatus();
 }
+
+/*
+ * TODO:
+ *  - Flags para melhorar controle: -only {interpret|rft|compilation}
+ */

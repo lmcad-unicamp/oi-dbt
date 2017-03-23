@@ -44,15 +44,15 @@ namespace dbt {
     uint32_t DataMemLimit;
     uint32_t CodeMemLimit;
 
+    uint32_t LastPC;
     uint32_t PC;
-
-    RFT& ImplRFT;
   public:
-    Machine(RFT& R) : ImplRFT(R) { Register[0] = 0; };
+    Machine() { Register[0] = 0; };
 
     void setCodeMemory(uint32_t, uint32_t, const char*);
     void setDataMemory(uint32_t, uint32_t, const char*);
 
+    uint32_t getLastPC();
     uint32_t getPC();
     void setPC(uint32_t);
     void incPC();
@@ -66,6 +66,9 @@ namespace dbt {
 
     Word getMemValueAt(uint32_t);
     void setMemValueAt(uint32_t, uint32_t);
+
+    int32_t* getRegisterPtr();
+    int32_t* getMemoryPtr();
 
     uint32_t getNumInst();
     uint32_t getCodeStartAddrs();

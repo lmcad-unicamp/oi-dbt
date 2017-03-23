@@ -22,6 +22,8 @@ namespace dbt {
 
   class ITDInterpreter : public Interpreter {
   private:
+    RFT& ImplRFT;
+
     uint32_t LastStartAddrs, LastEndAddrs;
     std::vector<int*> DispatchValues;
     std::vector<OIDecoder::OIInst> DecodedInsts;
@@ -36,7 +38,7 @@ namespace dbt {
     OIDecoder::OIInst getDecodedInst(uint32_t);
     void setDecodedInst(uint32_t, OIDecoder::OIInst);
   public:
-    ITDInterpreter(SyscallManager& SM) : Interpreter(SM) {}
+    ITDInterpreter(SyscallManager& SM, RFT& R) : Interpreter(SM), ImplRFT(R) {}
 
     void execute(Machine&, uint32_t, uint32_t);
   };

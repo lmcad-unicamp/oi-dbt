@@ -36,18 +36,20 @@ uint32_t Machine::getPC() {
   return PC;
 }
 
+uint32_t Machine::getLastPC() {
+  return LastPC;
+}
+
 void Machine::incPC() {
   PC += 4;
-  ImplRFT.onNextInst(*this);
 }
 
 void Machine::setPC(uint32_t NewPC) {
   assert((NewPC >= CodeMemOffset && NewPC < CodeMemLimit) &&
       "Jumping for an address out of border!");
 
-  ImplRFT.onBranch(*this, NewPC);
+  LastPC = PC;
   PC = NewPC;
-  ImplRFT.onNextInst(*this);
 }
 
 Word Machine::getInstAt(uint32_t Addr) {
@@ -118,6 +120,14 @@ uint32_t Machine::getDoubleRegister(uint8_t R) {
 
 void Machine::setDoubleRegister(uint8_t R, double V) {
   DoubleRegister[R] = V;
+}
+
+int32_t* Machine::getRegisterPtr() {
+  return Register;
+}
+
+int32_t* Machine::getMemoryPtr() {
+  return (int32_t*) DataMemory.get();
 }
 
 using namespace ELFIO;

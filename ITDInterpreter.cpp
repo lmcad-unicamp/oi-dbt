@@ -1,11 +1,10 @@
 #include <OIDecoder.hpp>
 #include <interpreter.hpp>
+#include <timer.hpp>
 
 #include <cmath>
 #include <ctime>
 #include <iostream>
-
-#include <papi.h>
 
 using namespace dbt;
 using namespace dbt::OIDecoder;
@@ -264,6 +263,7 @@ call:
     I = getDecodedInst(M.getPC());
     M.setRegister(31, M.getPC()+4);
     M.setPC((M.getPC() & 0xF0000000) | (I.Addrs << 2));
+    ImplRFT.onBranch(M);
     goto next;
   }
 
@@ -271,6 +271,7 @@ jumpr:
   {
     I = getDecodedInst(M.getPC());
     M.setPC(M.getRegister(I.RT));
+    ImplRFT.onBranch(M);
     goto next;
   }
 
@@ -309,8 +310,10 @@ slt:
 jeq:
   {
     I = getDecodedInst(M.getPC());
-    if (M.getRegister(I.RT) == M.getRegister(I.RS))
+    if (M.getRegister(I.RT) == M.getRegister(I.RS)) {
       M.setPC(M.getPC() + (I.Imm << 2));
+      ImplRFT.onBranch(M);
+    }
     M.incPC();
     goto next;
   }
@@ -320,6 +323,7 @@ jeqz:
     I = getDecodedInst(M.getPC());
     if (M.getRegister(I.RS) == 0) { 
       M.setPC(M.getPC() + (I.Imm << 2));
+      ImplRFT.onBranch(M);
     }
     M.incPC();
     goto next;
@@ -328,8 +332,10 @@ jeqz:
 jne:
   {
     I = getDecodedInst(M.getPC());
-    if (M.getRegister(I.RT) != M.getRegister(I.RS))
+    if (M.getRegister(I.RT) != M.getRegister(I.RS)) {
       M.setPC(M.getPC() + ((I.Imm << 2)));
+      ImplRFT.onBranch(M);
+    }
     M.incPC();
     goto next;
   }
@@ -343,11 +349,13 @@ jump:
   {
     I = getDecodedInst(M.getPC());
     M.setPC((M.getPC() & 0xF0000000) | (I.Addrs << 2));
+    ImplRFT.onBranch(M);
     goto next;
   }
 
 next:
     DEBUG_PRINT(M.getPC(), I);
+    ImplRFT.onNextInst(M);
     goto *getDispatchValue(M.getPC());
 }
 
@@ -361,25 +369,9 @@ execute(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs) {
   LastStartAddrs = StartAddrs;
   LastEndAddrs   = EndAddrs;
 
-  int events[5] = {PAPI_L2_TCM, PAPI_TOT_INS, PAPI_TOT_CYC, PAPI_BR_CN, PAPI_BR_MSP}, ret;
-  long_long values[5];
-
-  if ((ret = PAPI_start_counters(events, 5)) != PAPI_OK) {
-    fprintf(stderr, "PAPI failed to start counters: %s\n", PAPI_strerror(ret));
-    exit(1);
-  }
-
+  Timer Clock;
+  Clock.startClock();
   dispatch(M, StartAddrs, EndAddrs);
-
-  if ((ret = PAPI_read_counters(values, 5)) != PAPI_OK) {
-    fprintf(stderr, "PAPI failed to read counters: %s\n", PAPI_strerror(ret));
-    exit(1);
-  }
-
-  std::cout << "Number of Instructions Emulated: " << num << std::endl 
-    << "Number of Native Instructions Executed:" << (double)values[1] << std::endl
-    << "Native/Emulated Proportion: " << (double)values[1]/num << std::endl
-    << "Clock/Emulated: " << (double)values[2]/num << std::endl
-    << "Misspredicted Branches: " << (double)values[4] << std::endl
-    << "Total L2 Cache Misses: " << (double)values[0] << std::endl;
+  Clock.stopClock();
+  Clock.printReport("DBT Statistics!", num);
 }

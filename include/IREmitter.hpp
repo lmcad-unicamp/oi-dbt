@@ -8,11 +8,6 @@
 #include "llvm/IR/Module.h"
 #include "llvm/IR/IRBuilder.h"
 
-// Opt
-#include "llvm/IR/LegacyPassManager.h"
-#include "llvm/Transforms/Scalar.h"
-#include "llvm/Transforms/Scalar/GVN.h"
-
 #include <vector>
 #include <array>
 #include <unordered_map>
@@ -24,10 +19,8 @@ namespace dbt {
 	class IREmitter {
 	private:
 		llvm::LLVMContext TheContext;
-		std::unique_ptr<llvm::Module> TheModule;
 		std::unordered_map<std::string, llvm::Value*> NamedValues;
 		std::unique_ptr<llvm::IRBuilder<>> Builder;
-    std::unique_ptr<llvm::legacy::FunctionPassManager> TheFPM; 
 
     std::unordered_map<uint32_t, llvm::Value*> IRMemoryMap;
     std::unordered_map<uint32_t, llvm::BranchInst*> IRBranchMap;
@@ -42,15 +35,10 @@ namespace dbt {
     llvm::Value* genImm(uint32_t);
   public:
 		IREmitter() {
-			TheModule = std::make_unique<llvm::Module>("DBT-Module", TheContext);
 			Builder = std::make_unique<llvm::IRBuilder<>>(TheContext);
-      TheFPM = llvm::make_unique<llvm::legacy::FunctionPassManager>(TheModule.get());
-      TheFPM->add(llvm::createInstructionCombiningPass());
-      TheFPM->add(llvm::createGVNPass());
-      TheFPM->add(llvm::createLICMPass());
     };
 
-    llvm::Function* generateRegionIR(const OIInstList&, uint32_t);
+    llvm::Module* generateRegionIR(uint32_t, const OIInstList&, uint32_t);
   };
 }
 

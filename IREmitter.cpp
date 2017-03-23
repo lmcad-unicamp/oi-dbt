@@ -6,7 +6,6 @@
 #include "llvm/IR/Constants.h"
 #include "llvm/IR/DerivedTypes.h"
 #include "llvm/IR/Type.h"
-#include "llvm/Support/raw_ostream.h"
 
 #include <cstdlib>
 
@@ -16,7 +15,8 @@ uint32_t DataMemOffset;
 Value* FirstInstGen;
 
 Value* dbt::IREmitter::genDataMemVecPtr(Value* RawAddrs, Function* Func) {
-  Value* Addrs = Builder->CreateSub(RawAddrs, genImm(DataMemOffset));
+  Value* AddrsOff = Builder->CreateSub(RawAddrs, genImm(DataMemOffset));
+  Value* Addrs = Builder->CreateExactSDiv(RawAddrs, genImm(4));
   Argument *ArgDataMemPtr = &*(++Func->arg_begin()); 
   return Builder->CreateGEP(Type::getInt32Ty(TheContext), ArgDataMemPtr, Addrs);
 }
@@ -27,6 +27,9 @@ Value* dbt::IREmitter::genRegisterVecPtr(uint8_t RegNum, Function* Func) {
 }
 
 Value* dbt::IREmitter::genLoadRegister(uint8_t RegNum, Function* Func) {
+  if (RegNum == 0)
+    return genImm(0); 
+
   Value* Ptr = genRegisterVecPtr(RegNum, Func);
   FirstInstGen = Ptr;
   return Builder->CreateLoad(Ptr);
@@ -159,13 +162,21 @@ void dbt::IREmitter::processBranchesTargets(const OIInstList& OIRegion) {
   Trash->eraseFromParent();
 }
 
-Function* dbt::IREmitter::generateRegionIR(const OIInstList& OIRegion, uint32_t MemOffset) {
+Module* dbt::IREmitter::generateRegionIR(uint32_t EntryAddress, const OIInstList& OIRegion, uint32_t MemOffset) {
+  Module* TheModule = new Module("", TheContext);
+  IRMemoryMap.clear();
+  IRBranchMap.clear();
+
   DataMemOffset = MemOffset;
 
   //int32_t execRegion(int32_t* IntRegisters, int32_t* DataMemory);
   std::array<Type*, 2> ArgsType = {Type::getInt32PtrTy(TheContext), Type::getInt32PtrTy(TheContext)};
   FunctionType *FT = FunctionType::get(Type::getInt32Ty(TheContext), ArgsType, false);
-  Function *F = Function::Create(FT, Function::ExternalLinkage, "", TheModule.get());
+  Function *F = Function::Create(FT, Function::ExternalLinkage, "r"+std::to_string(EntryAddress), TheModule);
+  F->addAttribute(1, Attribute::NoAlias);
+  F->addAttribute(2, Attribute::NoAlias);
+  F->addAttribute(1, Attribute::NoCapture);
+  F->addAttribute(2, Attribute::NoCapture);
 
   // Entry block to function must not have predecessors!
   BasicBlock *Entry = BasicBlock::Create(TheContext, "entry", F);
@@ -182,8 +193,5 @@ Function* dbt::IREmitter::generateRegionIR(const OIInstList& OIRegion, uint32_t 
 
   processBranchesTargets(OIRegion);
 
-  TheFPM->run(*F);
-
-  F->print(errs());
-  return F;
+  return TheModule;
 }
