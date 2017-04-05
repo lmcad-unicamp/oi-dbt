@@ -1,1 +1,1 @@
-add_library(NET NET.cpp RFT.cpp)
+add_library(RFT NET.cpp RFT.cpp)

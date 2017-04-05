@@ -13,12 +13,8 @@ void dbt::IROpt::optimizeIRFunction(llvm::Module* M, OptLevel Level) {
   if (Level == OptLevel::Basic) {
     auto BasicPM = std::make_unique<llvm::legacy::FunctionPassManager>(M);
     
-    // Promote allocas to registers.
-    BasicPM->add(llvm::createPromoteMemoryToRegisterPass());
     // Do simple "peephole" optimizations and bit-twiddling optzns.
     BasicPM->add(llvm::createInstructionCombiningPass());
-    // Reassociate expressions.
-    BasicPM->add(llvm::createReassociatePass());
     // Eliminate Common SubExpressions.
     BasicPM->add(llvm::createGVNPass());
     // Loop Code Motion

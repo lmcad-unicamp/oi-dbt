@@ -259,86 +259,68 @@ shl:
   goto next;
 
 call:
-  {
-    I = getDecodedInst(M.getPC());
-    M.setRegister(31, M.getPC()+4);
-    M.setPC((M.getPC() & 0xF0000000) | (I.Addrs << 2));
-    ImplRFT.onBranch(M);
-    goto next;
-  }
+  I = getDecodedInst(M.getPC());
+  M.setRegister(31, M.getPC()+4);
+  M.setPC((M.getPC() & 0xF0000000) | (I.Addrs << 2));
+  ImplRFT.onBranch(M);
+  goto next;
 
 jumpr:
-  {
-    I = getDecodedInst(M.getPC());
-    M.setPC(M.getRegister(I.RT));
-    ImplRFT.onBranch(M);
-    goto next;
-  }
+  I = getDecodedInst(M.getPC());
+  M.setPC(M.getRegister(I.RT));
+  ImplRFT.onBranch(M);
+  goto next;
 
 stw:
-  {
-    I = getDecodedInst(M.getPC());
-    M.setMemValueAt(M.getRegister(I.RS) + I.Imm, M.getRegister(I.RT));
-    M.incPC();
-    goto next;
-  }
+  I = getDecodedInst(M.getPC());
+  M.setMemValueAt(M.getRegister(I.RS) + I.Imm, M.getRegister(I.RT));
+  M.incPC();
+  goto next;
 
 sltiu:
-  {
-    I = getDecodedInst(M.getPC());
-    M.setRegister(I.RT, M.getRegister(I.RS) < (I.Imm & 0x3FFF));
-    M.incPC();
-    goto next;
-  }
+  I = getDecodedInst(M.getPC());
+  M.setRegister(I.RT, M.getRegister(I.RS) < (I.Imm & 0x3FFF));
+  M.incPC();
+  goto next;
 
 slti:
-  {
-    I = getDecodedInst(M.getPC());
-    M.setRegister(I.RT, (int32_t) M.getRegister(I.RS) < (int32_t) I.Imm);
-    M.incPC();
-    goto next;
-  }
+  I = getDecodedInst(M.getPC());
+  M.setRegister(I.RT, (int32_t) M.getRegister(I.RS) < (int32_t) I.Imm);
+  M.incPC();
+  goto next;
 
 slt:
-  {
-    I = getDecodedInst(M.getPC());
-    M.setRegister(I.RD, M.getRegister(I.RS) < M.getRegister(I.RT));
-    M.incPC();
-    goto next;
-  }
+  I = getDecodedInst(M.getPC());
+  M.setRegister(I.RD, M.getRegister(I.RS) < M.getRegister(I.RT));
+  M.incPC();
+  goto next;
 
 jeq:
-  {
-    I = getDecodedInst(M.getPC());
-    if (M.getRegister(I.RT) == M.getRegister(I.RS)) {
-      M.setPC(M.getPC() + (I.Imm << 2));
-      ImplRFT.onBranch(M);
-    }
-    M.incPC();
-    goto next;
+  I = getDecodedInst(M.getPC());
+  if (M.getRegister(I.RT) == M.getRegister(I.RS)) {
+    M.setPC(M.getPC() + (I.Imm << 2));
+    ImplRFT.onBranch(M);
   }
+  M.incPC();
+  goto next;
 
 jeqz:
-  {
-    I = getDecodedInst(M.getPC());
-    if (M.getRegister(I.RS) == 0) { 
-      M.setPC(M.getPC() + (I.Imm << 2));
-      ImplRFT.onBranch(M);
-    }
-    M.incPC();
-    goto next;
+  I = getDecodedInst(M.getPC());
+  if (M.getRegister(I.RS) == 0) { 
+    M.setPC(M.getPC() + (I.Imm << 2));
+    ImplRFT.onBranch(M);
   }
+  M.incPC();
+  goto next;
 
 jne:
-  {
-    I = getDecodedInst(M.getPC());
-    if (M.getRegister(I.RT) != M.getRegister(I.RS)) {
-      M.setPC(M.getPC() + ((I.Imm << 2)));
-      ImplRFT.onBranch(M);
-    }
-    M.incPC();
-    goto next;
+  I = getDecodedInst(M.getPC());
+  if (M.getRegister(I.RT) != M.getRegister(I.RS)) {
+    M.setPC(M.getPC() + ((I.Imm << 2)));
+    ImplRFT.onBranch(M);
   }
+  M.incPC();
+  goto next;
 
 syscall:
   if (SyscallM.processSyscall(M))
@@ -346,17 +328,15 @@ syscall:
   goto next;
 
 jump:
-  {
-    I = getDecodedInst(M.getPC());
-    M.setPC((M.getPC() & 0xF0000000) | (I.Addrs << 2));
-    ImplRFT.onBranch(M);
-    goto next;
-  }
+  I = getDecodedInst(M.getPC());
+  M.setPC((M.getPC() & 0xF0000000) | (I.Addrs << 2));
+  ImplRFT.onBranch(M);
+  goto next;
 
 next:
-    DEBUG_PRINT(M.getPC(), I);
-    ImplRFT.onNextInst(M);
-    goto *getDispatchValue(M.getPC());
+  DEBUG_PRINT(M.getPC(), I);
+  ImplRFT.onNextInst(M);
+  goto *getDispatchValue(M.getPC());
 }
 
 void ITDInterpreter::

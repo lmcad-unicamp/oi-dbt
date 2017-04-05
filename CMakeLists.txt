@@ -1,17 +1,84 @@
 cmake_minimum_required(VERSION 3.5)
 project(openisa-dbt)
 
-SET(CMAKE_CXX_FLAGS "-O3 -Werror -std=c++14")
+set(CMAKE_CXX_FLAGS "-O3 -Werror -std=c++14 -fno-rtti -flto")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -O3 -flto")
 
 include_directories(include)
 
 add_subdirectory(RFT)
 add_subdirectory(arglib)
 
-add_library(syscall syscall.cpp)
-add_library(interpreter ITDInterpreter.cpp)
-add_library(machine machine.cpp)
+add_library(dbt IREmitter.cpp IROpt.cpp ITDInterpreter.cpp machine.cpp manager.cpp syscall.cpp)
 
 add_executable(oi-dbt main.cpp)
 
-target_link_libraries(oi-dbt machine interpreter papi NET arglib syscall)
+install(TARGETS oi-dbt RUNTIME DESTINATION bin)
+
+target_link_libraries(oi-dbt 
+  papi 
+  RFT 
+  dbt 
+  arglib 
+  pthread
+  z
+  dl
+  curses
+
+  LLVMPasses
+  LLVMObjCARCOpts
+  LLVMSymbolize
+  LLVMDebugInfoPDB
+  LLVMDebugInfoDWARF
+  LLVMCoverage
+  LLVMTableGen
+  LLVMLineEditor
+  LLVMOrcJIT
+  LLVMMIRParser
+  LLVMObjectYAML
+  LLVMLibDriver
+  LLVMOption
+  LLVMX86Disassembler
+  LLVMX86AsmParser
+  LLVMX86CodeGen
+  LLVMGlobalISel
+  LLVMSelectionDAG
+  LLVMAsmPrinter
+  LLVMDebugInfoCodeView
+  LLVMDebugInfoMSF
+  LLVMX86Desc
+  LLVMMCDisassembler
+  LLVMX86Info
+  LLVMX86AsmPrinter
+  LLVMX86Utils
+  LLVMMCJIT
+  LLVMMCJIT
+  LLVMInterpreter
+  LLVMExecutionEngine
+  LLVMRuntimeDyld
+  LLVMCodeGen
+  LLVMTarget
+  LLVMCoroutines
+  LLVMipo
+  LLVMInstrumentation
+  LLVMVectorize
+  LLVMScalarOpts
+  LLVMLinker
+  LLVMIRReader
+  LLVMAsmParser
+  LLVMInstCombine
+  LLVMTransformUtils
+  LLVMBitWriter
+  LLVMTransformUtils
+  LLVMAnalysis
+  LLVMTarget
+  LLVMObject
+  LLVMMCParser
+  LLVMMC
+  LLVMBitReader
+  LLVMProfileData
+
+  LLVMCore
+  LLVMSupport
+  LLVMDemangle
+)

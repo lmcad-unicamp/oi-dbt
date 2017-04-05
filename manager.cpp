@@ -8,11 +8,9 @@ void Manager::addOIRegion(uint32_t EntryAddress, OIInstList OIRegion) {
   OIRegions[EntryAddress] = OIRegion;
 
   llvm::Module* M = IRE->generateRegionIR(EntryAddress, OIRegion, 0); //FIXME: Should'nt be 0!
-  for (auto& F : *M)
-    llvm::verifyFunction(F, &llvm::errs());
-  IRO->optimizeIRFunction(M, IROpt::OptLevel::Basic); // FIXME: Some opt aren't working (sigfault)
-  for (auto& F : *M) 
-    F.print(llvm::errs());
+
+  IRO->optimizeIRFunction(M, IROpt::OptLevel::Basic); 
+
   IRJIT->addModule(std::unique_ptr<llvm::Module>(M));
   NativeRegions[EntryAddress] = (intptr_t) IRJIT->findSymbol("r"+std::to_string(EntryAddress)).getAddress();
 }
