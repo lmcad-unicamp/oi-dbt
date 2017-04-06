@@ -138,113 +138,89 @@ dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs) {
   goto next;
 
 nop:
-  {
-    M.incPC();
-    goto next;
-  }
+  M.incPC();
+  goto next;
 
 absd:
-  {
-    I = getDecodedInst(M.getPC());
-    M.setDoubleRegister(I.RT, fabs(M.getDoubleRegister(I.RS)));
-    M.incPC();
-    goto next;
-  }
+  I = getDecodedInst(M.getPC());
+  M.setDoubleRegister(I.RT, fabs(M.getDoubleRegister(I.RS)));
+  M.incPC();
+  goto next;
 
 add:
-  {
-    I = getDecodedInst(M.getPC());
-    M.setRegister(I.RD, M.getRegister(I.RS)+M.getRegister(I.RT));
-    M.incPC();
-    goto next;
-  }
+  I = getDecodedInst(M.getPC());
+  M.setRegister(I.RD, M.getRegister(I.RS)+M.getRegister(I.RT));
+  M.incPC();
+  goto next;
 
 sub:
-  {
-    I = getDecodedInst(M.getPC());
-    M.setRegister(I.RD, M.getRegister(I.RS)-M.getRegister(I.RT));
-    M.incPC();
-    goto next;
-  }
+  I = getDecodedInst(M.getPC());
+  M.setRegister(I.RD, M.getRegister(I.RS)-M.getRegister(I.RT));
+  M.incPC();
+  goto next;
 
 mul:
   {
-    I = getDecodedInst(M.getPC());
-    int64_t Result = M.getRegister(I.RS) * M.getRegister(I.RT);
-    if (I.RD != 0) //FIXME: Opt
-      M.setRegister(I.RD, (Result & 0xFFFFFFFF));
-    if (I.RV != 0)
-      M.setRegister(I.RV, ((Result >> 32) & 0xFFFFFFFF));
-    M.incPC();
-    goto next;
+  I = getDecodedInst(M.getPC());
+  int64_t Result = M.getRegister(I.RS) * M.getRegister(I.RT);
+  if (I.RD != 0) //FIXME: Opt
+    M.setRegister(I.RD, (Result & 0xFFFFFFFF));
+  if (I.RV != 0)
+    M.setRegister(I.RV, ((Result >> 32) & 0xFFFFFFFF));
+  M.incPC();
+  goto next;
   }
 
 div:
-  {
-    I = getDecodedInst(M.getPC());
-    M.setRegister(I.RD, M.getRegister(I.RS) / M.getRegister(I.RT));
-    M.incPC();
-    goto next;
-  }
+  I = getDecodedInst(M.getPC());
+  M.setRegister(I.RD, M.getRegister(I.RS) / M.getRegister(I.RT));
+  M.incPC();
+  goto next;
 
 mod:
-  {
-    I = getDecodedInst(M.getPC());
-    M.setRegister(I.RV, M.getRegister(I.RS) % M.getRegister(I.RT));
-    M.incPC();
-    goto next;
-  }
+  I = getDecodedInst(M.getPC());
+  M.setRegister(I.RV, M.getRegister(I.RS) % M.getRegister(I.RT));
+  M.incPC();
+  goto next;
 
 ldi:
-  {
-    I = getDecodedInst(M.getPC());
-    ldiReg = I.RT;
-    M.setRegister(ldiReg, M.getRegister(I.RT) & 0xFFFFC000);
-    M.setRegister(ldiReg, M.getRegister(ldiReg) | (I.Imm & 0x3FFF));
-    M.incPC();
-    goto next;
-  }
+  I = getDecodedInst(M.getPC());
+  ldiReg = I.RT;
+  M.setRegister(ldiReg, M.getRegister(I.RT) & 0xFFFFC000);
+  M.setRegister(ldiReg, M.getRegister(ldiReg) | (I.Imm & 0x3FFF));
+  M.incPC();
+  goto next;
 
 ldihi:
-  {
-    I = getDecodedInst(M.getPC());
-    M.setRegister(ldiReg, M.getRegister(I.RT) & 0x3FFF);
-    M.setRegister(ldiReg, M.getRegister(ldiReg) | (I.Addrs << 14));
-    M.incPC();
-    goto next;
-  }
+  I = getDecodedInst(M.getPC());
+  M.setRegister(ldiReg, M.getRegister(I.RT) & 0x3FFF);
+  M.setRegister(ldiReg, M.getRegister(ldiReg) | (I.Addrs << 14));
+  M.incPC();
+  goto next;
 
 ldw:
-  {
-    I = getDecodedInst(M.getPC());
-    M.setRegister(I.RT, M.getMemValueAt(M.getRegister(I.RS) + I.Imm).asI_);
-    M.incPC();
-    goto next;
-  }
+  I = getDecodedInst(M.getPC());
+  M.setRegister(I.RT, M.getMemValueAt(M.getRegister(I.RS) + I.Imm).asI_);
+  M.incPC();
+  goto next;
 
 addi:
-  {
-    I = getDecodedInst(M.getPC());
-    M.setRegister(I.RT, M.getRegister(I.RS) + I.Imm);
-    M.incPC();
-    goto next;
-  }
+  I = getDecodedInst(M.getPC());
+  M.setRegister(I.RT, M.getRegister(I.RS) + I.Imm);
+  M.incPC();
+  goto next;
 
 and_:
-  {
-    I = getDecodedInst(M.getPC());
-    M.setRegister(I.RD, M.getRegister(I.RS) & M.getRegister(I.RT));
-    M.incPC();
-    goto next;
-  }
+  I = getDecodedInst(M.getPC());
+  M.setRegister(I.RD, M.getRegister(I.RS) & M.getRegister(I.RT));
+  M.incPC();
+  goto next;
 
 or_:
-  {
-    I = getDecodedInst(M.getPC());
-    M.setRegister(I.RD, M.getRegister(I.RS) | M.getRegister(I.RT));
-    M.incPC();
-    goto next;
-  }
+  I = getDecodedInst(M.getPC());
+  M.setRegister(I.RD, M.getRegister(I.RS) | M.getRegister(I.RT));
+  M.incPC();
+  goto next;
 
 shr:
   I = getDecodedInst(M.getPC());

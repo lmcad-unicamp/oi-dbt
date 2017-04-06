@@ -47,6 +47,16 @@ Value* dbt::IREmitter::genImm(uint32_t Imm) {
 void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecoder::OIInst Inst) {
   Function* Func = Builder->GetInsertBlock()->getParent();
   switch (Inst.Type) {
+    case dbt::OIDecoder::Add: 
+      {
+        Value* RS = genLoadRegister(Inst.RS, Func);
+        IRMemoryMap[GuestAddr] = FirstInstGen;
+        Value* RT = genLoadRegister(Inst.RT, Func);
+        Value* Res = Builder->CreateAdd(RS, RT);
+        genStoreRegister(Inst.RD, Res, Func);
+        break;
+      }
+
     case dbt::OIDecoder::Addi: 
       {
         Value* Res = Builder->CreateAdd(genLoadRegister(Inst.RS, Func), genImm(Inst.Imm));
@@ -104,9 +114,41 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
   }
 }
 
-void dbt::IREmitter::processBranchesTargets(const OIInstList& OIRegion) {
+void dbt::IREmitter::updateBranchTarget(uint32_t GuestAddr, std::array<uint32_t, 2> Tgts) {
   Function* F = Builder->GetInsertBlock()->getParent();
+  for (int i = 0; i < 2; i++) {
+    uint32_t AddrTarget = Tgts[i];
 
+    if (AddrTarget == 0) continue;
+
+    BasicBlock *BBTarget;
+    if (IRMemoryMap.count(AddrTarget) != 0) {
+      auto TargetInst = cast<Instruction>(IRMemoryMap[AddrTarget]);
+      BasicBlock *Current = TargetInst->getParent();
+
+      if (Current->getFirstNonPHI() == TargetInst) 
+        BBTarget = Current;
+      else
+        BBTarget = Current->splitBasicBlock(TargetInst);
+    } else {
+      BBTarget = BasicBlock::Create(TheContext, "", F);
+      Builder->SetInsertPoint(BBTarget);
+      Builder->CreateRet(genImm(AddrTarget));
+    }
+    IRBranchMap[GuestAddr]->setSuccessor(i, BBTarget);
+  }
+}
+
+void dbt::IREmitter::cleanCFG() {
+  Function* F = Builder->GetInsertBlock()->getParent();
+  BasicBlock* Trash;
+  for (auto& BB : *F) 
+    if (BB.size() == 0)
+      Trash = &BB;
+  Trash->eraseFromParent();
+}
+
+void dbt::IREmitter::processBranchesTargets(const OIInstList& OIRegion) {
   for (auto Pair : OIRegion) {
     OIDecoder::OIInst Inst = OIDecoder::decode(Pair[1]);
     uint32_t GuestAddr = Pair[0];
@@ -114,52 +156,18 @@ void dbt::IREmitter::processBranchesTargets(const OIInstList& OIRegion) {
     switch (Inst.Type) {
       case dbt::OIDecoder::Jeqz: 
         {
-          std::array<uint32_t, 2> Tgts = {(GuestAddr + (Inst.Imm << 2)) + 4, GuestAddr + 4};
-          for (int i = 0; i < 2; i++) {
-            uint32_t AddrTarget = Tgts[i];
-            BasicBlock *BBTarget;
-            if (IRMemoryMap.count(AddrTarget) != 0) {
-              BasicBlock *Current = IRBranchMap[AddrTarget]->getParent();
-              if (Current->getFirstNonPHI() == IRMemoryMap[AddrTarget])
-                BBTarget = Current;
-              else
-                BBTarget = Current->splitBasicBlock(cast<Instruction>(IRMemoryMap[AddrTarget]));
-            } else {
-              BBTarget = BasicBlock::Create(TheContext, "Jeqz", F);
-              Builder->SetInsertPoint(BBTarget);
-              Builder->CreateRet(genImm(AddrTarget));
-            }
-            IRBranchMap[GuestAddr]->setSuccessor(i, BBTarget);
-          }
+          updateBranchTarget(GuestAddr, {(GuestAddr + (Inst.Imm << 2)) + 4, GuestAddr + 4});
           break;
         }
-
       case dbt::OIDecoder::Jump: 
         {
-          uint32_t AddrTarget = (GuestAddr & 0xF0000000) | (Inst.Addrs << 2);
-          BasicBlock *BBTarget;
-          if (IRMemoryMap.count(AddrTarget) != 0) {
-            BasicBlock *Current = cast<Instruction>(IRMemoryMap[AddrTarget])->getParent();
-            if (Current->getFirstNonPHI() == IRMemoryMap[AddrTarget])
-              BBTarget = Current;
-            else
-              BBTarget = Current->splitBasicBlock(cast<Instruction>(IRMemoryMap[AddrTarget]));
-          } else {
-            BBTarget = BasicBlock::Create(TheContext, "Jump", F);
-            Builder->SetInsertPoint(BBTarget);
-            Builder->CreateRet(genImm(AddrTarget));
-          }
-          IRBranchMap[GuestAddr]->setSuccessor(0, BBTarget);
+          updateBranchTarget(GuestAddr, {(GuestAddr & 0xF0000000) | (Inst.Addrs << 2), 0});
           break;
         }
     }
   }
-
-  BasicBlock* Trash;
-  for (auto& BB : *F) 
-    if (BB.size() == 0)
-      Trash = &BB;
-  Trash->eraseFromParent();
+  
+  cleanCFG();
 }
 
 Module* dbt::IREmitter::generateRegionIR(uint32_t EntryAddress, const OIInstList& OIRegion, uint32_t MemOffset) {

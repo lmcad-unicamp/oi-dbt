@@ -4,6 +4,19 @@
 #include <iostream>
 #include <iomanip>
 
+void dbt::RFT::startRegionFormation(uint32_t PC) {
+  Recording = true; 
+  RecordingEntry = PC;
+}
+
+void dbt::RFT::finishRegionFormation() {
+  if (OIRegion.size() > 0) {
+    TheManager.addOIRegion(RecordingEntry, OIRegion);
+    OIRegion.clear();
+  }
+  Recording = false;
+}
+
 void dbt::RFT::printRegions() {
   std::cout << std::endl << "\t\t NET\n";
   std::cout << std::endl << "Number of Regions: " << TheManager.getNumOfOIRegions() << '\n';

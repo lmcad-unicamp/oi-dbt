@@ -28,6 +28,8 @@ namespace dbt {
 
     void printRegions();
 
+    void startRegionFormation(uint32_t); 
+    void finishRegionFormation(); 
     virtual void onBranch(dbt::Machine&) = 0;
     virtual void onNextInst(dbt::Machine&) = 0;
   };

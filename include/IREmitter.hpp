@@ -25,6 +25,8 @@ namespace dbt {
     std::unordered_map<uint32_t, llvm::Value*> IRMemoryMap;
     std::unordered_map<uint32_t, llvm::BranchInst*> IRBranchMap;
 
+    void cleanCFG();
+    void updateBranchTarget(uint32_t, std::array<uint32_t, 2>);
     void processBranchesTargets(const OIInstList&);
     void generateInstIR(const uint32_t, const OIDecoder::OIInst);
 

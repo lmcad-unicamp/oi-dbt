@@ -8,37 +8,27 @@ void NET::onBranch(Machine& M) {
   if (M.getPC() < M.getLastPC()) {
     if (!Recording) { 
       ++ExecFreq[M.getPC()];
-      if (!TheManager.isRegionEntry(M.getPC()) && ExecFreq[M.getPC()] > 50) {
-        Recording = true; 
-        RecordingEntry = M.getPC();
-      }
+      if (!TheManager.isRegionEntry(M.getPC()) && ExecFreq[M.getPC()] > 50) 
+        startRegionFormation(M.getPC());
     } else {
-      Recording = false;
-      TheManager.addOIRegion(RecordingEntry, OIRegion);
-      OIRegion.clear();
+      finishRegionFormation(); 
     }
   }
 }
 
 void NET::onNextInst(Machine& M) {
   if (TheManager.isNativeRegionEntry(M.getPC())) {
-    if (Recording) {
-      Recording = false;
-      TheManager.addOIRegion(RecordingEntry, OIRegion);
-      OIRegion.clear();
-    }
+    if (Recording) 
+      finishRegionFormation(); 
 
-    auto Next = TheManager.jumpToRegion(RecordingEntry, M);
+    auto Next = TheManager.jumpToRegion(RecordingEntry, M); // FIXME: This should not be here!
     M.setPC(Next);
   } else {
     if (Recording) {
-      if (TheManager.isRegionEntry(M.getPC())) { 
-        Recording = false;
-        TheManager.addOIRegion(RecordingEntry, OIRegion);
-        OIRegion.clear();
-      } else {
+      if (TheManager.isRegionEntry(M.getPC())) 
+        finishRegionFormation(); 
+      else 
         OIRegion.push_back({M.getPC(), M.getInstAtPC().asI_});
-      }
     }
   }
 }
