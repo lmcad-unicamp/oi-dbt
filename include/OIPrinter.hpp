@@ -12,9 +12,6 @@ namespace dbt {
     static std::string getString(OIInst Inst) {
       std::ostringstream Out;
       switch (Inst.Type) {
-      case Absd:
-        Out << "absd";
-        break;
       case Add:
         Out << "add";
         break;

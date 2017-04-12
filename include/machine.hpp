@@ -33,7 +33,7 @@ namespace dbt {
 
   class Machine {
   private:
-    int32_t Register[64];
+    int32_t Register[65];
     double DoubleRegister[64];
     uptr<char[]> DataMemory;
     uptr<Word[]> CodeMemory;

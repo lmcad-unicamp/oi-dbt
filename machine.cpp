@@ -6,8 +6,7 @@
 
 using namespace dbt;
 
-void
-copystr(std::unique_ptr<char[]>& Target, const char* Source, uint32_t Size) {
+void copystr(std::unique_ptr<char[]>& Target, const char* Source, uint32_t Size) {
   for (uint32_t i = 0; i < Size; ++i)
     Target[i] = Source[i];
 }

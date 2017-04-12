@@ -22,6 +22,12 @@ namespace dbt {
 		std::unordered_map<std::string, llvm::Value*> NamedValues;
 		std::unique_ptr<llvm::IRBuilder<>> Builder;
 
+    uint32_t DataMemOffset;
+
+    llvm::Value* FirstInstGen;
+    void addFirstInstToMap(uint32_t);
+    void setIfNotTheFirstInstGen(llvm::Value*);
+
     std::unordered_map<uint32_t, llvm::Value*> IRMemoryMap;
     std::unordered_map<uint32_t, llvm::BranchInst*> IRBranchMap;
 
@@ -33,6 +39,7 @@ namespace dbt {
     llvm::Value* genDataMemVecPtr(llvm::Value*, llvm::Function*);
     llvm::Value* genRegisterVecPtr(uint8_t, llvm::Function*);
     llvm::Value* genLoadRegister(uint8_t, llvm::Function*);
+    llvm::Value* genStoreRegister(llvm::Value*, llvm::Value*, llvm::Function*);
     llvm::Value* genStoreRegister(uint8_t, llvm::Value*, llvm::Function*);
     llvm::Value* genImm(uint32_t);
   public:

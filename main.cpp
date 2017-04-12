@@ -93,5 +93,7 @@ int main(int argc, char** argv) {
 
 /*
  * TODO:
+ *  - Implement and test all instructions of the interpreter into the IREmitter
+ *  - Make corrections on the region transition 
  *  - Flags para melhorar controle: -only {interpret|rft|compilation}
  */

@@ -12,7 +12,7 @@ namespace dbt {
     };
 
     enum OIInstType
-    { Absd, Add, And, Or, Ldi, Ldihi, Ldw, Addi, Call, Jumpr, Stw, Sltiu, Slti, Jeq, Jne, Jump, Mul, Syscall, Nop, 
+    { Add, And, Or, Ldi, Ldihi, Ldw, Addi, Call, Jumpr, Stw, Sltiu, Slti, Jeq, Jne, Jump, Mul, Syscall, Nop, 
       Shr, Shl, Jeqz, Sub, Slt, Div, Mod, Null };
 
     typedef struct OIInst {
@@ -79,12 +79,6 @@ namespace dbt {
 
       uint8_t Ext;
       switch(Op) {
-      case 0b100010:
-        Ext = (W.asI_ & OpMask) >> 12;
-        if (Ext == 0b101) I.Type = OIInstType::Absd;
-        I.RS = getRS(W);
-        I.RT = getRT(W);
-        break;
       case 0b100000:
         Ext = W.asI_ >> 18;
         if (Ext == 0b0) I.Type = OIInstType::Add;

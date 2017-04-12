@@ -40,7 +40,6 @@ setDecodedInst(uint32_t Addrs, OIInst DI) {
   DecodedInsts[(Addrs-LastStartAddrs)/4] = DI;
 }
 
-uint8_t ldiReg = 0;
 void ITDInterpreter::
 dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs) {
   for (uint32_t Addrs = StartAddrs; Addrs < EndAddrs; Addrs+=4) {
@@ -49,9 +48,6 @@ dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs) {
     OIInst I = decode(W.asI_);
 
     switch(I.Type) {
-    case OIInstType::Absd:
-      setDispatchValue(Addrs, static_cast<int*>(&&absd));
-      break;
     case Add:
       setDispatchValue(Addrs, static_cast<int*>(&&add));
       break;
@@ -135,15 +131,10 @@ dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs) {
   }
 
   OIInst I;
+  constexpr int32_t ldiReg = 65;
   goto next;
 
 nop:
-  M.incPC();
-  goto next;
-
-absd:
-  I = getDecodedInst(M.getPC());
-  M.setDoubleRegister(I.RT, fabs(M.getDoubleRegister(I.RS)));
   M.incPC();
   goto next;
 
@@ -163,7 +154,7 @@ mul:
   {
   I = getDecodedInst(M.getPC());
   int64_t Result = M.getRegister(I.RS) * M.getRegister(I.RT);
-  if (I.RD != 0) //FIXME: Opt
+  if (I.RD != 0) 
     M.setRegister(I.RD, (Result & 0xFFFFFFFF));
   if (I.RV != 0)
     M.setRegister(I.RV, ((Result >> 32) & 0xFFFFFFFF));
@@ -185,16 +176,14 @@ mod:
 
 ldi:
   I = getDecodedInst(M.getPC());
-  ldiReg = I.RT;
-  M.setRegister(ldiReg, M.getRegister(I.RT) & 0xFFFFC000);
-  M.setRegister(ldiReg, M.getRegister(ldiReg) | (I.Imm & 0x3FFF));
+  M.setRegister(ldiReg, I.RT);
+  M.setRegister(I.RT, (M.getRegister(I.RT) & 0xFFFFC000) | (I.Imm & 0x3FFF));
   M.incPC();
   goto next;
 
 ldihi:
   I = getDecodedInst(M.getPC());
-  M.setRegister(ldiReg, M.getRegister(I.RT) & 0x3FFF);
-  M.setRegister(ldiReg, M.getRegister(ldiReg) | (I.Addrs << 14));
+  M.setRegister(M.getRegister(ldiReg), (M.getRegister(I.RT) & 0x3FFF) | (I.Addrs << 14));
   M.incPC();
   goto next;
 
