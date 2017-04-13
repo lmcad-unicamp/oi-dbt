@@ -57,9 +57,6 @@ namespace dbt {
     void setPC(uint32_t);
     void incPC();
 
-    uint32_t getSP();
-    void setSP(uint32_t);
-
     Word getInstAt(uint32_t);
     Word getInstAtPC();
     Word getNextInst();

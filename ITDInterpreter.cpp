@@ -16,8 +16,7 @@ using namespace dbt::OIDecoder;
 #define DEBUG_PRINT(Addr, Inst) std::cout << std::hex << Addr << "\t" << OIPrinter::getString(Inst) << std::dec << "\n";
 #endif
 
-bool ITDInterpreter::
-isAddrsContainedIn(uint32_t StartAddrs, uint32_t EndAddrs) {
+bool ITDInterpreter::isAddrsContainedIn(uint32_t StartAddrs, uint32_t EndAddrs) {
   return !(StartAddrs < LastStartAddrs || EndAddrs > LastEndAddrs);
 }
 
@@ -35,13 +34,11 @@ OIInst ITDInterpreter::getDecodedInst(uint32_t Addrs) {
   return DecodedInsts[(Addrs-LastStartAddrs)/4];
 }
 
-void ITDInterpreter::
-setDecodedInst(uint32_t Addrs, OIInst DI) {
+void ITDInterpreter::setDecodedInst(uint32_t Addrs, OIInst DI) {
   DecodedInsts[(Addrs-LastStartAddrs)/4] = DI;
 }
 
-void ITDInterpreter::
-dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs) {
+void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs) {
   for (uint32_t Addrs = StartAddrs; Addrs < EndAddrs; Addrs+=4) {
     Word W = M.getInstAt(Addrs);
 
@@ -304,8 +301,7 @@ next:
   goto *getDispatchValue(M.getPC());
 }
 
-void ITDInterpreter::
-execute(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs) {
+void ITDInterpreter::execute(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs) {
   if (DispatchValues.size() == 0 || !isAddrsContainedIn(StartAddrs, EndAddrs)) { 
     DispatchValues.reserve((EndAddrs - StartAddrs)/4);
     DecodedInsts.reserve((EndAddrs - StartAddrs)/4);

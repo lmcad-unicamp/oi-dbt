@@ -46,11 +46,11 @@ namespace dbt {
       int32_t jumpToRegion(uint32_t, dbt::Machine&);
 
       bool isRegionEntry(uint32_t EntryAddress) {
-        return OIRegions.count(EntryAddress);
+        return OIRegions.count(EntryAddress) != 0;
       }
 
       bool isNativeRegionEntry(uint32_t EntryAddress) {
-        return NativeRegions.count(EntryAddress);
+        return NativeRegions.count(EntryAddress) != 0;
       }
 
       size_t getNumOfOIRegions() {

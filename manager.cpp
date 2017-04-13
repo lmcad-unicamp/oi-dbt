@@ -11,6 +11,9 @@ void Manager::addOIRegion(uint32_t EntryAddress, OIInstList OIRegion) {
 
   IRO->optimizeIRFunction(M, IROpt::OptLevel::Basic); 
 
+/*  for (auto& F : *M) 
+    F.print(llvm::errs());*/
+
   IRJIT->addModule(std::unique_ptr<llvm::Module>(M));
   NativeRegions[EntryAddress] = (intptr_t) IRJIT->findSymbol("r"+std::to_string(EntryAddress)).getAddress();
 }

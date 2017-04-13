@@ -11,8 +11,7 @@ void copystr(std::unique_ptr<char[]>& Target, const char* Source, uint32_t Size)
     Target[i] = Source[i];
 }
 
-void Machine::
-setCodeMemory(uint32_t StartAddress, uint32_t Size, const char* CodeBuffer) {
+void Machine::setCodeMemory(uint32_t StartAddress, uint32_t Size, const char* CodeBuffer) {
   CodeMemOffset = StartAddress;
   CodeMemory = uptr<Word[]>(new Word[Size]);
   CodeMemLimit = Size + CodeMemOffset;
@@ -23,8 +22,7 @@ setCodeMemory(uint32_t StartAddress, uint32_t Size, const char* CodeBuffer) {
   }
 }
 
-void Machine::
-setDataMemory(uint32_t StartAddress, uint32_t Size, const char* DataBuffer) {
+void Machine::setDataMemory(uint32_t StartAddress, uint32_t Size, const char* DataBuffer) {
   DataMemOffset = StartAddress;
   DataMemory = std::unique_ptr<char[]>(new char[Size]);
   DataMemLimit = Size + DataMemOffset;
