@@ -38,9 +38,11 @@ namespace dbt {
 
     llvm::Value* genDataMemVecPtr(llvm::Value*, llvm::Function*);
     llvm::Value* genRegisterVecPtr(uint8_t, llvm::Function*);
+    llvm::Value* genRegisterVecPtr(llvm::Value*, llvm::Function*);
     llvm::Value* genLoadRegister(uint8_t, llvm::Function*);
-    llvm::Value* genStoreRegister(llvm::Value*, llvm::Value*, llvm::Function*);
+    llvm::Value* genLoadRegister(llvm::Value*, llvm::Function*);
     llvm::Value* genStoreRegister(uint8_t, llvm::Value*, llvm::Function*);
+    llvm::Value* genStoreRegister(llvm::Value*, llvm::Value*, llvm::Function*);
     llvm::Value* genImm(uint32_t);
   public:
 		IREmitter() {

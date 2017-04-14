@@ -9,12 +9,8 @@
 using namespace dbt;
 using namespace dbt::OIDecoder;
 
-#ifdef NDEBUG
-#define DEBUG_PRINT(Addr, Inst)
-#else
-#include <OIPrinter.hpp>
-#define DEBUG_PRINT(Addr, Inst) std::cout << std::hex << Addr << "\t" << OIPrinter::getString(Inst) << std::dec << "\n";
-#endif
+//#include <OIPrinter.hpp>
+//#define DEBUG_PRINT(Addr, Inst) std::cout << std::hex << Addr << "\t" << OIPrinter::getString(Inst) << std::dec << "\n";
 
 bool ITDInterpreter::isAddrsContainedIn(uint32_t StartAddrs, uint32_t EndAddrs) {
   return !(StartAddrs < LastStartAddrs || EndAddrs > LastEndAddrs);
@@ -117,6 +113,9 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
     case Shl:
       setDispatchValue(Addrs, static_cast<int*>(&&shl));
       break;
+    case Ori:
+      setDispatchValue(Addrs, static_cast<int*>(&&ori));
+      break;
     case Nop:
       setDispatchValue(Addrs, static_cast<int*>(&&nop));
       break;
@@ -128,7 +127,7 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
   }
 
   OIInst I;
-  constexpr int32_t ldiReg = 65;
+  constexpr int32_t ldiReg = 64;
   goto next;
 
 nop:
@@ -180,7 +179,7 @@ ldi:
 
 ldihi:
   I = getDecodedInst(M.getPC());
-  M.setRegister(M.getRegister(ldiReg), (M.getRegister(I.RT) & 0x3FFF) | (I.Addrs << 14));
+  M.setRegister(M.getRegister(ldiReg), (M.getRegister(M.getRegister(ldiReg)) & 0x3FFF) | (I.Addrs << 14));
   M.incPC();
   goto next;
 
@@ -224,13 +223,11 @@ call:
   I = getDecodedInst(M.getPC());
   M.setRegister(31, M.getPC()+4);
   M.setPC((M.getPC() & 0xF0000000) | (I.Addrs << 2));
-  ImplRFT.onBranch(M);
   goto next;
 
 jumpr:
   I = getDecodedInst(M.getPC());
   M.setPC(M.getRegister(I.RT));
-  ImplRFT.onBranch(M);
   goto next;
 
 stw:
@@ -257,31 +254,37 @@ slt:
   M.incPC();
   goto next;
 
+ori:
+  I = getDecodedInst(M.getPC());
+  M.setRegister(I.RT, M.getRegister(I.RS) | (I.Imm & 0x3FFF));
+  M.incPC();
+  goto next;
+
 jeq:
   I = getDecodedInst(M.getPC());
-  if (M.getRegister(I.RT) == M.getRegister(I.RS)) {
+  if (M.getRegister(I.RS) == M.getRegister(I.RT)) {
     M.setPC(M.getPC() + (I.Imm << 2));
-    ImplRFT.onBranch(M);
   }
   M.incPC();
+  ImplRFT.onBranch(M);
   goto next;
 
 jeqz:
   I = getDecodedInst(M.getPC());
   if (M.getRegister(I.RS) == 0) { 
     M.setPC(M.getPC() + (I.Imm << 2));
-    ImplRFT.onBranch(M);
   }
   M.incPC();
+  ImplRFT.onBranch(M);
   goto next;
 
 jne:
   I = getDecodedInst(M.getPC());
-  if (M.getRegister(I.RT) != M.getRegister(I.RS)) {
-    M.setPC(M.getPC() + ((I.Imm << 2)));
-    ImplRFT.onBranch(M);
+  if (M.getRegister(I.RS) != M.getRegister(I.RT)) {
+    M.setPC(M.getPC() + (I.Imm << 2));
   }
   M.incPC();
+  ImplRFT.onBranch(M);
   goto next;
 
 syscall:
@@ -296,7 +299,7 @@ jump:
   goto next;
 
 next:
-  DEBUG_PRINT(M.getPC(), I);
+  //DEBUG_PRINT(M.getPC(), getDecodedInst(M.getPC()));
   ImplRFT.onNextInst(M);
   goto *getDispatchValue(M.getPC());
 }

@@ -1,5 +1,6 @@
 #include <RFT.hpp>
 
+
 #include <memory>
 
 using namespace dbt;
@@ -8,7 +9,7 @@ void NET::onBranch(Machine& M) {
   if (M.getPC() < M.getLastPC()) {
     if (!Recording) { 
       ++ExecFreq[M.getPC()];
-      if (!TheManager.isRegionEntry(M.getPC()) && ExecFreq[M.getPC()] > 20) 
+      if (!TheManager.isRegionEntry(M.getPC()) && ExecFreq[M.getPC()] > 50) 
         startRegionFormation(M.getPC());
     } else {
       finishRegionFormation(); 

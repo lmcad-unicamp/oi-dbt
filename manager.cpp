@@ -11,7 +11,7 @@ void Manager::addOIRegion(uint32_t EntryAddress, OIInstList OIRegion) {
 
   IRO->optimizeIRFunction(M, IROpt::OptLevel::Basic); 
 
-/*  for (auto& F : *M) 
+ /* for (auto& F : *M) 
     F.print(llvm::errs());*/
 
   IRJIT->addModule(std::unique_ptr<llvm::Module>(M));

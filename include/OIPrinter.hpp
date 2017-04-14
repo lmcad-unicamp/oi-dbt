@@ -87,6 +87,9 @@ namespace dbt {
       case Shl:
         Out << "shl";
         break;
+      case Ori:
+        Out << "ori";
+        break;
       default:
         Out << "Null";
         break;

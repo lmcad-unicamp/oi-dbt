@@ -129,7 +129,7 @@ int32_t* Machine::getMemoryPtr() {
 
 using namespace ELFIO;
 
-#define STACK_SIZE 2024
+#define STACK_SIZE 104857600
 int Machine::loadELF(const std::string ElfPath) {
   elfio reader;
 

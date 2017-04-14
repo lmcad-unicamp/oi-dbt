@@ -7,6 +7,8 @@
 #include "llvm/IR/DerivedTypes.h"
 #include "llvm/IR/Type.h"
 
+#include "llvm/Support/raw_ostream.h"
+
 #include <cstdlib>
 
 using namespace llvm;
@@ -30,6 +32,13 @@ Value* dbt::IREmitter::genDataMemVecPtr(Value* RawAddrs, Function* Func) {
   return Builder->CreateGEP(Type::getInt32Ty(TheContext), ArgDataMemPtr, Addrs);
 }
 
+Value* dbt::IREmitter::genRegisterVecPtr(Value* RegNum, Function* Func) {
+  Argument *ArgIntRegPtr = &*Func->arg_begin(); 
+  Value* GEP = Builder->CreateGEP(ArgIntRegPtr, RegNum);
+  setIfNotTheFirstInstGen(GEP);
+  return GEP;
+}
+
 Value* dbt::IREmitter::genRegisterVecPtr(uint8_t RegNum, Function* Func) {
   Argument *ArgIntRegPtr = &*Func->arg_begin(); 
   Value* GEP = Builder->CreateGEP(ArgIntRegPtr, ConstantInt::get(Type::getInt32Ty(TheContext), RegNum));
@@ -37,25 +46,26 @@ Value* dbt::IREmitter::genRegisterVecPtr(uint8_t RegNum, Function* Func) {
   return GEP;
 }
 
+Value* dbt::IREmitter::genLoadRegister(Value* R, Function* Func) {
+  Value* Ptr = genRegisterVecPtr(R, Func);
+  return Builder->CreateLoad(Ptr);
+}
+
 Value* dbt::IREmitter::genLoadRegister(uint8_t RegNum, Function* Func) {
   if (RegNum == 0)
     return genImm(0); 
 
   Value* Ptr = genRegisterVecPtr(RegNum, Func);
-  setIfNotTheFirstInstGen(Ptr);
   return Builder->CreateLoad(Ptr);
 }
 
 Value* dbt::IREmitter::genStoreRegister(Value* R, Value* V, Function* Func) {
-  Argument *ArgIntRegPtr = &*Func->arg_begin(); 
-  Value* Ptr = Builder->CreateGEP(ArgIntRegPtr, R);
-  setIfNotTheFirstInstGen(Ptr);
+  Value* Ptr = genRegisterVecPtr(R, Func);
   return Builder->CreateStore(V, Ptr);
 }
 
 Value* dbt::IREmitter::genStoreRegister(uint8_t RegNum, Value* V, Function* Func) {
   Value* Ptr = genRegisterVecPtr(RegNum, Func);
-  setIfNotTheFirstInstGen(Ptr);
   return Builder->CreateStore(V, Ptr);
 }
 
@@ -67,16 +77,30 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
   Function* Func = Builder->GetInsertBlock()->getParent();
 
   switch (Inst.Type) {
+    case dbt::OIDecoder::Ldi: {
+        genStoreRegister(64, genImm(Inst.RT), Func);
+        Value* R1 = Builder->CreateAnd(genLoadRegister(Inst.RT, Func), genImm(0xFFFFC000));
+        Value* Res = Builder->CreateOr(R1, genImm(Inst.Imm & 0x3FFF));
+        genStoreRegister(Inst.RT, Res, Func);
+        break;
+      }
+
     case dbt::OIDecoder::Ldihi: {
-        Value* R1 = Builder->CreateAnd(genLoadRegister(Inst.RT, Func), genImm(0x3FFF));
+        Value* R1 = Builder->CreateAnd(genLoadRegister(genLoadRegister(64, Func), Func), genImm(0x3FFF));
         Value* Res = Builder->CreateOr(R1, genImm(Inst.Addrs << 14));
-        genStoreRegister(genLoadRegister(65, Func), Res, Func);
+        genStoreRegister(genLoadRegister(64, Func), Res, Func);
+        break;
+      }
+
+    case dbt::OIDecoder::Ori: {
+        Value* Res = Builder->CreateOr(genLoadRegister(Inst.RS, Func), genImm(Inst.Imm & 0x3FFF));
+        genStoreRegister(Inst.RT, Res, Func);
         break;
       }
 
     case dbt::OIDecoder::Mod: {
         Value* Res = Builder->CreateSRem(genLoadRegister(Inst.RS, Func), genLoadRegister(Inst.RT, Func));
-        genStoreRegister(Inst.RD, Res, Func);
+        genStoreRegister(Inst.RV, Res, Func);
         break;
       }
 
@@ -105,7 +129,7 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
           genStoreRegister(Inst.RD, ShiftedRes, Func);
         } 
         if (Inst.RV != 0) {
-          Value* ShiftedRes = Builder->CreateAnd(Builder->CreateLShr(Res, 32), genImm(0xFFFFFFFF));
+          Value* ShiftedRes = Builder->CreateAnd(Builder->CreateAShr(Res, 32), genImm(0xFFFFFFFF));
           genStoreRegister(Inst.RV, ShiftedRes, Func);
         }
         break;
@@ -258,11 +282,13 @@ void dbt::IREmitter::updateBranchTarget(uint32_t GuestAddr, std::array<uint32_t,
 
 void dbt::IREmitter::cleanCFG() {
   Function* F = Builder->GetInsertBlock()->getParent();
-  BasicBlock* Trash;
+  BasicBlock* Trash = nullptr;
   for (auto& BB : *F) 
     if (BB.size() == 0)
       Trash = &BB;
-  Trash->eraseFromParent();
+
+  if (Trash)
+    Trash->eraseFromParent();
 }
 
 void dbt::IREmitter::processBranchesTargets(const OIInstList& OIRegion) {
@@ -319,6 +345,13 @@ Module* dbt::IREmitter::generateRegionIR(uint32_t EntryAddress, const OIInstList
   }
 
   processBranchesTargets(OIRegion);
+
+  for (auto& BB : *F) {
+    if (BB.getTerminator() == nullptr) {
+      Builder->SetInsertPoint(&BB);
+      Builder->CreateRet(genImm(OIRegion.back()[0]+4));
+    }
+  }
 
   return TheModule;
 }

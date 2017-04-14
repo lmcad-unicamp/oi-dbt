@@ -13,7 +13,7 @@ namespace dbt {
 
     enum OIInstType
     { Add, And, Or, Ldi, Ldihi, Ldw, Addi, Call, Jumpr, Stw, Sltiu, Slti, Jeq, Jne, Jump, Mul, Syscall, Nop, 
-      Shr, Shl, Jeqz, Sub, Slt, Div, Mod, Null };
+      Shr, Shl, Jeqz, Sub, Slt, Div, Mod, Ori, Null };
 
     typedef struct OIInst {
       OIInstType Type;
@@ -40,19 +40,19 @@ namespace dbt {
 
     static int16_t getImm(Word W) {
       uint16_t x = (W.asI_ >> 6) & 0x3FFF;
-      return ((x >= (1 << 13))
-          ? -(16384 - x) 
-          : x);
+      return (x & 0x2000) ? (x | 0xc000) : x;
     }
 
     static int16_t getImm1(Word W) {
       uint16_t x = (W.asI_ >> 12) & 0x3FFF;
-      return ((x >= (1 << 13))
-          ? -(16384 - x) 
-          : x);
+      return (x & 0x2000) ? (x | 0xc000) : x;
     }
 
-    constexpr int32_t getPL18(Word W) {
+    static uint16_t getUImm1(Word W) {
+      return (W.asI_ >> 12) & 0x3FFF;
+    }
+
+    constexpr uint32_t getPL18(Word W) {
       return W.asI_ & 0x3FFFF; 
     }
 
@@ -141,14 +141,15 @@ namespace dbt {
         I.Imm = getImm1(W);
         break;
       case 0b10101:
+        I.RS = getRS(W);
+        I.RT = getRT(W);
+        I.Imm = getImm1(W);
+
         if (I.RT == 0) 
           I.Type = OIInstType::Jeqz;
         else
           I.Type = OIInstType::Jeq;
 
-        I.RS = getRS(W);
-        I.RT = getRT(W);
-        I.Imm = getImm1(W);
         break;
       case 0b10110:
         I.Type = OIInstType::Jne;
@@ -177,8 +178,15 @@ namespace dbt {
       case 0b100100:
         I.Type = OIInstType::Syscall;
         break;
+      case 0b10011:
+        I.Type = OIInstType::Ori;
+        I.Imm = getUImm1(W);
+        I.RS  = getRS(W);
+        I.RT  = getRT(W);
+        break;
       default:
         I.Type = OIInstType::Null;
+        break;
       }
       return I;
     }
