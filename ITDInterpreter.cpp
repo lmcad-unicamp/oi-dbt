@@ -9,8 +9,8 @@
 using namespace dbt;
 using namespace dbt::OIDecoder;
 
-//#include <OIPrinter.hpp>
-//#define DEBUG_PRINT(Addr, Inst) std::cout << std::hex << Addr << "\t" << OIPrinter::getString(Inst) << std::dec << "\n";
+#include <OIPrinter.hpp>
+#define DEBUG_PRINT(Addr, Inst) std::cout << std::hex << Addr << "\t" << OIPrinter::getString(Inst) << std::dec << "\n";
 
 bool ITDInterpreter::isAddrsContainedIn(uint32_t StartAddrs, uint32_t EndAddrs) {
   return !(StartAddrs < LastStartAddrs || EndAddrs > LastEndAddrs);
@@ -53,6 +53,9 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
     case And: 
       setDispatchValue(Addrs, static_cast<int*>(&&and_));
       break;
+    case Andi: 
+      setDispatchValue(Addrs, static_cast<int*>(&&andi));
+      break;
     case Or: 
       setDispatchValue(Addrs, static_cast<int*>(&&or_));
       break;
@@ -89,8 +92,17 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
     case Jeqz:
       setDispatchValue(Addrs, static_cast<int*>(&&jeqz));
       break;
+    case Jgtz:
+      setDispatchValue(Addrs, static_cast<int*>(&&jgtz));
+      break;
+    case Jlez:
+      setDispatchValue(Addrs, static_cast<int*>(&&jlez));
+      break;
     case Jne:
       setDispatchValue(Addrs, static_cast<int*>(&&jne));
+      break;
+    case Jnez:
+      setDispatchValue(Addrs, static_cast<int*>(&&jnez));
       break;
     case Jump:
       setDispatchValue(Addrs, static_cast<int*>(&&jump));
@@ -115,6 +127,12 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
       break;
     case Ori:
       setDispatchValue(Addrs, static_cast<int*>(&&ori));
+      break;
+    case Stb:
+      setDispatchValue(Addrs, static_cast<int*>(&&stb));
+      break;
+    case Ldbu:
+      setDispatchValue(Addrs, static_cast<int*>(&&ldbu));
       break;
     case Nop:
       setDispatchValue(Addrs, static_cast<int*>(&&nop));
@@ -201,6 +219,12 @@ and_:
   M.incPC();
   goto next;
 
+andi:
+  I = getDecodedInst(M.getPC());
+  M.setRegister(I.RT, M.getRegister(I.RS) & (I.Imm & 0x3FFF));
+  M.incPC();
+  goto next;
+
 or_:
   I = getDecodedInst(M.getPC());
   M.setRegister(I.RD, M.getRegister(I.RS) | M.getRegister(I.RT));
@@ -223,6 +247,18 @@ call:
   I = getDecodedInst(M.getPC());
   M.setRegister(31, M.getPC()+4);
   M.setPC((M.getPC() & 0xF0000000) | (I.Addrs << 2));
+  goto next;
+
+ldbu: 
+  I = getDecodedInst(M.getPC());
+  M.setRegister(I.RT, M.getMemByteAt(M.getRegister(I.RS) + I.Imm));
+  M.incPC();
+  goto next;
+
+stb: 
+  I = getDecodedInst(M.getPC());
+  M.setMemByteAt(M.getRegister(I.RS) + I.Imm, M.getRegister(I.RT) & 0xFF);
+  M.incPC();
   goto next;
 
 jumpr:
@@ -262,29 +298,56 @@ ori:
 
 jeq:
   I = getDecodedInst(M.getPC());
-  if (M.getRegister(I.RS) == M.getRegister(I.RT)) {
-    M.setPC(M.getPC() + (I.Imm << 2));
-  }
   M.incPC();
-  ImplRFT.onBranch(M);
+  if (M.getRegister(I.RS) == M.getRegister(I.RT)) { 
+    M.setPC(M.getPC() + (I.Imm << 2));
+    ImplRFT.onBranch(M);
+  }
   goto next;
 
 jeqz:
   I = getDecodedInst(M.getPC());
+  M.incPC();
   if (M.getRegister(I.RS) == 0) { 
     M.setPC(M.getPC() + (I.Imm << 2));
+    ImplRFT.onBranch(M);
   }
+  goto next;
+
+jgtz:
+  I = getDecodedInst(M.getPC());
   M.incPC();
-  ImplRFT.onBranch(M);
+  if (!(M.getRegister(I.RT) & 0x80000000) && (M.getRegister(I.RT) != 0)) { 
+    M.setPC(M.getPC() + (I.Imm << 2));
+    ImplRFT.onBranch(M);
+  }
+  goto next;
+
+jlez:
+  I = getDecodedInst(M.getPC());
+  M.incPC();
+  if ((M.getRegister(I.RT) == 0) || (M.getRegister(I.RT) & 0x80000000)) { 
+    M.setPC(M.getPC() + (I.Imm << 2));
+    ImplRFT.onBranch(M);
+  }
   goto next;
 
 jne:
   I = getDecodedInst(M.getPC());
-  if (M.getRegister(I.RS) != M.getRegister(I.RT)) {
-    M.setPC(M.getPC() + (I.Imm << 2));
-  }
   M.incPC();
-  ImplRFT.onBranch(M);
+  if (M.getRegister(I.RS) != M.getRegister(I.RT)) { 
+    M.setPC(M.getPC() + (I.Imm << 2));
+    ImplRFT.onBranch(M);
+  }
+  goto next;
+
+jnez:
+  I = getDecodedInst(M.getPC());
+  M.incPC();
+  if (M.getRegister(I.RS) != 0) { 
+    M.setPC(M.getPC() + (I.Imm << 2));
+    ImplRFT.onBranch(M);
+  }
   goto next;
 
 syscall:

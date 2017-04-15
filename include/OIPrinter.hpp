@@ -21,6 +21,9 @@ namespace dbt {
       case And:
         Out << "and";
         break;
+      case Andi:
+        Out << "andi";
+        break;
       case Or:
         Out << "or";
         break;
@@ -63,6 +66,9 @@ namespace dbt {
       case Jne:
         Out << "jne";
         break;
+      case Jnez:
+        Out << "jnez";
+        break;
       case Jump:
         Out << "jump";
         break;
@@ -89,6 +95,18 @@ namespace dbt {
         break;
       case Ori:
         Out << "ori";
+        break;
+      case Jgtz:
+        Out << "jgtz";
+        break;
+      case Jlez:
+        Out << "jlez";
+        break;
+      case Stb:
+        Out << "stb";
+        break;
+      case Ldbu:
+        Out << "ldbu";
         break;
       default:
         Out << "Null";

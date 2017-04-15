@@ -65,6 +65,22 @@ Word Machine::getNextInst() {
   return getInstAtPC();
 }
 
+void Machine::setMemByteAt(uint32_t Addr, uint8_t Value) {
+  assert((Addr >= DataMemOffset && Addr < DataMemLimit) &&
+      "Trying to access an address out of border!");
+
+  uint32_t CorrectAddr = Addr - DataMemOffset;
+  DataMemory[CorrectAddr] = Value;
+}
+
+uint8_t Machine::getMemByteAt(uint32_t Addr) {
+  assert((Addr >= DataMemOffset && Addr < DataMemLimit) &&
+      "Trying to access an address out of border!");
+
+  uint32_t CorrectAddr = Addr - DataMemOffset;
+  return (uint8_t) DataMemory[CorrectAddr];
+}
+
 Word Machine::getMemValueAt(uint32_t Addr) {
   assert((Addr >= DataMemOffset && Addr < DataMemLimit) &&
       "Trying to access an address out of border!");

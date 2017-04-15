@@ -12,8 +12,8 @@ namespace dbt {
     };
 
     enum OIInstType
-    { Add, And, Or, Ldi, Ldihi, Ldw, Addi, Call, Jumpr, Stw, Sltiu, Slti, Jeq, Jne, Jump, Mul, Syscall, Nop, 
-      Shr, Shl, Jeqz, Sub, Slt, Div, Mod, Ori, Null };
+    { Add, And, Andi, Or, Ldi, Ldihi, Ldw, Addi, Call, Jumpr, Stw, Sltiu, Slti, Jeq, Jne, Jump, Mul, Syscall, Nop, 
+      Shr, Shl, Jeqz, Sub, Slt, Div, Mod, Ori, Jgtz, Jlez, Jnez, Ldbu, Stb, Null };
 
     typedef struct OIInst {
       OIInstType Type;
@@ -79,6 +79,23 @@ namespace dbt {
 
       uint8_t Ext;
       switch(Op) {
+      case 0b10010:
+        I.Type = OIInstType::Andi;
+        I.Imm = getImm1(W);
+        I.RS = getRS(W);
+        I.RT = getRT(W);
+        break;
+      case 0b1001:
+        I.Type = OIInstType::Stb;
+        I.Imm = getImm1(W);
+        I.RS = getRS(W);
+        I.RT = getRT(W);
+      case 0b11:
+        I.Type = OIInstType::Ldbu;
+        I.Imm = getImm1(W);
+        I.RS = getRS(W);
+        I.RT = getRT(W);
+        break;
       case 0b100000:
         Ext = W.asI_ >> 18;
         if (Ext == 0b0) I.Type = OIInstType::Add;
@@ -98,6 +115,8 @@ namespace dbt {
         break;
       case 0b11111: 
         Ext = (W.asI_ & OpMask) >> 20;
+        if (Ext == 0b1) I.Type = OIInstType::Jgtz;
+        if (Ext == 0b0) I.Type = OIInstType::Jlez;
         if (Ext == 0b100) I.Type = OIInstType::Ldi;
         I.RT = getRT(W);
         I.Imm = getImm(W);
@@ -152,10 +171,15 @@ namespace dbt {
 
         break;
       case 0b10110:
-        I.Type = OIInstType::Jne;
         I.RS = getRS(W);
         I.RT = getRT(W);
         I.Imm = getImm1(W);
+
+        if (I.RT == 0) 
+          I.Type = OIInstType::Jnez;
+        else
+          I.Type = OIInstType::Jne;
+
         break;
       case 0b0:
         I.Type = OIInstType::Jump;
@@ -185,6 +209,7 @@ namespace dbt {
         I.RT  = getRT(W);
         break;
       default:
+        std::cout << "Houston: we have a problem! Inst (" << std::hex << CodedInst << ") not implemented!\n";
         I.Type = OIInstType::Null;
         break;
       }
