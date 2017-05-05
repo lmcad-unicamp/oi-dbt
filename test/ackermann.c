@@ -14,6 +14,6 @@ Ack(int M, int N) {
 }
 
 int main(int argc, char *argv[]) {
-    return Ack(3, 9);
+    return Ack(2, 6);
 }
 

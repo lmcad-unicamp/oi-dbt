@@ -3,8 +3,8 @@
  * http://www.bagley.org/~doug/shootout/
  */
 
-unsigned long
-fib(unsigned long n) {
+unsigned
+fib(unsigned n) {
     if (n < 2)
 	return(1);
     else
@@ -13,5 +13,5 @@ fib(unsigned long n) {
 
 int
 main(int argc, char *argv[]) {
-  return fib(35);
+  return fib(15);
 }

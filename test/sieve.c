@@ -3,11 +3,11 @@
  * http://www.bagley.org/~doug/shootout/
  */
 
-int
-main(int argc, char *argv[]) {
+char flags[8192 + 1];
+
+int main(int argc, char *argv[]) {
 #define LENGTH 1700
   int NUM = LENGTH;
-  static char flags[8192 + 1];
   long i, k;
   int count = 0;
 

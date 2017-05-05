@@ -7,6 +7,7 @@ to_test="net"
 compile() {
   $oiclang -O0 $1 -o a0.out 
   $oiclang -O1 $1 -o a1.out 
+  $oiclang -O2 $1 -o a2.out 
   clang -O1 $1 -o native
 }
 
@@ -20,24 +21,34 @@ execute() {
   aux=$?
   if [[ "$n" -ne "$aux" ]]; then return 1; fi;
 
-#  echo "Executing OI in O1 with interpreter:"
-#  oi-dbt -bin a1.out -interpret > /dev/null
-#  aux=$?
-#  if [[ "$n" -ne "$aux" ]]; then return 1; fi;
-
   echo "Executing OI in O0 with DBT:"
   oi-dbt -bin a0.out > /dev/null
   aux=$?
   if [[ "$n" -ne "$aux" ]]; then return 1; fi;
 
-#  echo "Executing OI in O1 with DBT:"
-#  oi-dbt -bin a1.out > /dev/null 
-#  aux=$?
-#  if [[ "$n" -ne "$aux" ]]; then return 1; fi;
+  echo "Executing OI in O1 with interpreter:"
+  oi-dbt -bin a1.out -interpret > /dev/null
+  aux=$?
+  if [[ "$n" -ne "$aux" ]]; then return 1; fi;
+
+  echo "Executing OI in O1 with DBT:"
+  oi-dbt -bin a1.out > /dev/null
+  aux=$?
+  if [[ "$n" -ne "$aux" ]]; then return 1; fi;
+
+  echo "Executing OI in O2 with interpreter:"
+  oi-dbt -bin a2.out -interpret > /dev/null
+  aux=$?
+  if [[ "$n" -ne "$aux" ]]; then return 1; fi;
+
+  echo "Executing OI in O2 with DBT:"
+  oi-dbt -bin a2.out > /dev/null
+  aux=$?
+  if [[ "$n" -ne "$aux" ]]; then return 1; fi;
 }
 
 clean() {
-  rm a0.out a1.out native
+  rm a2.out native
 }
 
 run_all_tests() {

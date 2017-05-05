@@ -4,24 +4,75 @@
 
 using namespace dbt;
 
+void Manager::runPipeline() {
+  if (!IRE) {
+    llvm::InitializeNativeTarget();
+    llvm::InitializeNativeTargetAsmPrinter();
+    llvm::InitializeNativeTargetAsmParser();
+
+    IRE = llvm::make_unique<IREmitter>();
+    IRO = llvm::make_unique<IROpt>();
+    IRJIT = new llvm::orc::IRLazyJIT();
+  }
+
+  while (isRunning) { 
+    uint32_t EntryAddress;
+    OIInstList OIRegion;
+
+    if (getNumOfOIRegions() > 0) {
+      OIRegionsMtx.lock_shared();
+      EntryAddress = OIRegions.begin()->first;
+      OIRegion = OIRegions.begin()->second;
+      OIRegionsMtx.unlock_shared();
+    } 
+
+    if (OIRegion.size() == 0) { 
+      continue;
+    }
+
+    auto Module = IRE->generateRegionIR(EntryAddress, OIRegion, DataMemOffset); //FIXME: Should'nt be 0!
+
+    unsigned Size = 0;
+    for (auto& F : *Module) 
+      for (auto& BB : F)
+        Size += BB.size(); 
+
+    IRO->optimizeIRFunction(Module, IROpt::OptLevel::Basic); 
+
+    unsigned OSize = 0;
+    for (auto& F : *Module) 
+      for (auto& BB : F)
+        OSize += BB.size(); 
+
+/*    for (auto& F : *Module) 
+      F.print(llvm::errs());*/
+
+    IRJIT->addModule(std::unique_ptr<llvm::Module>(Module));
+
+    std::cout << "We've compiled: " << std::hex << EntryAddress << " "<< std::dec << (float) OSize/Size << std::endl;
+
+    NativeRegionsMtx.lock();
+    NativeRegions[EntryAddress] = (intptr_t) IRJIT->findSymbol("r"+std::to_string(EntryAddress)).getAddress();
+    NativeRegionsMtx.unlock();
+
+    OIRegionsMtx.lock();
+    OIRegions.erase(EntryAddress);
+    OIRegionsMtx.unlock();
+  }
+}
+
 void Manager::addOIRegion(uint32_t EntryAddress, OIInstList OIRegion) {
-  OIRegions[EntryAddress] = OIRegion;
-
-  llvm::Module* M = IRE->generateRegionIR(EntryAddress, OIRegion, 0); //FIXME: Should'nt be 0!
-
-  IRO->optimizeIRFunction(M, IROpt::OptLevel::Basic); 
-
- /* for (auto& F : *M) 
-    F.print(llvm::errs());*/
-
-  IRJIT->addModule(std::unique_ptr<llvm::Module>(M));
-  NativeRegions[EntryAddress] = (intptr_t) IRJIT->findSymbol("r"+std::to_string(EntryAddress)).getAddress();
+  if (!isRegionEntry(EntryAddress)) {
+    OIRegionsMtx.lock();
+    OIRegions[EntryAddress] = OIRegion;
+    OIRegionsMtx.unlock();
+  }
 }
 
 int32_t Manager::jumpToRegion(uint32_t EntryAddress, dbt::Machine& M) {
   uint32_t JumpTo = EntryAddress;
   while (isNativeRegionEntry(JumpTo)) {
-    int32_t (*FP)(int32_t*, int32_t*) = (int32_t (*)(int32_t*, int32_t*)) NativeRegions[JumpTo];
+    uint32_t (*FP)(int32_t*, uint32_t*) = (uint32_t (*)(int32_t*, uint32_t*)) NativeRegions[JumpTo];
     JumpTo = FP(M.getRegisterPtr(), M.getMemoryPtr());
   }
   return JumpTo;

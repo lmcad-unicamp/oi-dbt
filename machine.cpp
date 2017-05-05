@@ -6,7 +6,7 @@
 
 using namespace dbt;
 
-void copystr(std::unique_ptr<char[]>& Target, const char* Source, uint32_t Size) {
+void copystr(char* Target, const char* Source, uint32_t Size) {
   for (uint32_t i = 0; i < Size; ++i)
     Target[i] = Source[i];
 }
@@ -22,11 +22,16 @@ void Machine::setCodeMemory(uint32_t StartAddress, uint32_t Size, const char* Co
   }
 }
 
-void Machine::setDataMemory(uint32_t StartAddress, uint32_t Size, const char* DataBuffer) {
-  DataMemOffset = StartAddress;
-  DataMemory = std::unique_ptr<char[]>(new char[Size]);
-  DataMemLimit = Size + DataMemOffset;
-  copystr(DataMemory, DataBuffer, Size);
+void Machine::allocDataMemory(uint32_t Offset, uint32_t TotalSize) {
+  DataMemOffset = Offset;
+  DataMemLimit = Offset + TotalSize;
+  DataMemory = std::unique_ptr<char[]>(new char[TotalSize]);
+}
+
+void Machine::addDataMemory(uint32_t StartAddress, uint32_t Size, const char* DataBuffer) {
+  uint32_t Offset = StartAddress - DataMemOffset;
+  DataMemLimit += Size;
+  copystr(DataMemory.get() + Offset, DataBuffer, Size);
 }
 
 uint32_t Machine::getPC() {
@@ -78,7 +83,7 @@ uint8_t Machine::getMemByteAt(uint32_t Addr) {
       "Trying to access an address out of border!");
 
   uint32_t CorrectAddr = Addr - DataMemOffset;
-  return (uint8_t) DataMemory[CorrectAddr];
+  return DataMemory[CorrectAddr];
 }
 
 Word Machine::getMemValueAt(uint32_t Addr) {
@@ -96,10 +101,10 @@ void Machine::setMemValueAt(uint32_t Addr, uint32_t Value) {
       "Trying to access an address out of border!");
 
   uint32_t CorrectAddr = Addr - DataMemOffset;
-  DataMemory[CorrectAddr+3]   = (Value >> 24) & 0xFF;
+  DataMemory[CorrectAddr+3] = (Value >> 24) & 0xFF;
   DataMemory[CorrectAddr+2] = (Value >> 16) & 0xFF;
   DataMemory[CorrectAddr+1] = (Value >> 8) & 0xFF;
-  DataMemory[CorrectAddr] = (Value) & 0xFF;
+  DataMemory[CorrectAddr]   = (Value) & 0xFF;
 }
 
 uint32_t Machine::getNumInst() {
@@ -123,7 +128,6 @@ int32_t Machine::getRegister(uint8_t R) {
 }
 
 void Machine::setRegister(uint8_t R, int32_t V) {
-  assert(R != 0 && "Trying to set $zero!\n");
   Register[R] = V;
 }
 
@@ -139,8 +143,8 @@ int32_t* Machine::getRegisterPtr() {
   return Register;
 }
 
-int32_t* Machine::getMemoryPtr() {
-  return (int32_t*) DataMemory.get();
+uint32_t* Machine::getMemoryPtr() {
+  return (uint32_t*) DataMemory.get();
 }
 
 using namespace ELFIO;
@@ -153,13 +157,39 @@ int Machine::loadELF(const std::string ElfPath) {
     return 0;
 
   Elf_Half sec_num = reader.sections.size();
+
+  uint32_t TotalDataSize = 0; 
+  uint32_t AddressOffset = 0;
+  bool Started = false;
+  bool First = false;
   for (int i = 0; i < sec_num; ++i) {
     section* psec = reader.sections[i];
 
+    if (Started && (psec->get_flags() & 0x2) != 0) {
+      TotalDataSize += psec->get_size();
+      if (!First) {
+        AddressOffset = psec->get_address();
+        First = true;
+      }
+    }
+
     if (psec->get_name() == ".text") 
+      Started = true;
+  }
+
+  allocDataMemory(AddressOffset, TotalDataSize + STACK_SIZE);
+
+  Started = false;
+  for (int i = 0; i < sec_num; ++i) {
+    section* psec = reader.sections[i];
+    if (Started && (psec->get_flags() & 0x2) != 0 && psec->get_data() != nullptr) {
+      addDataMemory(psec->get_address(), psec->get_size(), psec->get_data());
+    }
+
+    if (psec->get_name() == ".text") { 
       setCodeMemory(psec->get_address(), psec->get_size(),  psec->get_data());
-    else if (psec->get_name() == ".data") 
-      setDataMemory(psec->get_address(), psec->get_size()+STACK_SIZE, psec->get_data());
+      Started = true;
+    }
   }
 
   if (!DataMemory) {
@@ -168,8 +198,8 @@ int Machine::loadELF(const std::string ElfPath) {
     DataMemory = uptr<char[]>(new char[STACK_SIZE]);
   }
 
-  setRegister(29, (DataMemLimit-DataMemOffset-STACK_SIZE)+(STACK_SIZE/2)); //StackPointer
-  setRegister(30, (DataMemLimit-DataMemOffset-STACK_SIZE)+(STACK_SIZE/2)); //StackPointer
+  setRegister(29, DataMemLimit-4); //StackPointer
+  setRegister(30, DataMemLimit-4); //StackPointer
   
   setPC(reader.get_entry());
 

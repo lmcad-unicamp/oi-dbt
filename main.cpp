@@ -55,7 +55,6 @@ int main(int argc, char** argv) {
   if (validateArguments())
     return 1;
 
-  dbt::Manager TheManager(1, dbt::Manager::OptPolitic::Normal);
 
   dbt::Machine M;
 
@@ -66,6 +65,8 @@ int main(int argc, char** argv) {
     return 2;
   }
 
+  dbt::Manager TheManager(1, dbt::Manager::OptPolitic::Normal, M.getDataMemOffset());
+
   std::unique_ptr<dbt::RFT> RftChosen;
 
   if (InterpreterFlag.was_set()) {
@@ -73,7 +74,14 @@ int main(int argc, char** argv) {
   } else {
     std::string RFTName = RFTFlag.get_value();
     if (RFTName == "net") {
+      std::cout << "NET RFT Selected\n";
       RftChosen = std::make_unique<dbt::NET>(TheManager);
+    } else if (RFTName == "mret2") {
+      std::cout << "MRET2 RFT Selected\n";
+      RftChosen = std::make_unique<dbt::MRET2>(TheManager);
+    } else if (RFTName == "netplus") {
+      std::cout << "NETPlus RFT Selected\n";
+      RftChosen = std::make_unique<dbt::NETPlus>(TheManager);
     } else {
       std::cerr << "You should select a valid RFT!\n";
       return 1;
@@ -86,7 +94,7 @@ int main(int argc, char** argv) {
   dbt::ITDInterpreter I(*SyscallM.get(), *RftChosen.get());
   I.executeAll(M);
 
-  RftChosen->printRegions();
+  //RftChosen->printRegions(); <- Not thread safe
 
   return SyscallM->getExitStatus();
 }

@@ -9,7 +9,7 @@ void NET::onBranch(Machine& M) {
   if (M.getPC() < M.getLastPC()) {
     if (!Recording) { 
       ++ExecFreq[M.getPC()];
-      if (!TheManager.isRegionEntry(M.getPC()) && ExecFreq[M.getPC()] > 50) 
+      if (!TheManager.isRegionEntry(M.getPC()) && ExecFreq[M.getPC()] > HotnessThreshold) 
         startRegionFormation(M.getPC());
     } else {
       finishRegionFormation(); 
@@ -18,20 +18,14 @@ void NET::onBranch(Machine& M) {
 }
 
 void NET::onNextInst(Machine& M) {
-  if (TheManager.isRegionEntry(M.getPC())) {
+  if (TheManager.isNativeRegionEntry(M.getPC())) {
     if (Recording) 
       finishRegionFormation(); 
 
-    if (TheManager.isNativeRegionEntry(M.getPC())) {
-      auto Next = TheManager.jumpToRegion(M.getPC(), M); 
-      M.setPC(Next);
-    }
+    auto Next = TheManager.jumpToRegion(M.getPC(), M); 
+    M.setPC(Next);
   } else {
-    if (Recording) {
-      if (TheManager.isRegionEntry(M.getPC())) 
-        finishRegionFormation(); 
-      else 
-        OIRegion.push_back({M.getPC(), M.getInstAtPC().asI_});
-    }
+    if (Recording) 
+      OIRegion.push_back({M.getPC(), M.getInstAtPC().asI_});
   }
 }

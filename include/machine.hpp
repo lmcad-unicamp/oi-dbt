@@ -49,8 +49,9 @@ namespace dbt {
   public:
     Machine() { Register[0] = 0; };
 
+    void allocDataMemory(uint32_t, uint32_t);
     void setCodeMemory(uint32_t, uint32_t, const char*);
-    void setDataMemory(uint32_t, uint32_t, const char*);
+    void addDataMemory(uint32_t, uint32_t, const char*);
 
     uint32_t getLastPC();
     uint32_t getPC();
@@ -67,7 +68,7 @@ namespace dbt {
     void setMemValueAt(uint32_t, uint32_t);
 
     int32_t* getRegisterPtr();
-    int32_t* getMemoryPtr();
+    uint32_t* getMemoryPtr();
 
     uint32_t getNumInst();
     uint32_t getCodeStartAddrs();

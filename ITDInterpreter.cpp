@@ -59,6 +59,12 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
     case Or: 
       setDispatchValue(Addrs, static_cast<int*>(&&or_));
       break;
+    case Nor:
+      setDispatchValue(Addrs, static_cast<int*>(&&nor));
+      break;
+    case Ldh:
+      setDispatchValue(Addrs, static_cast<int*>(&&ldh));
+      break;
     case Ldi:
       setDispatchValue(Addrs, static_cast<int*>(&&ldi));
       break;
@@ -83,6 +89,9 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
     case Slti:
       setDispatchValue(Addrs, static_cast<int*>(&&slti));
       break;
+    case Sltu:
+      setDispatchValue(Addrs, static_cast<int*>(&&sltu));
+      break;
     case Slt:
       setDispatchValue(Addrs, static_cast<int*>(&&slt));
       break;
@@ -95,8 +104,14 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
     case Jgtz:
       setDispatchValue(Addrs, static_cast<int*>(&&jgtz));
       break;
+    case Jgez:
+      setDispatchValue(Addrs, static_cast<int*>(&&jgez));
+      break;
     case Jlez:
       setDispatchValue(Addrs, static_cast<int*>(&&jlez));
+      break;
+    case Jltz:
+      setDispatchValue(Addrs, static_cast<int*>(&&jltz));
       break;
     case Jne:
       setDispatchValue(Addrs, static_cast<int*>(&&jne));
@@ -110,6 +125,9 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
     case Mul:
       setDispatchValue(Addrs, static_cast<int*>(&&mul));
       break;
+    case Mulu:
+      setDispatchValue(Addrs, static_cast<int*>(&&mulu));
+      break;
     case Div:
       setDispatchValue(Addrs, static_cast<int*>(&&div));
       break;
@@ -122,11 +140,23 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
     case Shr:
       setDispatchValue(Addrs, static_cast<int*>(&&shr));
       break;
+    case Asr:
+      setDispatchValue(Addrs, static_cast<int*>(&&asr));
+      break;
     case Shl:
       setDispatchValue(Addrs, static_cast<int*>(&&shl));
       break;
+    case Movn:
+      setDispatchValue(Addrs, static_cast<int*>(&&movn));
+      break;
+    case Movz:
+      setDispatchValue(Addrs, static_cast<int*>(&&movz));
+      break;
     case Ori:
       setDispatchValue(Addrs, static_cast<int*>(&&ori));
+      break;
+    case Xori:
+      setDispatchValue(Addrs, static_cast<int*>(&&Xori));
       break;
     case Stb:
       setDispatchValue(Addrs, static_cast<int*>(&&stb));
@@ -167,11 +197,25 @@ sub:
 mul:
   {
   I = getDecodedInst(M.getPC());
-  int64_t Result = M.getRegister(I.RS) * M.getRegister(I.RT);
+  int64_t Result = (int32_t) M.getRegister(I.RS) * (int32_t) M.getRegister(I.RT);
+
   if (I.RD != 0) 
     M.setRegister(I.RD, (Result & 0xFFFFFFFF));
   if (I.RV != 0)
     M.setRegister(I.RV, ((Result >> 32) & 0xFFFFFFFF));
+  M.incPC();
+  goto next;
+  }
+
+mulu:
+  {
+  I = getDecodedInst(M.getPC());
+  uint64_t Result = (uint32_t) M.getRegister(I.RS) * (uint32_t) M.getRegister(I.RT);
+
+  if (I.RD != 0) 
+    M.setRegister(I.RD, (int)(Result & 0xFFFFFFFF));
+  if (I.RV != 0)
+    M.setRegister(I.RV, (int)((Result >> 32) & 0xFFFFFFFF));
   M.incPC();
   goto next;
   }
@@ -187,6 +231,16 @@ mod:
   M.setRegister(I.RV, M.getRegister(I.RS) % M.getRegister(I.RT));
   M.incPC();
   goto next;
+
+ldh: 
+  {
+  I = getDecodedInst(M.getPC());
+  M.setRegister(ldiReg, I.RT);
+  short int half = M.getMemValueAt(M.getRegister(I.RS) + I.Imm).asI_ & 0xFFFF;
+  M.setRegister(I.RT, (int) half);
+  M.incPC();
+  goto next;
+  }
 
 ldi:
   I = getDecodedInst(M.getPC());
@@ -231,11 +285,27 @@ or_:
   M.incPC();
   goto next;
 
-shr:
+nor:
   I = getDecodedInst(M.getPC());
-  M.setRegister(I.RD, M.getRegister(I.RT) >> I.RS);
+  M.setRegister(I.RD, ~(M.getRegister(I.RS) | M.getRegister(I.RT)));
   M.incPC();
   goto next;
+
+shr: {
+       I = getDecodedInst(M.getPC());
+       unsigned aux = ((uint32_t) M.getRegister(I.RT)) >> (uint32_t) I.RS; 
+       M.setRegister(I.RD, aux);
+       M.incPC();
+       goto next;
+     }
+
+asr: {
+       I = getDecodedInst(M.getPC());
+       int aux = ((int32_t) M.getRegister(I.RT)) >> (int32_t) I.RS; 
+       M.setRegister(I.RD, aux);
+       M.incPC();
+       goto next;
+     }
 
 shl:
   I = getDecodedInst(M.getPC());
@@ -243,27 +313,43 @@ shl:
   M.incPC();
   goto next;
 
+movn:
+  I = getDecodedInst(M.getPC());
+  if (M.getRegister(I.RT) != 0)
+    M.setRegister(I.RD, M.getRegister(I.RS));
+  M.incPC();
+  goto next;
+
+movz:
+  I = getDecodedInst(M.getPC());
+  if (M.getRegister(I.RT) == 0)
+    M.setRegister(I.RD, M.getRegister(I.RS));
+  M.incPC();
+  goto next;
+
 call:
   I = getDecodedInst(M.getPC());
   M.setRegister(31, M.getPC()+4);
   M.setPC((M.getPC() & 0xF0000000) | (I.Addrs << 2));
+  ImplRFT.onBranch(M);
   goto next;
 
 ldbu: 
   I = getDecodedInst(M.getPC());
-  M.setRegister(I.RT, M.getMemByteAt(M.getRegister(I.RS) + I.Imm));
+  M.setRegister(I.RT, (unsigned char) M.getMemByteAt(M.getRegister(I.RS) + I.Imm));
   M.incPC();
   goto next;
 
 stb: 
   I = getDecodedInst(M.getPC());
-  M.setMemByteAt(M.getRegister(I.RS) + I.Imm, M.getRegister(I.RT) & 0xFF);
+  M.setMemByteAt(M.getRegister(I.RS) + I.Imm, (unsigned char) M.getRegister(I.RT) & 0xFF);
   M.incPC();
   goto next;
 
 jumpr:
   I = getDecodedInst(M.getPC());
   M.setPC(M.getRegister(I.RT));
+  ImplRFT.onBranch(M);
   goto next;
 
 stw:
@@ -274,7 +360,7 @@ stw:
 
 sltiu:
   I = getDecodedInst(M.getPC());
-  M.setRegister(I.RT, M.getRegister(I.RS) < (I.Imm & 0x3FFF));
+  M.setRegister(I.RT, (uint32_t) M.getRegister(I.RS) < (uint32_t) (I.Imm & 0x3FFF));
   M.incPC();
   goto next;
 
@@ -284,9 +370,21 @@ slti:
   M.incPC();
   goto next;
 
+sltu:
+  I = getDecodedInst(M.getPC());
+  M.setRegister(I.RD, (uint32_t) M.getRegister(I.RS) < (uint32_t) M.getRegister(I.RT));
+  M.incPC();
+  goto next;
+
 slt:
   I = getDecodedInst(M.getPC());
-  M.setRegister(I.RD, M.getRegister(I.RS) < M.getRegister(I.RT));
+  M.setRegister(I.RD, (int32_t) M.getRegister(I.RS) < (int32_t) M.getRegister(I.RT));
+  M.incPC();
+  goto next;
+
+Xori:
+  I = getDecodedInst(M.getPC());
+  M.setRegister(I.RT, M.getRegister(I.RS) ^ (I.Imm & 0x3FFF));
   M.incPC();
   goto next;
 
@@ -323,10 +421,28 @@ jgtz:
   }
   goto next;
 
+jgez:
+  I = getDecodedInst(M.getPC());
+  M.incPC();
+  if (!(M.getRegister(I.RT) & 0x80000000)) { 
+    M.setPC(M.getPC() + (I.Imm << 2));
+    ImplRFT.onBranch(M);
+  }
+  goto next;
+
 jlez:
   I = getDecodedInst(M.getPC());
   M.incPC();
   if ((M.getRegister(I.RT) == 0) || (M.getRegister(I.RT) & 0x80000000)) { 
+    M.setPC(M.getPC() + (I.Imm << 2));
+    ImplRFT.onBranch(M);
+  }
+  goto next;
+
+jltz:
+  I = getDecodedInst(M.getPC());
+  M.incPC();
+  if (M.getRegister(I.RT) & 0x80000000) { 
     M.setPC(M.getPC() + (I.Imm << 2));
     ImplRFT.onBranch(M);
   }
@@ -376,9 +492,9 @@ void ITDInterpreter::execute(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs)
   LastStartAddrs = StartAddrs;
   LastEndAddrs   = EndAddrs;
 
-  Timer Clock;
-  Clock.startClock();
+//  Timer Clock;
+//  Clock.startClock();
   dispatch(M, StartAddrs, EndAddrs);
-  Clock.stopClock();
-  Clock.printReport("DBT Statistics!", num);
+//  Clock.stopClock();
+//  Clock.printReport("DBT Statistics!", num);
 }

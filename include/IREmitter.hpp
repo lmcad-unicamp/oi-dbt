@@ -44,6 +44,9 @@ namespace dbt {
     llvm::Value* genStoreRegister(uint8_t, llvm::Value*, llvm::Function*);
     llvm::Value* genStoreRegister(llvm::Value*, llvm::Value*, llvm::Function*);
     llvm::Value* genImm(uint32_t);
+
+    llvm::Value* genLogicalOr(llvm::Value*, llvm::Value*, llvm::Function*);
+    llvm::Value* genLogicalAnd(llvm::Value*, llvm::Value*, llvm::Function*);
   public:
 		IREmitter() {
 			Builder = std::make_unique<llvm::IRBuilder<>>(TheContext);

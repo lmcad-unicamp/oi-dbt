@@ -16,6 +16,7 @@ namespace dbt {
 
   class RFT {
   protected:
+    const unsigned HotnessThreshold = 20;
     std::unordered_map<uint32_t, uint8_t> ExecFreq;
     OIInstList OIRegion;
 
@@ -37,6 +38,37 @@ namespace dbt {
   class NET : public RFT {
   public:
     NET(Manager& M) : RFT(M) {};
+
+    void onBranch(dbt::Machine&);
+    void onNextInst(dbt::Machine&);
+  };
+
+  class MRET2 : public RFT {
+  private:
+    OIInstList RecordingBufferTmp1, RecordingBufferTmp2;
+
+    uint32_t header;
+    std::unordered_map<uint32_t, unsigned> phases;
+    std::unordered_map<uint32_t, bool> recorded;
+
+    unsigned stored_index = 0;
+    OIInstList stored[1000];
+  public:
+    MRET2(Manager& M) : RFT(M) {};
+
+    uint32_t getStoredIndex(uint32_t);
+    uint32_t getPhase(uint32_t);
+    bool hasRecorded(uint32_t);
+    void mergePhases();
+    void finishPhase();
+
+    void onBranch(dbt::Machine&);
+    void onNextInst(dbt::Machine&);
+  };
+
+  class NETPlus : public RFT {
+  public:
+    NETPlus(Manager& M) : RFT(M) {};
 
     void onBranch(dbt::Machine&);
     void onNextInst(dbt::Machine&);

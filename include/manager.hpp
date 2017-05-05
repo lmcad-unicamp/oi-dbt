@@ -5,6 +5,9 @@
 #include <IROpt.hpp>
 #include <IRLazyJIT.hpp>
 #include <machine.hpp>
+#include <thread>
+#include <mutex>
+#include <shared_mutex>
 
 #include "llvm/Support/TargetSelect.h"
 
@@ -23,6 +26,10 @@ namespace dbt {
       std::unordered_map<uint32_t, llvm::Module*> IRRegions;
       std::unordered_map<uint32_t, intptr_t> NativeRegions;
 
+      mutable std::shared_mutex OIRegionsMtx, IRRegionsMtx, NativeRegionsMtx;
+
+      uint32_t DataMemOffset;
+
       unsigned NumOfThreads;
       OptPolitic OptMode;
 
@@ -30,34 +37,43 @@ namespace dbt {
       std::unique_ptr<IROpt> IRO;
       llvm::orc::IRLazyJIT* IRJIT;
 
-    public:
-      Manager(unsigned T, OptPolitic O) : NumOfThreads(T), OptMode(O) {
-        llvm::InitializeNativeTarget();
-        llvm::InitializeNativeTargetAsmPrinter();
-        llvm::InitializeNativeTargetAsmParser();
+      std::thread Thr;
+      std::atomic<bool> isRunning;
 
-        IRE = llvm::make_unique<IREmitter>();
-        IRO = llvm::make_unique<IROpt>();
-        IRJIT = new llvm::orc::IRLazyJIT();
-      };
+    public:
+      void runPipeline();
+
+      Manager(unsigned T, OptPolitic O, uint32_t DMO) : NumOfThreads(T), OptMode(O), isRunning(true), 
+                                          Thr(&Manager::runPipeline, this), DataMemOffset(DMO) {}
+
+      ~Manager() {
+        isRunning = false;
+        if (Thr.joinable())
+          Thr.join();
+      }
 
       void addOIRegion(uint32_t, OIInstList);
 
       int32_t jumpToRegion(uint32_t, dbt::Machine&);
 
       bool isRegionEntry(uint32_t EntryAddress) {
-        return OIRegions.count(EntryAddress) != 0;
+        std::shared_lock<std::shared_mutex> lockOI(OIRegionsMtx);
+        std::shared_lock<std::shared_mutex> lockNative(NativeRegionsMtx);
+        return OIRegions.count(EntryAddress) != 0 || NativeRegions.count(EntryAddress) != 0;
       }
 
       bool isNativeRegionEntry(uint32_t EntryAddress) {
+        std::shared_lock<std::shared_mutex> lock(NativeRegionsMtx);
         return NativeRegions.count(EntryAddress) != 0;
       }
 
       size_t getNumOfOIRegions() {
+        std::shared_lock<std::shared_mutex> lock(OIRegionsMtx);
         return OIRegions.size();
       }
 
       float getAvgRegionsSize() {
+        std::shared_lock<std::shared_mutex> lock(OIRegionsMtx);
         uint64_t total;
         for (auto Region : OIRegions) 
           total += Region.second.size();

@@ -7,12 +7,13 @@
 #include "llvm/IR/DerivedTypes.h"
 #include "llvm/IR/Type.h"
 
+#include "llvm/IR/CFG.h"
+
 #include "llvm/Support/raw_ostream.h"
 
 #include <cstdlib>
 
 using namespace llvm;
-
 
 void dbt::IREmitter::addFirstInstToMap(uint32_t GuestAddrs) {
   IRMemoryMap[GuestAddrs] = FirstInstGen;
@@ -26,7 +27,7 @@ void dbt::IREmitter::setIfNotTheFirstInstGen(Value* Inst) {
 
 Value* dbt::IREmitter::genDataMemVecPtr(Value* RawAddrs, Function* Func) {
   Value* AddrsOff = Builder->CreateSub(RawAddrs, genImm(DataMemOffset));
-  Value* Addrs = Builder->CreateExactSDiv(RawAddrs, genImm(4));
+  Value* Addrs = Builder->CreateExactSDiv(AddrsOff, genImm(4));
   Argument *ArgDataMemPtr = &*(++Func->arg_begin()); 
   setIfNotTheFirstInstGen(AddrsOff);
   return Builder->CreateGEP(Type::getInt32Ty(TheContext), ArgDataMemPtr, Addrs);
@@ -73,6 +74,46 @@ Value* dbt::IREmitter::genImm(uint32_t Imm) {
   return ConstantInt::get(Type::getInt32Ty(TheContext), Imm);
 }
 
+Value* dbt::IREmitter::genLogicalOr(Value* Lhs, Value* Rhs, Function* Func) {
+  BasicBlock* TBB = BasicBlock::Create(TheContext, "", Func);
+  BasicBlock* FBB = BasicBlock::Create(TheContext, "", Func);
+
+  Value* Res1 = Builder->CreateICmpNE(Lhs, genImm(0));
+  BranchInst* Br = Builder->CreateCondBr(Res1, TBB, FBB);
+
+  Builder->SetInsertPoint(FBB);
+  Value* Res2 = Builder->CreateICmpNE(Rhs, genImm(0));
+  Builder->CreateBr(TBB);
+
+  Builder->SetInsertPoint(TBB);
+  PHINode* Node = Builder->CreatePHI(Type::getInt1Ty(TheContext), 2);
+  Node->setIncomingValue(0, Res1);
+  Node->setIncomingValue(1, Res2);
+
+  setIfNotTheFirstInstGen(Res1);
+  return Node;
+}
+
+Value* dbt::IREmitter::genLogicalAnd(Value* Lhs, Value* Rhs, Function* Func) {
+  BasicBlock* TBB = BasicBlock::Create(TheContext, "", Func);
+  BasicBlock* FBB = BasicBlock::Create(TheContext, "", Func);
+
+  Value* Res1 = Builder->CreateICmpNE(Lhs, genImm(0));
+  BranchInst* Br = Builder->CreateCondBr(Res1, TBB, FBB);
+
+  Builder->SetInsertPoint(TBB);
+  Value* Res2 = Builder->CreateICmpNE(Rhs, genImm(0));
+  Builder->CreateBr(FBB);
+
+  Builder->SetInsertPoint(FBB);
+  PHINode* Node = Builder->CreatePHI(Type::getInt1Ty(TheContext), 2);
+  Node->setIncomingValue(0, Res1);
+  Node->setIncomingValue(1, Res2);
+
+  setIfNotTheFirstInstGen(Res1);
+  return Node;
+}
+
 void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecoder::OIInst Inst) {
   Function* Func = Builder->GetInsertBlock()->getParent();
 
@@ -80,20 +121,26 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
     case dbt::OIDecoder::Ldi: {
         genStoreRegister(64, genImm(Inst.RT), Func);
         Value* R1 = Builder->CreateAnd(genLoadRegister(Inst.RT, Func), genImm(0xFFFFC000));
-        Value* Res = Builder->CreateOr(R1, genImm(Inst.Imm & 0x3FFF));
+        Value* Res = Builder->CreateOr(R1, genImm(Inst.Imm & 0x3FFF)); //FIXME
         genStoreRegister(Inst.RT, Res, Func);
         break;
       }
 
     case dbt::OIDecoder::Ldihi: {
         Value* R1 = Builder->CreateAnd(genLoadRegister(genLoadRegister(64, Func), Func), genImm(0x3FFF));
-        Value* Res = Builder->CreateOr(R1, genImm(Inst.Addrs << 14));
+        Value* Res = Builder->CreateOr(R1, genImm(Inst.Addrs << 14)); //FIXME
         genStoreRegister(genLoadRegister(64, Func), Res, Func);
         break;
       }
 
     case dbt::OIDecoder::Ori: {
         Value* Res = Builder->CreateOr(genLoadRegister(Inst.RS, Func), genImm(Inst.Imm & 0x3FFF));
+        genStoreRegister(Inst.RT, Res, Func);
+        break;
+      }
+
+    case dbt::OIDecoder::Xori: {
+        Value* Res = Builder->CreateXor(genLoadRegister(Inst.RS, Func), genImm(Inst.Imm & 0x3FFF));
         genStoreRegister(Inst.RT, Res, Func);
         break;
       }
@@ -111,6 +158,12 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
       }
 
     case dbt::OIDecoder::Shr: {
+        Value* Res = Builder->CreateLShr(genLoadRegister(Inst.RT, Func), genImm(Inst.RS));
+        genStoreRegister(Inst.RD, Res, Func);
+        break;
+      }
+
+    case dbt::OIDecoder::Asr: {
         Value* Res = Builder->CreateAShr(genLoadRegister(Inst.RT, Func), genImm(Inst.RS));
         genStoreRegister(Inst.RD, Res, Func);
         break;
@@ -129,11 +182,29 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
           genStoreRegister(Inst.RD, ShiftedRes, Func);
         } 
         if (Inst.RV != 0) {
-          Value* ShiftedRes = Builder->CreateAnd(Builder->CreateAShr(Res, 32), genImm(0xFFFFFFFF));
+          Value* ShiftedRes = Builder->CreateAnd(Builder->CreateLShr(Res, 32), genImm(0xFFFFFFFF));
           genStoreRegister(Inst.RV, ShiftedRes, Func);
         }
         break;
       }
+
+    case dbt::OIDecoder::Mulu: {
+        Value* URS = Builder->CreateIntCast(genLoadRegister(Inst.RS, Func), Type::getInt32Ty(TheContext), false);
+        Value* URT = Builder->CreateIntCast(genLoadRegister(Inst.RT, Func), Type::getInt32Ty(TheContext), false);
+        Value* Res = Builder->CreateNUWMul(URS, URT);
+        if (Inst.RD != 0) { 
+          Value* UShiftedRes = Builder->CreateAnd(Res, genImm(0xFFFFFFFF));
+          Value* ShiftedRes = Builder->CreateIntCast(UShiftedRes, Type::getInt32Ty(TheContext), true);
+          genStoreRegister(Inst.RD, ShiftedRes, Func);
+        } 
+        if (Inst.RV != 0) {
+          Value* UShiftedRes = Builder->CreateAnd(Builder->CreateLShr(Res, 32), genImm(0xFFFFFFFF));
+          Value* ShiftedRes = Builder->CreateIntCast(UShiftedRes, Type::getInt32Ty(TheContext), true);
+          genStoreRegister(Inst.RV, ShiftedRes, Func);
+        }
+        break;
+      }
+
 
     case dbt::OIDecoder::Or: {
         Value* Res = Builder->CreateOr(genLoadRegister(Inst.RS, Func), genLoadRegister(Inst.RT, Func));
@@ -146,6 +217,12 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         genStoreRegister(Inst.RD, Res, Func);
         break;
       }
+
+    case dbt::OIDecoder::Andi: {
+        Value* Res = Builder->CreateAnd(genLoadRegister(Inst.RS, Func), genImm(Inst.Imm & 0x3FFF));
+        genStoreRegister(Inst.RT, Res, Func);
+        break;
+    }
 
     case dbt::OIDecoder::Sub: {
         Value* Res = Builder->CreateSub(genLoadRegister(Inst.RS, Func), genLoadRegister(Inst.RT, Func));
@@ -172,9 +249,25 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         break;
       }
 
+    case dbt::OIDecoder::Ldbu: {
+        Value* RawAddrs = Builder->CreateAdd(genLoadRegister(Inst.RS, Func), genImm(Inst.Imm));
+        Value* Ptr      = Builder->CreatePointerCast(genDataMemVecPtr(RawAddrs, Func), Type::getInt8PtrTy(TheContext));
+        Value* Res = Builder->CreateLoad(genDataMemVecPtr(RawAddrs, Func));
+        genStoreRegister(Inst.RT, Builder->CreateIntCast(Res, Type::getInt8Ty(TheContext), false), Func);
+        break;
+      }
+
     case dbt::OIDecoder::Stw: {
         Value* RawAddrs = Builder->CreateAdd(genLoadRegister(Inst.RS, Func), genImm(Inst.Imm));
-        Value* Res = Builder->CreateStore(genLoadRegister(Inst.RT, Func), genDataMemVecPtr(RawAddrs, Func));
+        Builder->CreateStore(genLoadRegister(Inst.RT, Func), genDataMemVecPtr(RawAddrs, Func));
+        break;
+      }
+
+    case dbt::OIDecoder::Stb: {
+        Value* RawAddrs = Builder->CreateAdd(genLoadRegister(Inst.RS, Func), genImm(Inst.Imm));
+        Value* Ptr      = Builder->CreatePointerCast(genDataMemVecPtr(RawAddrs, Func), Type::getInt8PtrTy(TheContext));
+        Value* UChar    = Builder->CreateIntCast(genLoadRegister(Inst.RT, Func), Type::getInt8Ty(TheContext), false);
+        Builder->CreateStore(UChar, Ptr);
         break;
       }
 
@@ -188,16 +281,35 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
     case dbt::OIDecoder::Slt: {
         Value* Res = Builder->CreateICmpSLT(genLoadRegister(Inst.RS, Func), genLoadRegister(Inst.RT, Func));
         Value* ResCasted = Builder->CreateIntCast(Res, Type::getInt32Ty(TheContext), true);
-        genStoreRegister(Inst.RT, ResCasted, Func);
+        genStoreRegister(Inst.RD, ResCasted, Func);
         break;
       }
 
     case dbt::OIDecoder::Sltiu: {
-        Value* Res = Builder->CreateICmpSLT(genLoadRegister(Inst.RS, Func), genImm(Inst.Imm & 0x3FFF));
+        Value* Res = Builder->CreateICmpULT(genLoadRegister(Inst.RS, Func), genImm(Inst.Imm & 0x3FFF));
         Value* ResCasted = Builder->CreateIntCast(Res, Type::getInt32Ty(TheContext), true);
         genStoreRegister(Inst.RT, ResCasted, Func);
         break;
       }
+
+    case dbt::OIDecoder::Sltu: {
+        Value* Res = Builder->CreateICmpULT(genLoadRegister(Inst.RS, Func), genLoadRegister(Inst.RT, Func));
+        Value* ResCasted = Builder->CreateIntCast(Res, Type::getInt32Ty(TheContext), true);
+        genStoreRegister(Inst.RD, ResCasted, Func);
+        break;
+      }
+
+    case dbt::OIDecoder::Movz: {  
+        Value* Res = Builder->CreateICmpEQ(genLoadRegister(Inst.RT, Func), genImm(0));
+        BasicBlock* TBB = BasicBlock::Create(TheContext, "", Func);
+        BasicBlock* FBB = BasicBlock::Create(TheContext, "", Func);
+        BranchInst* Br = Builder->CreateCondBr(Res, TBB, FBB);
+        Builder->SetInsertPoint(TBB);
+        genStoreRegister(Inst.RD, genLoadRegister(Inst.RS, Func), Func);
+        Builder->CreateBr(FBB);
+        Builder->SetInsertPoint(FBB);
+        break;
+      } 
 
     case dbt::OIDecoder::Jeqz: {
         BasicBlock* BB = BasicBlock::Create(TheContext, "", Func);
@@ -208,10 +320,50 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         break;
       }
 
+    case dbt::OIDecoder::Jnez: {
+        BasicBlock* BB = BasicBlock::Create(TheContext, "", Func);
+        Value* Res = Builder->CreateICmpNE(genLoadRegister(Inst.RS, Func), genImm(0));
+        BranchInst* Br = Builder->CreateCondBr(Res, BB, BB);
+        Builder->SetInsertPoint(BB);
+        IRBranchMap[GuestAddr] = Br;
+        break;
+      }
+
     case dbt::OIDecoder::Jeq: {
         BasicBlock* BB = BasicBlock::Create(TheContext, "", Func);
-        Value* Res = Builder->CreateICmpEQ(genLoadRegister(Inst.RT, Func), genLoadRegister(Inst.RS, Func));
+        Value* Res = Builder->CreateICmpEQ(genLoadRegister(Inst.RS, Func), genLoadRegister(Inst.RT, Func));
         BranchInst* Br = Builder->CreateCondBr(Res, BB, BB);
+        Builder->SetInsertPoint(BB);
+        IRBranchMap[GuestAddr] = Br;
+        break;
+      }
+
+    case dbt::OIDecoder::Jlez: {
+        BasicBlock* BB = BasicBlock::Create(TheContext, "", Func);
+        Value* Res1 = Builder->CreateICmpEQ(genLoadRegister(Inst.RT, Func), genImm(0));
+        Value* Res2 = Builder->CreateAnd(genLoadRegister(Inst.RT, Func), 0x80000000);
+        Value* Res  = Builder->CreateOr(Res1, Res2); //FIXME
+        BranchInst* Br = Builder->CreateCondBr(Res, BB, BB);
+        Builder->SetInsertPoint(BB);
+        IRBranchMap[GuestAddr] = Br;
+        break;
+      }
+
+    case dbt::OIDecoder::Jltz: {
+        BasicBlock* BB = BasicBlock::Create(TheContext, "", Func);
+        Value* Res = Builder->CreateAnd(genLoadRegister(Inst.RT, Func), 0x80000000);
+        BranchInst* Br = Builder->CreateCondBr(Res, BB, BB);
+        Builder->SetInsertPoint(BB);
+        IRBranchMap[GuestAddr] = Br;
+        break;
+      }
+
+    case dbt::OIDecoder::Jgtz: {
+        BasicBlock* BB = BasicBlock::Create(TheContext, "", Func);
+        Value* Res1 = Builder->CreateICmpNE(genLoadRegister(Inst.RT, Func), genImm(0));
+        Value* Res2 = Builder->CreateAnd(genLoadRegister(Inst.RT, Func), 0x80000000);
+        Value* Res  = Builder->CreateAnd(Res1, Res2); //FIXME
+        BranchInst* Br = Builder->CreateCondBr(Builder->CreateNot(Res), BB, BB);
         Builder->SetInsertPoint(BB);
         IRBranchMap[GuestAddr] = Br;
         break;
@@ -219,7 +371,7 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
 
     case dbt::OIDecoder::Jne: {
         BasicBlock* BB = BasicBlock::Create(TheContext, "", Func);
-        Value* Res = Builder->CreateICmpNE(genLoadRegister(Inst.RT, Func), genLoadRegister(Inst.RS, Func));
+        Value* Res = Builder->CreateICmpNE(genLoadRegister(Inst.RS, Func), genLoadRegister(Inst.RT, Func));
         BranchInst* Br = Builder->CreateCondBr(Res, BB, BB);
         Builder->SetInsertPoint(BB);
         IRBranchMap[GuestAddr] = Br;
@@ -249,6 +401,10 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         setIfNotTheFirstInstGen(Br);
         IRBranchMap[GuestAddr] = Br;
         break;
+      }
+    default: {
+        std::cout << "Mother of God! We don't have support to emit inst at: " << std::hex << GuestAddr << "\n";
+        exit(1);
       }
   }
 
@@ -282,13 +438,13 @@ void dbt::IREmitter::updateBranchTarget(uint32_t GuestAddr, std::array<uint32_t,
 
 void dbt::IREmitter::cleanCFG() {
   Function* F = Builder->GetInsertBlock()->getParent();
-  BasicBlock* Trash = nullptr;
+  std::vector<BasicBlock*> TrashBlocks;
   for (auto& BB : *F) 
-    if (BB.size() == 0)
-      Trash = &BB;
+    if (BB.size() == 0 || (pred_empty(&BB) && BB.getName() != "entry")) 
+      TrashBlocks.push_back(&BB);
 
-  if (Trash)
-    Trash->eraseFromParent();
+  for (auto& BB : TrashBlocks)
+    BB->eraseFromParent();
 }
 
 void dbt::IREmitter::processBranchesTargets(const OIInstList& OIRegion) {
@@ -299,20 +455,22 @@ void dbt::IREmitter::processBranchesTargets(const OIInstList& OIRegion) {
     switch (Inst.Type) {
       case dbt::OIDecoder::Jne: 
       case dbt::OIDecoder::Jeqz: 
+      case dbt::OIDecoder::Jlez:
+      case dbt::OIDecoder::Jltz:
+      case dbt::OIDecoder::Jnez:
       case dbt::OIDecoder::Jeq: 
         {
           updateBranchTarget(GuestAddr, {(GuestAddr + (Inst.Imm << 2)) + 4, GuestAddr + 4});
           break;
         }
       case dbt::OIDecoder::Jump: 
+      case dbt::OIDecoder::Call: 
         {
           updateBranchTarget(GuestAddr, {(GuestAddr & 0xF0000000) | (Inst.Addrs << 2), 0});
           break;
         }
     }
   }
-  
-  cleanCFG();
 }
 
 Module* dbt::IREmitter::generateRegionIR(uint32_t EntryAddress, const OIInstList& OIRegion, uint32_t MemOffset) {
@@ -352,6 +510,8 @@ Module* dbt::IREmitter::generateRegionIR(uint32_t EntryAddress, const OIInstList
       Builder->CreateRet(genImm(OIRegion.back()[0]+4));
     }
   }
+
+  cleanCFG();
 
   return TheModule;
 }

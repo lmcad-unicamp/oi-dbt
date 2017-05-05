@@ -27,6 +27,12 @@ namespace dbt {
       case Or:
         Out << "or";
         break;
+      case Nor:
+        Out << "Nor";
+        break;
+      case Ldh:
+        Out << "ldh";
+        break;
       case Ldi:
         Out << "ldi";
         break;
@@ -75,6 +81,9 @@ namespace dbt {
       case Mul:
         Out << "mul";
         break;
+      case Mulu:
+        Out << "mulu";
+        break;
       case Div:
         Out << "div";
         break;
@@ -102,14 +111,35 @@ namespace dbt {
       case Jlez:
         Out << "jlez";
         break;
+      case Jltz:
+        Out << "jltz";
+        break;
       case Stb:
         Out << "stb";
         break;
       case Ldbu:
         Out << "ldbu";
         break;
+      case Sltu:
+        Out << "sltu";
+        break;
+      case Asr:
+        Out << "asr";
+        break;
+      case Movn:
+        Out << "movn";
+        break;
+      case Movz:
+        Out << "movz";
+        break;
+      case Xori:
+        Out << "xori";
+        break;
+      case Jgez:
+        Out << "Jgez";
+        break;
       default:
-        Out << "Null";
+        Out << "null";
         break;
       }
       return Out.str();
