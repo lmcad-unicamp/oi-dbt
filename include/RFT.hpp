@@ -49,7 +49,6 @@ namespace dbt {
 
     uint32_t header;
     std::unordered_map<uint32_t, unsigned> phases;
-    std::unordered_map<uint32_t, bool> recorded;
 
     unsigned stored_index = 0;
     OIInstList stored[1000];

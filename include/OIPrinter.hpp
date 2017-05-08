@@ -117,6 +117,9 @@ namespace dbt {
       case Stb:
         Out << "stb";
         break;
+      case Ldb:
+        Out << "ldb";
+        break;
       case Ldbu:
         Out << "ldbu";
         break;

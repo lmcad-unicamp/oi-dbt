@@ -14,7 +14,7 @@ namespace dbt {
     enum OIInstType
     { Add, And, Andi, Or, Ldi, Ldihi, Ldw, Addi, Call, Jumpr, Stw, Sltiu, Slti, Jeq, Jne, Jump, Mul, Mulu, Syscall, Nop, 
       Shr, Shl, Jeqz, Sub, Slt, Div, Mod, Ori, Jgtz, Jlez, Jnez, Ldbu, Stb, Sltu, Asr, Jltz, Movn, Movz, Xori, Jgez,
-      Nor, Ldh, Null };
+      Nor, Ldh, Ldb, Null };
 
     typedef struct OIInst {
       OIInstType Type;
@@ -228,6 +228,12 @@ namespace dbt {
       case 0b10011:
         I.Type = OIInstType::Ori;
         I.Imm = getUImm1(W);
+        I.RS  = getRS(W);
+        I.RT  = getRT(W);
+        break;
+      case 0b10:
+        I.Type = OIInstType::Ldb;
+        I.Imm = getImm1(W);
         I.RS  = getRS(W);
         I.RT  = getRT(W);
         break;

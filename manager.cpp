@@ -30,7 +30,7 @@ void Manager::runPipeline() {
       continue;
     }
 
-    auto Module = IRE->generateRegionIR(EntryAddress, OIRegion, DataMemOffset); //FIXME: Should'nt be 0!
+    auto Module = IRE->generateRegionIR(EntryAddress, OIRegion, DataMemOffset); 
 
     unsigned Size = 0;
     for (auto& F : *Module) 
@@ -49,7 +49,7 @@ void Manager::runPipeline() {
 
     IRJIT->addModule(std::unique_ptr<llvm::Module>(Module));
 
-    std::cout << "We've compiled: " << std::hex << EntryAddress << " "<< std::dec << (float) OSize/Size << std::endl;
+    llvm::errs() << "We've compiled: " <<  EntryAddress << " " << (float) OSize/Size << "\n";
 
     NativeRegionsMtx.lock();
     NativeRegions[EntryAddress] = (intptr_t) IRJIT->findSymbol("r"+std::to_string(EntryAddress)).getAddress();

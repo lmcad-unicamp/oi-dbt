@@ -161,6 +161,9 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
     case Stb:
       setDispatchValue(Addrs, static_cast<int*>(&&stb));
       break;
+    case Ldb:
+      setDispatchValue(Addrs, static_cast<int*>(&&ldb));
+      break;
     case Ldbu:
       setDispatchValue(Addrs, static_cast<int*>(&&ldbu));
       break;
@@ -299,13 +302,11 @@ shr: {
        goto next;
      }
 
-asr: {
-       I = getDecodedInst(M.getPC());
-       int aux = ((int32_t) M.getRegister(I.RT)) >> (int32_t) I.RS; 
-       M.setRegister(I.RD, aux);
-       M.incPC();
-       goto next;
-     }
+asr: 
+  I = getDecodedInst(M.getPC());
+  M.setRegister(I.RD, ((int32_t) M.getRegister(I.RT)) >> I.RS);
+  M.incPC();
+  goto next;
 
 shl:
   I = getDecodedInst(M.getPC());
@@ -334,9 +335,15 @@ call:
   ImplRFT.onBranch(M);
   goto next;
 
+ldb: 
+  I = getDecodedInst(M.getPC());
+  M.setRegister(I.RT, (int32_t) M.getMemByteAt(M.getRegister(I.RS) + I.Imm));
+  M.incPC();
+  goto next;
+
 ldbu: 
   I = getDecodedInst(M.getPC());
-  M.setRegister(I.RT, (unsigned char) M.getMemByteAt(M.getRegister(I.RS) + I.Imm));
+  M.setRegister(I.RT, (uint32_t) M.getMemByteAt(M.getRegister(I.RS) + I.Imm));
   M.incPC();
   goto next;
 
@@ -360,7 +367,7 @@ stw:
 
 sltiu:
   I = getDecodedInst(M.getPC());
-  M.setRegister(I.RT, (uint32_t) M.getRegister(I.RS) < (uint32_t) (I.Imm & 0x3FFF));
+  M.setRegister(I.RT, ((uint32_t) M.getRegister(I.RS)) < ((uint32_t) (I.Imm & 0x3FFF)));
   M.incPC();
   goto next;
 

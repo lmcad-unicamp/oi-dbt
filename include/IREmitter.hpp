@@ -37,6 +37,7 @@ namespace dbt {
     void generateInstIR(const uint32_t, const OIDecoder::OIInst);
 
     llvm::Value* genDataMemVecPtr(llvm::Value*, llvm::Function*);
+    llvm::Value* genDataByteVecPtr(llvm::Value*, llvm::Function*);
     llvm::Value* genRegisterVecPtr(uint8_t, llvm::Function*);
     llvm::Value* genRegisterVecPtr(llvm::Value*, llvm::Function*);
     llvm::Value* genLoadRegister(uint8_t, llvm::Function*);

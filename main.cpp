@@ -94,14 +94,7 @@ int main(int argc, char** argv) {
   dbt::ITDInterpreter I(*SyscallM.get(), *RftChosen.get());
   I.executeAll(M);
 
-  //RftChosen->printRegions(); <- Not thread safe
+//  RftChosen->printRegions(); 
 
   return SyscallM->getExitStatus();
 }
-
-/*
- * TODO:
- *  - Implement and test all instructions of the interpreter into the IREmitter
- *  - Make corrections on the region transition 
- *  - Flags para melhorar controle: -only {interpret|rft|compilation}
- */
