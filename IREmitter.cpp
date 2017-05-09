@@ -333,6 +333,18 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         break;
       } 
 
+    case dbt::OIDecoder::Movn: {  
+        Value* Res = Builder->CreateICmpNE(genLoadRegister(Inst.RT, Func), genImm(0));
+        BasicBlock* TBB = BasicBlock::Create(TheContext, "", Func);
+        BasicBlock* FBB = BasicBlock::Create(TheContext, "", Func);
+        BranchInst* Br = Builder->CreateCondBr(Res, TBB, FBB);
+        Builder->SetInsertPoint(TBB);
+        genStoreRegister(Inst.RD, genLoadRegister(Inst.RS, Func), Func);
+        Builder->CreateBr(FBB);
+        Builder->SetInsertPoint(FBB);
+        break;
+      } 
+
     case dbt::OIDecoder::Jeqz: {
         BasicBlock* BB = BasicBlock::Create(TheContext, "", Func);
         Value* Res = Builder->CreateICmpEQ(genLoadRegister(Inst.RS, Func), genImm(0));
@@ -475,25 +487,8 @@ void dbt::IREmitter::processBranchesTargets(const OIInstList& OIRegion) {
     OIDecoder::OIInst Inst = OIDecoder::decode(Pair[1]);
     uint32_t GuestAddr = Pair[0];
 
-    switch (Inst.Type) {
-      case dbt::OIDecoder::Jne: 
-      case dbt::OIDecoder::Jeqz: 
-      case dbt::OIDecoder::Jlez:
-      case dbt::OIDecoder::Jltz:
-      case dbt::OIDecoder::Jnez:
-      case dbt::OIDecoder::Jgtz:
-      case dbt::OIDecoder::Jeq: 
-        {
-          updateBranchTarget(GuestAddr, {(GuestAddr + (Inst.Imm << 2)) + 4, GuestAddr + 4});
-          break;
-        }
-      case dbt::OIDecoder::Jump: 
-      case dbt::OIDecoder::Call: 
-        {
-          updateBranchTarget(GuestAddr, {(GuestAddr & 0xF0000000) | (Inst.Addrs << 2), 0});
-          break;
-        }
-    }
+    if (OIDecoder::isControlFlowInst(Inst))
+      updateBranchTarget(GuestAddr, OIDecoder::getPossibleTargets(GuestAddr, Inst));
   }
 }
 

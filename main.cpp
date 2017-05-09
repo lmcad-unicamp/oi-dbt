@@ -3,6 +3,7 @@
 #include <RFT.hpp>
 #include <manager.hpp>
 #include <syscall.hpp>
+#include <timer.hpp>
 
 #include <iostream>
 #include <memory>
@@ -41,6 +42,8 @@ int validateArguments() {
 }
 
 int main(int argc, char** argv) {
+  dbt::Timer GlobalTimer; 
+
   // Parse the arguments
   if (clarg::parse_arguments(argc, argv)) {
     cerr << "Error when parsing the arguments!" << endl;
@@ -54,7 +57,6 @@ int main(int argc, char** argv) {
 
   if (validateArguments())
     return 1;
-
 
   dbt::Machine M;
 
@@ -91,10 +93,13 @@ int main(int argc, char** argv) {
   std::unique_ptr<dbt::SyscallManager> SyscallM;
   SyscallM = std::make_unique<dbt::LinuxSyscallManager>();
 
+  GlobalTimer.startClock();
   dbt::ITDInterpreter I(*SyscallM.get(), *RftChosen.get());
   I.executeAll(M);
+  GlobalTimer.stopClock();
 
-//  RftChosen->printRegions(); 
+//  RftChosen->printRegions();
 
+  GlobalTimer.printReport("Global");
   return SyscallM->getExitStatus();
 }

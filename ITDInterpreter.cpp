@@ -499,9 +499,5 @@ void ITDInterpreter::execute(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs)
   LastStartAddrs = StartAddrs;
   LastEndAddrs   = EndAddrs;
 
-//  Timer Clock;
-//  Clock.startClock();
   dispatch(M, StartAddrs, EndAddrs);
-//  Clock.stopClock();
-//  Clock.printReport("DBT Statistics!", num);
 }

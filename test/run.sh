@@ -79,7 +79,7 @@ run_all_tests() {
       let oks=$oks+1
     fi
 
-    for rft in "net" "mret2"; do
+    for rft in "net" "mret2" "netplus"; do
       let total=$total+1
       if ! executeDBT $rft; then
         echo -e "\e[31mFailed during DBT ($rft)\e[0m"

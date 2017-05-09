@@ -3,6 +3,7 @@
 
 #include <machine.hpp>
 #include <manager.hpp>
+#include <timer.hpp>
 
 #include <unordered_map>
 #include <vector>
@@ -26,6 +27,8 @@ namespace dbt {
     Manager& TheManager;
   public:
     RFT(Manager& M) : TheManager(M) {};
+
+    ~RFT() {}
 
     void printRegions();
 
@@ -66,6 +69,9 @@ namespace dbt {
   };
 
   class NETPlus : public RFT {
+    void addNewPath(OIInstList);
+    void expand(unsigned, Machine&);
+    void expandAndFinish(Machine&);
   public:
     NETPlus(Manager& M) : RFT(M) {};
 

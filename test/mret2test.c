@@ -1,14 +1,15 @@
 
 int main() {
+  int b = 300;
   int a = 10;
   int i = 0;
   i+=a;
   i *= a;
-  for (; i < 300; i++) {
-    if (i < 115)
-      a += 10 * i;
+  for (; i < b; i++) {
+    if (i < 120)
+      a += 3;
     else
-      a -= i;
+      a += 4;
   }
   return a;
 }

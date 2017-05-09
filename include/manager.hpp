@@ -8,6 +8,7 @@
 #include <thread>
 #include <mutex>
 #include <shared_mutex>
+#include <timer.hpp>
 
 #include "llvm/Support/TargetSelect.h"
 
@@ -40,6 +41,12 @@ namespace dbt {
       std::thread Thr;
       std::atomic<bool> isRunning;
 
+      unsigned CompiledRegions = 0;
+      unsigned OICompiled = 0;
+      unsigned LLVMCompiled = 0;
+      float AvgOptCodeSize = 0;
+      
+      dbt::Timer CompilerTimer;
     public:
       void runPipeline();
 
@@ -50,6 +57,12 @@ namespace dbt {
         isRunning = false;
         if (Thr.joinable())
           Thr.join();
+
+        CompilerTimer.printReport("Compilation");
+        std::cout << "Compiled Regions: " << CompiledRegions << "\n";
+        std::cout << "Avg Code Size Reduction: " << AvgOptCodeSize/CompiledRegions << "\n";
+        std::cout << "Compiled OI: " << OICompiled << "\n";
+        std::cout << "Compiled LLVM: " << LLVMCompiled << "\n";
       }
 
       void addOIRegion(uint32_t, OIInstList);

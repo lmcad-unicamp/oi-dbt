@@ -255,6 +255,32 @@ namespace dbt {
 
       return I;
     }
+
+
+    static std::array<uint32_t, 2> getPossibleTargets(uint32_t PC, OIInst Inst) {
+      switch (Inst.Type) {
+        case dbt::OIDecoder::Jne: 
+        case dbt::OIDecoder::Jeqz: 
+        case dbt::OIDecoder::Jlez:
+        case dbt::OIDecoder::Jltz:
+        case dbt::OIDecoder::Jnez:
+        case dbt::OIDecoder::Jgtz:
+        case dbt::OIDecoder::Jeq: 
+          return {(PC + (Inst.Imm << 2)) + 4, PC + 4};
+        case dbt::OIDecoder::Jump: 
+        case dbt::OIDecoder::Call: 
+          return {(PC & 0xF0000000) | (Inst.Addrs << 2), 0};
+      }
+      return {PC, PC};
+    }
+
+    static bool isControlFlowInst(OIInst Inst) {
+      auto T = getPossibleTargets(1, Inst);
+      if (T[0] == 1 && T[1] == 1) 
+        return false;
+      return true;
+    }
+
   }
 }
 

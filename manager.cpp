@@ -1,6 +1,7 @@
 #include <manager.hpp>
 #include "llvm/IR/Verifier.h"
 #include "llvm/Support/raw_ostream.h"
+#include "timer.hpp"
 
 using namespace dbt;
 
@@ -30,6 +31,8 @@ void Manager::runPipeline() {
       continue;
     }
 
+    OICompiled += OIRegion.size();
+    CompilerTimer.startClock();
     auto Module = IRE->generateRegionIR(EntryAddress, OIRegion, DataMemOffset); 
 
     unsigned Size = 0;
@@ -50,6 +53,9 @@ void Manager::runPipeline() {
     IRJIT->addModule(std::unique_ptr<llvm::Module>(Module));
 
     llvm::errs() << "We've compiled: " <<  EntryAddress << " " << (float) OSize/Size << "\n";
+    CompiledRegions += 1;
+    LLVMCompiled += OSize;
+    AvgOptCodeSize += (float) OSize/Size;
 
     NativeRegionsMtx.lock();
     NativeRegions[EntryAddress] = (intptr_t) IRJIT->findSymbol("r"+std::to_string(EntryAddress)).getAddress();
@@ -58,6 +64,7 @@ void Manager::runPipeline() {
     OIRegionsMtx.lock();
     OIRegions.erase(EntryAddress);
     OIRegionsMtx.unlock();
+    CompilerTimer.stopClock();
   }
 }
 

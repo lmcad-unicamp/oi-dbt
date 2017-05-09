@@ -1,6 +1,6 @@
 int main() {
   int m, n, p, q, c, d, k, sum = 0;
-  #define size 100
+  #define size 200
   int first[size][size], second[size][size], multiply[size][size];
 
   m = size;
