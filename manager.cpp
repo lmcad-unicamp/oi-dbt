@@ -31,6 +31,10 @@ void Manager::runPipeline() {
       continue;
     }
 
+    CompiledOIRegionsMtx.lock();
+    CompiledOIRegions[EntryAddress] = OIRegion; 
+    CompiledOIRegionsMtx.unlock();
+
     OICompiled += OIRegion.size();
     auto Module = IRE->generateRegionIR(EntryAddress, OIRegion, DataMemOffset); 
 
@@ -62,7 +66,6 @@ void Manager::runPipeline() {
 
     OIRegionsMtx.lock();
     OIRegions.erase(EntryAddress);
-    CompiledOIRegions[EntryAddress] = OIRegion; 
     OIRegionsMtx.unlock();
   }
 }

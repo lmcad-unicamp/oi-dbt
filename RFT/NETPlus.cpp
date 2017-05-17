@@ -128,6 +128,10 @@ void NETPlus::onNextInst(Machine& M) {
 
     auto Next = TheManager.jumpToRegion(M.getPC(), M); 
     M.setPC(Next);
+
+    ++ExecFreq[Next];
+    if (ExecFreq[M.getPC()] > HotnessThreshold)
+      startRegionFormation(Next);
   } else {
     if (Recording) 
       OIRegion.push_back({M.getPC(), M.getInstAtPC().asI_});

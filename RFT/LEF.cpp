@@ -70,6 +70,10 @@ void LEF::onNextInst(Machine& M) {
 
     auto Next = TheManager.jumpToRegion(M.getPC(), M); 
     M.setPC(Next);
+
+    ++ExecFreq[Next];
+    if (ExecFreq[M.getPC()] > HotnessThreshold)
+      startRegionFormation(Next);
   } else {
     if (Recording) { 
       insertInstruction(M.getPC(), M.getInstAtPC().asI_);

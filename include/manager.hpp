@@ -28,7 +28,7 @@ namespace dbt {
       std::unordered_map<uint32_t, llvm::Module*> IRRegions;
       std::unordered_map<uint32_t, intptr_t> NativeRegions;
 
-      mutable std::shared_mutex OIRegionsMtx, IRRegionsMtx, NativeRegionsMtx;
+      mutable std::shared_mutex OIRegionsMtx, IRRegionsMtx, NativeRegionsMtx, CompiledOIRegionsMtx;
 
       uint32_t DataMemOffset;
 
@@ -100,7 +100,7 @@ namespace dbt {
       }
 
       OIInstList getCompiledOIRegion(uint32_t EntryAddrs) {
-        std::shared_lock<std::shared_mutex> lock(OIRegionsMtx);
+        std::shared_lock<std::shared_mutex> lock(CompiledOIRegionsMtx);
         return CompiledOIRegions[EntryAddrs];
       }
 
