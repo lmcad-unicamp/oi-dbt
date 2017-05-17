@@ -21,17 +21,8 @@ std::array<uint32_t, 2> getPossibleNextAddrs(InstPair Branch) {
 
 void NETPlus::addNewPath(OIInstList NewPath) {
   std::reverse(NewPath.begin(), NewPath.end());
-  for (auto NewInst : NewPath) {
-    bool ShouldInclude = true;
-    for (auto Inst : OIRegion) {
-      if (Inst[0] == NewInst[0]) {
-        ShouldInclude = false;
-        break;
-      }
-    }
-
-    if (ShouldInclude) OIRegion.push_back(NewInst);
-  }
+  for (auto NewInst : NewPath) 
+    insertInstruction(NewInst[0], NewInst[1]);
 }
 
 void NETPlus::expand(unsigned Deepness, Machine& M) {

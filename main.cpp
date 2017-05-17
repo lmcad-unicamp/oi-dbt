@@ -84,6 +84,12 @@ int main(int argc, char** argv) {
     } else if (RFTName == "netplus") {
       std::cout << "NETPlus RFT Selected\n";
       RftChosen = std::make_unique<dbt::NETPlus>(TheManager);
+    } else if (RFTName == "lei") {
+      std::cout << "LEI rft selected\n";
+      RftChosen = std::make_unique<dbt::LEI>(TheManager);
+    } else if (RFTName == "lef") {
+      std::cout << "LEF rft selected\n";
+      RftChosen = std::make_unique<dbt::LEF>(TheManager);
     } else {
       std::cerr << "You should select a valid RFT!\n";
       return 1;
@@ -103,3 +109,14 @@ int main(int argc, char** argv) {
   GlobalTimer.printReport("Global");
   return SyscallM->getExitStatus();
 }
+
+/*
+ * TODO:
+ *  - Make NET also compile hots exits (commit)
+ *  - Correct bugs in at least 3 benchmarks for each RFT
+ *  - Add new benchmarks
+ *  - Add new instructions (commit)
+ *  - Make improvements on the code (commit)
+ *  - Make improvements on the performance (commit)
+ *  ---------------------------------------------------- Until: 24 May
+*/

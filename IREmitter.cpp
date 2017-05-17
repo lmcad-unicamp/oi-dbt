@@ -16,6 +16,13 @@
 
 using namespace llvm;
 
+void dbt::IREmitter::insertDirectExit(uint32_t ExitAddrs) {
+  Builder->CreateRet(genImm(ExitAddrs));
+  if (DirectTransitions.count(ExitAddrs) == 0)
+    DirectTransitions[ExitAddrs];
+  DirectTransitions[ExitAddrs].push_back(CurrentEntryAddrs);
+}
+
 void dbt::IREmitter::addFirstInstToMap(uint32_t GuestAddrs) {
   IRMemoryMap[GuestAddrs] = FirstInstGen;
   FirstInstGen = nullptr;
@@ -465,7 +472,7 @@ void dbt::IREmitter::updateBranchTarget(uint32_t GuestAddr, std::array<uint32_t,
     } else {
       BBTarget = BasicBlock::Create(TheContext, "", F);
       Builder->SetInsertPoint(BBTarget);
-      Builder->CreateRet(genImm(AddrTarget));
+      insertDirectExit(AddrTarget);
     }
     IRBranchMap[GuestAddr]->setSuccessor(i, BBTarget);
   }
@@ -497,7 +504,8 @@ Module* dbt::IREmitter::generateRegionIR(uint32_t EntryAddress, const OIInstList
   IRMemoryMap.clear();
   IRBranchMap.clear();
 
-  DataMemOffset = MemOffset;
+  DataMemOffset     = MemOffset;
+  CurrentEntryAddrs = EntryAddress;
 
   //int32_t execRegion(int32_t* IntRegisters, int32_t* DataMemory);
   std::array<Type*, 2> ArgsType = {Type::getInt32PtrTy(TheContext), Type::getInt32PtrTy(TheContext)};
@@ -526,7 +534,7 @@ Module* dbt::IREmitter::generateRegionIR(uint32_t EntryAddress, const OIInstList
   for (auto& BB : *F) {
     if (BB.getTerminator() == nullptr) {
       Builder->SetInsertPoint(&BB);
-      Builder->CreateRet(genImm(OIRegion.back()[0]+4));
+      insertDirectExit(OIRegion.back()[0]+4);
     }
   }
 

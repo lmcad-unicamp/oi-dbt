@@ -67,7 +67,7 @@ namespace dbt {
     Word getMemValueAt(uint32_t);
     void setMemValueAt(uint32_t, uint32_t);
 
-    int32_t* getRegisterPtr();
+    int32_t*  getRegisterPtr();
     uint32_t* getMemoryPtr();
 
     uint32_t getNumInst();

@@ -16,7 +16,7 @@ void MRET2::mergePhases() {
     addr2 = RecordingBufferTmp2[j][0];
 
     if (addr1 == addr2) 
-      OIRegion.push_back(RecordingBufferTmp1[i]);
+      insertInstruction(RecordingBufferTmp1[i]);
     else
       break;
 

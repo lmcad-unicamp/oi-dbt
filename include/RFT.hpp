@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <vector>
 #include <array>
+#include <set>
 
 #define OIInstList std::vector<std::array<uint32_t,2>>
 
@@ -20,11 +21,17 @@ namespace dbt {
     const unsigned HotnessThreshold = 20;
     std::unordered_map<uint32_t, uint8_t> ExecFreq;
     OIInstList OIRegion;
+    std::set<uint32_t> OIAddrs;
 
     bool Recording = false;
     uint32_t RecordingEntry;
     
     Manager& TheManager;
+
+    void startRegionFormation(uint32_t); 
+    void finishRegionFormation(); 
+    void insertInstruction(uint32_t, uint32_t);
+    void insertInstruction(std::array<uint32_t, 2>&);
   public:
     RFT(Manager& M) : TheManager(M) {};
 
@@ -32,8 +39,6 @@ namespace dbt {
 
     void printRegions();
 
-    void startRegionFormation(uint32_t); 
-    void finishRegionFormation(); 
     virtual void onBranch(dbt::Machine&) = 0;
     virtual void onNextInst(dbt::Machine&) = 0;
   };
@@ -74,6 +79,40 @@ namespace dbt {
     void expandAndFinish(Machine&);
   public:
     NETPlus(Manager& M) : RFT(M) {};
+
+    void onBranch(dbt::Machine&);
+    void onNextInst(dbt::Machine&);
+  };
+
+  class LEF : public RFT {
+    std::unordered_map<uint32_t, bool> CamesFromCall;
+    bool hasRet;
+
+    void expand(uint32_t, Machine&);
+    void endRecording(Machine&);
+  public:
+    LEF(Manager& M) : RFT(M), hasRet(false) {};
+
+    void onBranch(dbt::Machine&);
+    void onNextInst(dbt::Machine&);
+  };
+
+	class LEI : public RFT {
+    #define MAX_SIZE_BUFFER 2000
+
+		struct branch_t {
+			uint32_t src;
+			uint32_t tgt;
+		};
+
+		std::vector<branch_t> Buffer;
+    std::unordered_map<uint32_t, int> BufferHash;
+
+    void circularBufferInsert(uint32_t, uint32_t);
+    void formTrace(uint32_t, int, Machine& M);
+    bool isFollowedByExit(int);
+  public:
+    LEI(Manager& M) : RFT(M) {};
 
     void onBranch(dbt::Machine&);
     void onNextInst(dbt::Machine&);

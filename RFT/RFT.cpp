@@ -4,6 +4,17 @@
 #include <iostream>
 #include <iomanip>
 
+void dbt::RFT::insertInstruction(uint32_t Addrs, uint32_t Opcode) {
+  if (OIAddrs.count(Addrs) == 0) {
+    OIAddrs.insert(Addrs);
+    OIRegion.push_back({Addrs, Opcode});
+  }
+}
+
+void dbt::RFT::insertInstruction(std::array<uint32_t, 2>& Inst) {
+  insertInstruction(Inst[0], Inst[1]);
+}
+
 void dbt::RFT::startRegionFormation(uint32_t PC) {
   Recording = true; 
   RecordingEntry = PC;

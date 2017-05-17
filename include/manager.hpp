@@ -24,6 +24,7 @@ namespace dbt {
       llvm::LLVMContext TheContext;
 
       std::unordered_map<uint32_t, OIInstList> OIRegions;
+      std::unordered_map<uint32_t, OIInstList> CompiledOIRegions;
       std::unordered_map<uint32_t, llvm::Module*> IRRegions;
       std::unordered_map<uint32_t, intptr_t> NativeRegions;
 
@@ -47,9 +48,10 @@ namespace dbt {
       float AvgOptCodeSize = 0;
       
       dbt::Timer CompilerTimer;
-    public:
+
       void runPipeline();
 
+    public:
       Manager(unsigned T, OptPolitic O, uint32_t DMO) : NumOfThreads(T), OptMode(O), isRunning(true), 
                                           Thr(&Manager::runPipeline, this), DataMemOffset(DMO) {}
 
@@ -93,8 +95,17 @@ namespace dbt {
         return (float)total / getNumOfOIRegions(); 
       }
 
+      std::vector<uint32_t> getDirectTransitions(uint32_t EntryAddrs) {
+        return IRE->getDirectTransitions(EntryAddrs);
+      }
+
+      OIInstList getCompiledOIRegion(uint32_t EntryAddrs) {
+        std::shared_lock<std::shared_mutex> lock(OIRegionsMtx);
+        return CompiledOIRegions[EntryAddrs];
+      }
+
       std::unordered_map<uint32_t, OIInstList>::iterator oiregions_begin() { return OIRegions.begin(); };
-      std::unordered_map<uint32_t, OIInstList>::iterator oiregions_end()   { return OIRegions.end(); };
+      std::unordered_map<uint32_t, OIInstList>::iterator oiregions_end()   { return OIRegions.end(); }; // FIXME: Not Thread Safe
   };
 }
 

@@ -1,6 +1,5 @@
 #include <RFT.hpp>
 
-
 #include <memory>
 
 using namespace dbt;
@@ -26,6 +25,6 @@ void NET::onNextInst(Machine& M) {
     M.setPC(Next);
   } else {
     if (Recording) 
-      OIRegion.push_back({M.getPC(), M.getInstAtPC().asI_});
+      insertInstruction(M.getPC(), M.getInstAtPC().asI_);
   }
 }

@@ -32,7 +32,6 @@ void Manager::runPipeline() {
     }
 
     OICompiled += OIRegion.size();
-    CompilerTimer.startClock();
     auto Module = IRE->generateRegionIR(EntryAddress, OIRegion, DataMemOffset); 
 
     unsigned Size = 0;
@@ -63,8 +62,8 @@ void Manager::runPipeline() {
 
     OIRegionsMtx.lock();
     OIRegions.erase(EntryAddress);
+    CompiledOIRegions[EntryAddress] = OIRegion; 
     OIRegionsMtx.unlock();
-    CompilerTimer.stopClock();
   }
 }
 

@@ -23,6 +23,7 @@ namespace dbt {
 		std::unique_ptr<llvm::IRBuilder<>> Builder;
 
     uint32_t DataMemOffset;
+    uint32_t CurrentEntryAddrs;
 
     llvm::Value* FirstInstGen;
     void addFirstInstToMap(uint32_t);
@@ -30,6 +31,8 @@ namespace dbt {
 
     std::unordered_map<uint32_t, llvm::Value*> IRMemoryMap;
     std::unordered_map<uint32_t, llvm::BranchInst*> IRBranchMap;
+
+    std::unordered_map<uint32_t, std::vector<uint32_t>> DirectTransitions; // FIXME: THIS SHOULDN'T BE IN THIS CLASS!
 
     void cleanCFG();
     void updateBranchTarget(uint32_t, std::array<uint32_t, 2>);
@@ -48,10 +51,16 @@ namespace dbt {
 
     llvm::Value* genLogicalOr(llvm::Value*, llvm::Value*, llvm::Function*);
     llvm::Value* genLogicalAnd(llvm::Value*, llvm::Value*, llvm::Function*);
+
+    void insertDirectExit(uint32_t);
   public:
 		IREmitter() {
 			Builder = std::make_unique<llvm::IRBuilder<>>(TheContext);
     };
+
+    std::vector<uint32_t> getDirectTransitions(uint32_t Addrs) { // Mother of GOD TODO: remove it from here!
+      return DirectTransitions[Addrs];
+    }
 
     llvm::Module* generateRegionIR(uint32_t, const OIInstList&, uint32_t);
   };
