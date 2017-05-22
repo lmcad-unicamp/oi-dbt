@@ -23,7 +23,7 @@ After building and installing oi-dbt, you can easily use it to emulate OpenISA e
 oi-dbt [-rft {net, mret2, lei, lef, netplus} | -interpreter] -bin PathToBinary [-v]
 
 ARGUMENTS:
-  -bin : Path to the binary which will should be emulated.
+  -bin : Path to the binary which will be emulated.
   -h : Displays the help message
   -interpret : Only interpret.
   -rft : Region Formation Technique (net)
@@ -32,6 +32,6 @@ ARGUMENTS:
 
 ### LICENSE
 
-This project is being developed at the Institute of Computing - Unicamp as Vanderson M. Rosario <vandersonmr2@gmail.com> masters thesis. You are free to contact him and use the code under the MIT LICENSE.
+This project is being developed at the Institute of Computing - Unicamp as @vandersonmr masters thesis. You are free to contact him and use the code under the MIT LICENSE.
 
 The OI-DBT is part of The OpenISA Project: an infrastructure for a new, open source and fast emulated architecture.
