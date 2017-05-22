@@ -11,6 +11,7 @@
 clarg::argString RFTFlag("-rft", "Region Formation Technique (net)", "net");
 clarg::argBool   InterpreterFlag("-interpret",  "Only interpret.");
 clarg::argString BinaryFlag("-bin",  "path to the binary which will should be emulated.", "");
+clarg::argBool   VerboseFlag("-v",  "display the compiled regions");
 clarg::argBool   HelpFlag("-h",  "display the help message");
 
 void usage(char* PrgName) {
@@ -104,7 +105,8 @@ int main(int argc, char** argv) {
   I.executeAll(M);
   GlobalTimer.stopClock();
 
-//  RftChosen->printRegions();
+  if (VerboseFlag.was_set())
+    RftChosen->printRegions();
 
   GlobalTimer.printReport("Global");
   return SyscallM->getExitStatus();
@@ -112,7 +114,6 @@ int main(int argc, char** argv) {
 
 /*
  * TODO:
- *  - Make NET also compile hots exits (commit)
  *  - Correct bugs in at least 3 benchmarks for each RFT
  *  - Add new benchmarks
  *  - Add new instructions (commit)

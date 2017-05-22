@@ -27,6 +27,7 @@ namespace dbt {
   union Word {
     char asC_[4];
     uint32_t asI_;
+    float asF_;
   };
 
   class RFT;
@@ -34,7 +35,8 @@ namespace dbt {
   class Machine {
   private:
     int32_t Register[65];
-    double DoubleRegister[64];
+    double FloatRegister[65];
+    double DoubleRegister[65];
     uptr<char[]> DataMemory;
     uptr<Word[]> CodeMemory;
 

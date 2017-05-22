@@ -200,12 +200,14 @@ sub:
 mul:
   {
   I = getDecodedInst(M.getPC());
-  int64_t Result = (int32_t) M.getRegister(I.RS) * (int32_t) M.getRegister(I.RT);
+  int64_t Result = (int64_t) M.getRegister(I.RS) * (int64_t) M.getRegister(I.RT);
 
-  if (I.RD != 0) 
+  if (I.RD != 0) {
     M.setRegister(I.RD, (Result & 0xFFFFFFFF));
-  if (I.RV != 0)
+  }
+  if (I.RV != 0) {
     M.setRegister(I.RV, ((Result >> 32) & 0xFFFFFFFF));
+  }
   M.incPC();
   goto next;
   }
@@ -213,12 +215,14 @@ mul:
 mulu:
   {
   I = getDecodedInst(M.getPC());
-  uint64_t Result = (uint32_t) M.getRegister(I.RS) * (uint32_t) M.getRegister(I.RT);
+  uint64_t Result = (uint64_t) M.getRegister(I.RS) * (uint64_t) M.getRegister(I.RT);
 
-  if (I.RD != 0) 
-    M.setRegister(I.RD, (int)(Result & 0xFFFFFFFF));
-  if (I.RV != 0)
-    M.setRegister(I.RV, (int)((Result >> 32) & 0xFFFFFFFF));
+  if (I.RD != 0) { 
+    M.setRegister(I.RD, (Result & 0xFFFFFFFF));
+  } 
+  if (I.RV != 0) {
+    M.setRegister(I.RV, ((Result >> 32) & 0xFFFFFFFF));
+  }
   M.incPC();
   goto next;
   }

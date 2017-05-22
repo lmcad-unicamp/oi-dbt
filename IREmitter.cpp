@@ -200,7 +200,9 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
       }
 
     case dbt::OIDecoder::Mul: {
-        Value* Res = Builder->CreateMul(genLoadRegister(Inst.RS, Func), genLoadRegister(Inst.RT, Func));
+        Value *RS = Builder->CreateSExt(genLoadRegister(Inst.RS, Func), Type::getInt64Ty(TheContext));
+        Value *RT = Builder->CreateSExt(genLoadRegister(Inst.RT, Func), Type::getInt64Ty(TheContext));
+        Value* Res = Builder->CreateMul(RS, RT);
         if (Inst.RD != 0) { 
           Value* ShiftedRes = Builder->CreateAnd(Res, genImm(0xFFFFFFFF));
           genStoreRegister(Inst.RD, ShiftedRes, Func);
@@ -213,8 +215,8 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
       }
 
     case dbt::OIDecoder::Mulu: {
-        Value* URS = Builder->CreateIntCast(genLoadRegister(Inst.RS, Func), Type::getInt32Ty(TheContext), false);
-        Value* URT = Builder->CreateIntCast(genLoadRegister(Inst.RT, Func), Type::getInt32Ty(TheContext), false);
+        Value* URS = Builder->CreateIntCast(genLoadRegister(Inst.RS, Func), Type::getInt64Ty(TheContext), false);
+        Value* URT = Builder->CreateIntCast(genLoadRegister(Inst.RT, Func), Type::getInt64Ty(TheContext), false);
         Value* Res = Builder->CreateNUWMul(URS, URT);
         if (Inst.RD != 0) { 
           Value* UShiftedRes = Builder->CreateAnd(Res, genImm(0xFFFFFFFF));

@@ -50,7 +50,7 @@ void Manager::runPipeline() {
       for (auto& BB : F)
         OSize += BB.size(); 
 
-/*    for (auto& F : *Module) 
+    /*for (auto& F : *Module) 
       F.print(llvm::errs());*/
 
     IRJIT->addModule(std::unique_ptr<llvm::Module>(Module));

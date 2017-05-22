@@ -16,6 +16,10 @@ namespace dbt {
       Shr, Shl, Jeqz, Sub, Slt, Div, Mod, Ori, Jgtz, Jlez, Jnez, Ldbu, Stb, Sltu, Asr, Jltz, Movn, Movz, Xori, Jgez,
       Nor, Ldh, Ldb, Null };
 
+    enum EncodingType {
+      PL0, PL6, PL26j, PL26c, PL26i, PL12, PL18, PL16, PL24, PL18i, PL20 
+    };
+
     typedef struct OIInst {
       OIInstType Type;
       uint8_t RS, RT, RD, RV;
@@ -65,6 +69,106 @@ namespace dbt {
       return W.asI_ & 0x3FFFFFF;
     }
 
+    static EncodingType getEncodingType(OIInstType InstType) {
+      switch(InstType) {
+        case OIInstType::Andi:
+        case OIInstType::Stb:
+        case OIInstType::Ldbu:
+        case OIInstType::Ldw:
+        case OIInstType::Addi:
+        case OIInstType::Stw:
+        case OIInstType::Xori:
+        case OIInstType::Sltiu:
+        case OIInstType::Slti:
+        case OIInstType::Jeqz:
+        case OIInstType::Jeq:
+        case OIInstType::Jnez:
+        case OIInstType::Jne:
+        case OIInstType::Ori:
+          return EncodingType::PL26i;
+        case OIInstType::Mulu:
+        case OIInstType::Mul:
+        case OIInstType::Div:
+        case OIInstType::Mod:
+          return EncodingType::PL24;
+        case OIInstType::Ldihi:
+          return EncodingType::PL18i;
+        case OIInstType::Add:
+        case OIInstType::Sub:
+        case OIInstType::Slt:
+        case OIInstType::Sltu:
+        case OIInstType::And:
+        case OIInstType::Or:
+        case OIInstType::Nor:
+        case OIInstType::Shl:
+        case OIInstType::Shr:
+        case OIInstType::Asr:
+        case OIInstType::Movn:
+        case OIInstType::Movz:
+          return EncodingType::PL18;
+        case OIInstType::Jlez:
+        case OIInstType::Jgtz:
+        case OIInstType::Jltz:
+        case OIInstType::Jgez:
+        case OIInstType::Ldi:
+          return EncodingType::PL20;
+        case OIInstType::Call:
+          return EncodingType::PL26c;
+        case OIInstType::Jumpr:
+          return EncodingType::PL6;
+        case OIInstType::Jump:
+          return EncodingType::PL26j;
+        case OIInstType::Syscall:
+        case OIInstType::Null:
+          return EncodingType::PL0;
+        defaut:
+          std::cout << "Dammit! We have a bug on Encoding types!\n";
+          return EncodingType::PL0;
+      }
+    }
+
+    static void fillFields(OIInst& I, EncodingType E, Word W) {
+      switch (E) {
+        case EncodingType::PL26i:
+          I.Imm = getImm1(W);
+          I.RS = getRS(W);
+          I.RT = getRT(W);
+          break;
+        case EncodingType::PL24:
+          I.RV = getRV(W);
+          I.RD = getRD(W);
+          I.RS = getRS(W);
+          I.RT = getRT(W);
+          break;
+        case EncodingType::PL18i:
+          I.Addrs = getPL18(W);
+          break;
+        case EncodingType::PL18:
+          I.RS = getRS(W);
+          I.RT = getRT(W);
+          I.RD = getRD(W);
+          break;
+        case EncodingType::PL20:
+          I.RT = getRT(W);
+          I.Imm = getImm(W);
+          break;
+        case EncodingType::PL26c:
+          I.Addrs = getAddr(W);
+          break;
+        case EncodingType::PL6:
+          I.RT = getRT(W);
+          break;
+        case EncodingType::PL26j:
+          I.Addrs = getLAddr(W);
+          break;
+        case EncodingType::PL0:
+          break;
+        default: 
+          std::cout << "It may seem unbelievable, but we haven't implemented this encoding type!\n";
+          break;
+      }
+    }
+
     static OIInst decode(uint32_t CodedInst) {
       Word W;
       W.asI_ = CodedInst;
@@ -83,36 +187,23 @@ namespace dbt {
       switch(Op) {
       case 0b10010:
         I.Type = OIInstType::Andi;
-        I.Imm = getImm1(W);
-        I.RS = getRS(W);
-        I.RT = getRT(W);
         break;
       case 0b100101:
         I.Type = OIInstType::Mulu;
-        I.RV = getRV(W);
-        I.RD = getRD(W);
-        I.RS = getRS(W);
-        I.RT = getRT(W);
         break;
       case 0b1001:
         I.Type = OIInstType::Stb;
-        I.Imm = getImm1(W);
-        I.RS = getRS(W);
-        I.RT = getRT(W);
         break;
       case 0b11:
         I.Type = OIInstType::Ldbu;
-        I.Imm = getImm1(W);
-        I.RS = getRS(W);
-        I.RT = getRT(W);
         break;
       case 0b100000:
         Ext = W.asI_ >> 18;
-        if (Ext == 0b0) I.Type = OIInstType::Add;
         if (Ext == 0b1) {
           I.Type = OIInstType::Ldihi;
-          I.Addrs = getPL18(W);
+          break;
         }
+        if (Ext == 0b0) I.Type = OIInstType::Add;
         if (Ext == 0b10) I.Type = OIInstType::Sub;
         if (Ext == 0b100) I.Type = OIInstType::Slt;
         if (Ext == 0b101) I.Type = OIInstType::Sltu;
@@ -124,9 +215,6 @@ namespace dbt {
         if (Ext == 0b1100) I.Type = OIInstType::Asr;
         if (Ext == 0b10001) I.Type = OIInstType::Movn;
         if (Ext == 0b10000) I.Type = OIInstType::Movz;
-        I.RS = getRS(W);
-        I.RT = getRT(W);
-        I.RD = getRD(W);
         break;
       case 0b11111: 
         Ext = (W.asI_ & OpMask) >> 20;
@@ -135,80 +223,47 @@ namespace dbt {
         if (Ext == 0b10) I.Type = OIInstType::Jltz;
         if (Ext == 0b11) I.Type = OIInstType::Jgez;
         if (Ext == 0b100) I.Type = OIInstType::Ldi;
-        I.RT = getRT(W);
-        I.Imm = getImm(W);
         break;
       case 0b110:
         I.Type = OIInstType::Ldw;
-        I.RS = getRS(W);
-        I.RT = getRT(W);
-        I.Imm = getImm1(W);
         break;
       case 0b1110:
         I.Type = OIInstType::Addi;
-        I.RT = getRT(W);
-        I.RS = getRS(W);
-        I.Imm = getImm1(W);
         break;
       case 0b1:
         I.Type = OIInstType::Call;
-        I.Addrs = getAddr(W);
         break;
       case 0b100011:
         I.Type = OIInstType::Jumpr;
-        I.RT = getRT(W);
         break;
       case 0b1011:
         I.Type = OIInstType::Stw;
-        I.RS = getRS(W);
-        I.RT = getRT(W);
-        I.Imm = getImm1(W);
         break;
       case 0b10100:
         I.Type = OIInstType::Xori;
-        I.RS = getRS(W);
-        I.RT = getRT(W);
-        I.Imm = getImm1(W);
         break;
       case 0b10001:
         I.Type = OIInstType::Sltiu;
-        I.RS = getRS(W);
-        I.RT = getRT(W);
-        I.Imm = getImm1(W);
         break;
       case 0b10000:
         I.Type = OIInstType::Slti;
-        I.RS = getRS(W);
-        I.RT = getRT(W);
-        I.Imm = getImm1(W);
         break;
       case 0b10101:
-        I.RS = getRS(W);
-        I.RT = getRT(W);
-        I.Imm = getImm1(W);
-
-        if (I.RT == 0) 
+        if (getRT(W) == 0) 
           I.Type = OIInstType::Jeqz;
         else
           I.Type = OIInstType::Jeq;
-
         break;
       case 0b10110:
-        I.RS = getRS(W);
-        I.RT = getRT(W);
-        I.Imm = getImm1(W);
-
-        if (I.RT == 0) 
+        if (getRT(W) == 0) 
           I.Type = OIInstType::Jnez;
         else
           I.Type = OIInstType::Jne;
-
         break;
       case 0b0:
         I.Type = OIInstType::Jump;
-        I.Addrs = getLAddr(W);
         break;
-      case 0b011101:
+      case 0b011101: 
         Ext = (W.asI_ & OpMask) >> 24;
         if (Ext == 0b00) I.Type = OIInstType::Mul;
         if (Ext == 0b01) {
@@ -217,31 +272,18 @@ namespace dbt {
           if (getRV(W) != 0)
             I.Type = OIInstType::Mod;
         }
-        I.RV = getRV(W);
-        I.RD = getRD(W);
-        I.RS = getRS(W);
-        I.RT = getRT(W);
         break;
       case 0b100100:
         I.Type = OIInstType::Syscall;
         break;
-      case 0b10011:
+      case 0b10011: // FIXME: Is this a UImm?
         I.Type = OIInstType::Ori;
-        I.Imm = getUImm1(W);
-        I.RS  = getRS(W);
-        I.RT  = getRT(W);
         break;
       case 0b10:
         I.Type = OIInstType::Ldb;
-        I.Imm = getImm1(W);
-        I.RS  = getRS(W);
-        I.RT  = getRT(W);
         break;
       case 0b100:
         I.Type = OIInstType::Ldh;
-        I.Imm = getImm1(W);
-        I.RS  = getRS(W);
-        I.RT  = getRT(W);
         break;
       default:
         I.Type = OIInstType::Null;
@@ -252,6 +294,8 @@ namespace dbt {
         std::cout << "Houston: we have a problem! Inst (" << std::hex << CodedInst << ") not implemented!\n";
         exit(1);
       }
+
+      fillFields(I, getEncodingType(I.Type), W);
 
       return I;
     }

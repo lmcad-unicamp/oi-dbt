@@ -47,8 +47,6 @@ namespace dbt {
       unsigned LLVMCompiled = 0;
       float AvgOptCodeSize = 0;
       
-      dbt::Timer CompilerTimer;
-
       void runPipeline();
 
     public:
@@ -60,8 +58,7 @@ namespace dbt {
         if (Thr.joinable())
           Thr.join();
 
-        CompilerTimer.printReport("Compilation");
-        std::cout << "Compiled Regions: " << CompiledRegions << "\n";
+        std::cout << "Compiled Regions: " << std::dec << CompiledRegions << "\n";
         std::cout << "Avg Code Size Reduction: " << AvgOptCodeSize/CompiledRegions << "\n";
         std::cout << "Compiled OI: " << OICompiled << "\n";
         std::cout << "Compiled LLVM: " << LLVMCompiled << "\n";
@@ -104,8 +101,8 @@ namespace dbt {
         return CompiledOIRegions[EntryAddrs];
       }
 
-      std::unordered_map<uint32_t, OIInstList>::iterator oiregions_begin() { return OIRegions.begin(); };
-      std::unordered_map<uint32_t, OIInstList>::iterator oiregions_end()   { return OIRegions.end(); }; // FIXME: Not Thread Safe
+      std::unordered_map<uint32_t, OIInstList>::iterator oiregions_begin() { return CompiledOIRegions.begin(); };
+      std::unordered_map<uint32_t, OIInstList>::iterator oiregions_end()   { return CompiledOIRegions.end(); }; // FIXME: Not Thread Safe
   };
 }
 

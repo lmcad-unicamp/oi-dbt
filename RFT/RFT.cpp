@@ -30,10 +30,6 @@ void dbt::RFT::finishRegionFormation() {
 
 void dbt::RFT::printRegions() {
   std::cout << std::endl << "\t\t NET\n";
-  std::cout << std::endl << "Number of Regions: " << TheManager.getNumOfOIRegions() << '\n';
-  uint32_t AvgSize = 0;
-  std::cout << "Average Region Static Size: " << TheManager.getAvgRegionsSize() << std::endl;
-  std::cout << "\tRegions:" << std::endl;
 
   int i = 1;
   for (auto Region = TheManager.oiregions_begin(); Region != TheManager.oiregions_end(); Region++) {
@@ -47,4 +43,5 @@ void dbt::RFT::printRegions() {
       std::cout << OIPrinter::getString(OIDecoder::decode(W.asI_)) << "\n";
     }
   }
+  std::cout << "\n";
 }
