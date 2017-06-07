@@ -114,9 +114,9 @@ int main(int argc, char** argv) {
 
 /*
  * TODO:
- *  - Correct bugs in at least 3 benchmarks for each RFT
- *  - Add new benchmarks
- *  - Add new instructions (commit)
+ *  - Add all instructions need by printf (commit)
+ *  - Correct bugs in at least 6 tests (commit)
+ *  - Add new benchmarks (commit)
  *  - Make improvements on the code (commit)
  *  - Make improvements on the performance (commit)
  *  ---------------------------------------------------- Until: 24 May

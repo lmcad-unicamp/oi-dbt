@@ -9,7 +9,7 @@ include_directories(include)
 add_subdirectory(RFT)
 add_subdirectory(arglib)
 
-add_library(dbt IREmitter.cpp IROpt.cpp ITDInterpreter.cpp machine.cpp manager.cpp syscall.cpp)
+add_library(dbt IREmitter.cpp IROpt.cpp interpreter.cpp machine.cpp manager.cpp syscall.cpp)
 
 add_executable(oi-dbt main.cpp)
 

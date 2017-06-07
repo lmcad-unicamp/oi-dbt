@@ -48,6 +48,9 @@ namespace dbt {
         case Call:
           Out << "call";
           break;
+        case Callr:
+          Out << "callr";
+          break;
         case Jumpr:
           Out << "jumpr";
           break;
@@ -102,6 +105,9 @@ namespace dbt {
         case Shl:
           Out << "shl";
           break;
+        case Shlr:
+          Out << "shlr";
+          break;
         case Ori:
           Out << "ori";
           break;
@@ -138,8 +144,20 @@ namespace dbt {
         case Xori:
           Out << "xori";
           break;
+        case Xor:
+          Out << "xor";
+          break;
         case Jgez:
           Out << "Jgez";
+          break;
+        case Sth:
+          Out << "sth";
+          break;
+        case Ldhu:
+          Out << "ldhu";
+          break;
+        case Seh:
+          Out << "Seh";
           break;
         default:
           Out << "null";
@@ -163,6 +181,9 @@ namespace dbt {
           break;
         case EncodingType::PL18:
           Out << "  $" << (uint32_t) I.RT << ", $" << (uint32_t) I.RS << ", $" << (uint32_t) I.RD;
+          break;
+        case EncodingType::PL12:
+          Out << "  $" << (uint32_t) I.RT << ", $" << (uint32_t) I.RS;
           break;
         case EncodingType::PL20:
           if (I.Type == OIInstType::Jlez || I.Type == OIInstType::Jgtz || I.Type == OIInstType::Jltz || I.Type == OIInstType::Jgez) 
