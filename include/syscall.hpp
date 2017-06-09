@@ -15,7 +15,7 @@ namespace dbt {
 
   class LinuxSyscallManager : public SyscallManager {
   private:
-    enum SyscallType { Exit = 1 };
+    enum SyscallType { Exit = 1, Fstat = 108 };
   public:
     int processSyscall(Machine&);
   };

@@ -14,9 +14,7 @@ void NET::onBranch(Machine& M) {
       finishRegionFormation(); 
     }
   }
-}
 
-void NET::onNextInst(Machine& M) {
   if (TheManager.isNativeRegionEntry(M.getPC())) {
     if (Recording) 
       finishRegionFormation(); 
@@ -27,8 +25,10 @@ void NET::onNextInst(Machine& M) {
     ++ExecFreq[Next];
     if (ExecFreq[M.getPC()] > HotnessThreshold)
       startRegionFormation(Next);
-  } else {
-    if (Recording) 
-      insertInstruction(M.getPC(), M.getInstAtPC().asI_);
+  } else if (Recording) {
+    for (uint32_t I = LastTarget; I <= M.getLastPC(); I += 4)
+      insertInstruction(I, M.getInstAt(I).asI_);
   }
+
+  LastTarget = M.getPC();
 }

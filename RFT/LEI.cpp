@@ -81,6 +81,3 @@ void LEI::onBranch(Machine& M) {
     BufferHash[tgt] = Buffer.size()-1;
   }
 }
-
-void LEI::onNextInst(Machine& M) {
-}

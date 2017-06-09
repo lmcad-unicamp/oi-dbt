@@ -8,6 +8,7 @@
 
 using namespace dbt;
 using namespace dbt::OIDecoder;
+unsigned total = 0;
 
 #include <OIPrinter.hpp>
 #define DEBUG_PRINT(Addr, Inst) std::cout << std::hex << Addr << "\t" << OIPrinter::getString(Inst) << std::dec << "\n";
@@ -166,11 +167,15 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
   IMPLEMENT(mod, 
       M.setRegister(I.RV, M.getRegister(I.RS) % M.getRegister(I.RT));
     );
-  
+
+  IMPLEMENT(ldhu, 
+      unsigned short int half = M.getMemHalfAt(M.getRegister(I.RS) + I.Imm);
+      M.setRegister(I.RT, (uint32_t) half);
+    );
+
   IMPLEMENT(ldh, 
-      M.setRegister(ldiReg, I.RT);
-      short int half = M.getMemValueAt(M.getRegister(I.RS) + I.Imm).asI_ & 0xFFFF;
-      M.setRegister(I.RT, (int) half);
+      short int half = M.getMemHalfAt(M.getRegister(I.RS) + I.Imm);
+			M.setRegister(I.RT, (int32_t) half);
     );
 
   IMPLEMENT(sth, 
@@ -189,6 +194,7 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
     );
   
   IMPLEMENT(ldw,
+			//std::cout << M.getRegister(I.RS) + I.Imm << " | "<< (M.getMemValueAt(M.getRegister(I.RS) + I.Imm).asI_) << "\n";
       M.setRegister(I.RT, M.getMemValueAt(M.getRegister(I.RS) + I.Imm).asI_);
     );
   
@@ -260,10 +266,6 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
   IMPLEMENT(seh,
       M.setRegister(I.RS, (M.getRegister(I.RT) >> 16) << 16);
     );
-
-  IMPLEMENT(ldhu,
-      M.setRegister(I.RT, (uint16_t) (((uint32_t) M.getMemByteAt(M.getRegister(I.RS) + I.Imm)) & 0xFFFF));
-    );
   
   IMPLEMENT(stb,
       M.setMemByteAt(M.getRegister(I.RS) + I.Imm, (unsigned char) M.getRegister(I.RT) & 0xFF);
@@ -275,6 +277,7 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
   
   IMPLEMENT(stw,
       M.setMemValueAt(M.getRegister(I.RS) + I.Imm, M.getRegister(I.RT));
+			//std::cout << M.getRegister(I.RS) + I.Imm << " <- " << M.getRegister(I.RT) << "\n";
     );
   
   IMPLEMENT(sltiu,
@@ -365,14 +368,13 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
       M.setPC((M.getPC() & 0xF0000000) | (I.Addrs << 2));
     );
   
-  syscall:
-    if (SyscallM.processSyscall(M))
-      return;
-    goto next;
-  
+	IMPLEMENT(syscall,
+    	if (SyscallM.processSyscall(M))
+      	return;
+		);
+
   next:
-    DEBUG_PRINT(M.getPC(), getDecodedInst(M.getPC()));
-    ImplRFT.onNextInst(M);
+    //DEBUG_PRINT(M.getPC(), getDecodedInst(M.getPC()));
     goto *getDispatchValue(M.getPC());
 
   // --------------------------------------------------------------------------------------------------- //

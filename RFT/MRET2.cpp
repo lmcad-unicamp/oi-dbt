@@ -8,7 +8,7 @@ void MRET2::mergePhases() {
   uint32_t addr1, addr2;
   unsigned i = 0, j = 0;
 
-  if (0 == RecordingBufferTmp1.size() || 0 == RecordingBufferTmp2.size()) 
+  if (RecordingBufferTmp1.size() == 0 || RecordingBufferTmp2.size() == 0) 
     return;
 
   while (i < RecordingBufferTmp1.size() && j < RecordingBufferTmp2.size()) {
@@ -73,9 +73,7 @@ void MRET2::onBranch(Machine& M) {
       finishPhase();
     }
   }
-}
 
-void MRET2::onNextInst(Machine& M) {
   if (TheManager.isNativeRegionEntry(M.getPC())) {
     if (Recording) 
       finishPhase();
@@ -86,8 +84,10 @@ void MRET2::onNextInst(Machine& M) {
     ++ExecFreq[Next];
     if (ExecFreq[M.getPC()] > HotnessThreshold)
       startRegionFormation(Next);
-  } else {
-    if (Recording) 
-      RecordingBufferTmp1.push_back({M.getPC(), M.getInstAtPC().asI_});
+  } else if (Recording) { 
+    for (uint32_t I = LastTarget; I <= M.getLastPC(); I += 4)
+      RecordingBufferTmp1.push_back({I, M.getInstAt(I).asI_});
   }
+
+  LastTarget = M.getPC();
 }

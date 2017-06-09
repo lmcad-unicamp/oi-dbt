@@ -119,9 +119,7 @@ void NETPlus::onBranch(Machine& M) {
       expandAndFinish(M);
     }
   }
-}
 
-void NETPlus::onNextInst(Machine& M) {
   if (TheManager.isNativeRegionEntry(M.getPC())) {
     if (Recording) 
       expandAndFinish(M);
@@ -132,8 +130,10 @@ void NETPlus::onNextInst(Machine& M) {
     ++ExecFreq[Next];
     if (ExecFreq[M.getPC()] > HotnessThreshold)
       startRegionFormation(Next);
-  } else {
-    if (Recording) 
-      OIRegion.push_back({M.getPC(), M.getInstAtPC().asI_});
+  } else if (Recording) {
+    for (uint32_t I = LastTarget; I <= M.getLastPC(); I += 4)
+      OIRegion.push_back({I, M.getInstAt(I).asI_});
   }
+
+  LastTarget = M.getPC();
 }

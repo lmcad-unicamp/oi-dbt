@@ -74,6 +74,7 @@ namespace dbt {
         case OIInstType::Andi:
         case OIInstType::Stb:
         case OIInstType::Ldbu:
+        case OIInstType::Ldb:
         case OIInstType::Ldw:
         case OIInstType::Addi:
         case OIInstType::Stw:
@@ -86,6 +87,7 @@ namespace dbt {
         case OIInstType::Jne:
         case OIInstType::Ori:
         case OIInstType::Sth:
+        case OIInstType::Ldh:
         case OIInstType::Ldhu:
           return EncodingType::PL26i;
         case OIInstType::Mulu:

@@ -6,6 +6,11 @@
 
 using namespace dbt;
 
+union HalfUn {
+	char asC_[2];
+	uint16_t asH_;
+};
+
 void copystr(char* Target, const char* Source, uint32_t Size) {
   for (uint32_t i = 0; i < Size; ++i)
     Target[i] = Source[i];
@@ -16,8 +21,7 @@ void Machine::setCodeMemory(uint32_t StartAddress, uint32_t Size, const char* Co
   CodeMemory = uptr<Word[]>(new Word[Size]);
   CodeMemLimit = Size + CodeMemOffset;
   for (uint32_t i = 0; i < Size; i++) {
-    Word Bytes = {CodeBuffer[i], CodeBuffer[i+1],
-                  CodeBuffer[i+2], CodeBuffer[i+3]};
+    Word Bytes = {CodeBuffer[i], CodeBuffer[i+1], CodeBuffer[i+2], CodeBuffer[i+3]};
     CodeMemory[i] = Bytes;
   }
 }
@@ -86,6 +90,15 @@ uint8_t Machine::getMemByteAt(uint32_t Addr) {
   return DataMemory[CorrectAddr];
 }
 
+uint16_t Machine::getMemHalfAt(uint32_t Addr) {
+  assert((Addr >= DataMemOffset && Addr < DataMemLimit) &&
+      "Trying to access an address out of border!");
+
+  uint32_t CorrectAddr = Addr - DataMemOffset;
+  HalfUn Half = {DataMemory[CorrectAddr], DataMemory[CorrectAddr+1]};
+  return Half.asH_;
+}
+
 Word Machine::getMemValueAt(uint32_t Addr) {
   assert((Addr >= DataMemOffset && Addr < DataMemLimit) &&
       "Trying to access an address out of border!");
@@ -103,8 +116,8 @@ void Machine::setMemValueAt(uint32_t Addr, uint32_t Value) {
   uint32_t CorrectAddr = Addr - DataMemOffset;
   DataMemory[CorrectAddr+3] = (Value >> 24) & 0xFF;
   DataMemory[CorrectAddr+2] = (Value >> 16) & 0xFF;
-  DataMemory[CorrectAddr+1] = (Value >> 8) & 0xFF;
-  DataMemory[CorrectAddr]   = (Value) & 0xFF;
+  DataMemory[CorrectAddr+1] = (Value >> 8 ) & 0xFF;
+  DataMemory[CorrectAddr]   = (Value      ) & 0xFF;
 }
 
 uint32_t Machine::getNumInst() {
@@ -143,13 +156,17 @@ int32_t* Machine::getRegisterPtr() {
   return Register;
 }
 
+char* Machine::getByteMemoryPtr() {
+  return DataMemory.get();
+}
+
 uint32_t* Machine::getMemoryPtr() {
   return (uint32_t*) DataMemory.get();
 }
 
 using namespace ELFIO;
 
-#define STACK_SIZE 104857600
+#define STACK_SIZE 10485760
 int Machine::loadELF(const std::string ElfPath) {
   elfio reader;
 
@@ -177,7 +194,7 @@ int Machine::loadELF(const std::string ElfPath) {
       Started = true;
   }
 
-  allocDataMemory(AddressOffset, TotalDataSize + STACK_SIZE);
+  allocDataMemory(AddressOffset, (TotalDataSize + STACK_SIZE) + (4 - (TotalDataSize + STACK_SIZE) % 4));
 
   Started = false;
   for (int i = 0; i < sec_num; ++i) {
@@ -192,14 +209,8 @@ int Machine::loadELF(const std::string ElfPath) {
     }
   }
 
-  if (!DataMemory) {
-    DataMemLimit = STACK_SIZE;
-    DataMemOffset = 0;
-    DataMemory = uptr<char[]>(new char[STACK_SIZE]);
-  }
-
-  setRegister(29, DataMemLimit-4); //StackPointer
-  setRegister(30, DataMemLimit-4); //StackPointer
+  setRegister(29, DataMemLimit/2); //StackPointer
+  setRegister(30, DataMemLimit/2); //StackPointer
   
   setPC(reader.get_entry());
 

@@ -42,7 +42,17 @@ int validateArguments() {
   return 0;
 }
 
+dbt::Machine M;
+
+void  sigHandler(int sig) {
+  std::cerr << "Segfault while emulating at PC: " << std::hex << M.getPC() << "\n";
+  //TODO: Implement a M.dump();
+  exit(1);
+}
+
 int main(int argc, char** argv) {
+  signal(SIGSEGV, sigHandler);
+
   dbt::Timer GlobalTimer; 
 
   // Parse the arguments
@@ -59,7 +69,6 @@ int main(int argc, char** argv) {
   if (validateArguments())
     return 1;
 
-  dbt::Machine M;
 
   int loadStatus = M.loadELF(BinaryFlag.get_value());
 

@@ -25,6 +25,8 @@ namespace dbt {
 
     bool Recording = false;
     uint32_t RecordingEntry;
+
+    uint32_t LastTarget;
     
     Manager& TheManager;
 
@@ -40,7 +42,6 @@ namespace dbt {
     void printRegions();
 
     virtual void onBranch(dbt::Machine&) = 0;
-    virtual void onNextInst(dbt::Machine&) = 0;
   };
 
   class NET : public RFT {
@@ -48,7 +49,6 @@ namespace dbt {
     NET(Manager& M) : RFT(M) {};
 
     void onBranch(dbt::Machine&);
-    void onNextInst(dbt::Machine&);
   };
 
   class MRET2 : public RFT {
@@ -70,7 +70,6 @@ namespace dbt {
     void finishPhase();
 
     void onBranch(dbt::Machine&);
-    void onNextInst(dbt::Machine&);
   };
 
   class NETPlus : public RFT {
@@ -81,7 +80,6 @@ namespace dbt {
     NETPlus(Manager& M) : RFT(M) {};
 
     void onBranch(dbt::Machine&);
-    void onNextInst(dbt::Machine&);
   };
 
   class LEF : public RFT {
@@ -94,7 +92,6 @@ namespace dbt {
     LEF(Manager& M) : RFT(M), hasRet(false) {};
 
     void onBranch(dbt::Machine&);
-    void onNextInst(dbt::Machine&);
   };
 
 	class LEI : public RFT {
@@ -115,7 +112,6 @@ namespace dbt {
     LEI(Manager& M) : RFT(M) {};
 
     void onBranch(dbt::Machine&);
-    void onNextInst(dbt::Machine&);
   };
 
   class NullRFT : public RFT {
@@ -123,7 +119,6 @@ namespace dbt {
     NullRFT(Manager& M) : RFT(M) {};
 
     void onBranch(dbt::Machine&) {};
-    void onNextInst(dbt::Machine&) {};
   };
 }
 

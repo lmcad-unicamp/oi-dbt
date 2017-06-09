@@ -171,7 +171,7 @@ namespace dbt {
           else if (I.Type == OIInstType::Jne || I.Type == OIInstType::Jnez || I.Type == OIInstType::Jeq || I.Type == OIInstType::Jeqz) 
             Out << "  $" << (uint32_t) I.RT << ", $" << (uint32_t) I.RS << ", " << ((I.Imm << 2) + 4);
           else
-            Out << "  $" << (uint32_t) I.RS << ", $" << (uint32_t) I.RT << ", " << I.Imm;
+            Out << "  $" << (uint32_t) I.RT << ", $" << (uint32_t) I.RS << ", " << I.Imm;
           break;
         case EncodingType::PL24:
           Out << "  $" << (uint32_t) I.RT << ", $" << (uint32_t) I.RD << ", $" << (uint32_t) I.RS << ", $" << (uint32_t) I.RV;
@@ -180,7 +180,7 @@ namespace dbt {
           Out << "  " << I.Addrs;
           break;
         case EncodingType::PL18:
-          Out << "  $" << (uint32_t) I.RT << ", $" << (uint32_t) I.RS << ", $" << (uint32_t) I.RD;
+          Out << "  $" << (uint32_t) I.RD << ", $" << (uint32_t) I.RS << ", $" << (uint32_t) I.RT;
           break;
         case EncodingType::PL12:
           Out << "  $" << (uint32_t) I.RT << ", $" << (uint32_t) I.RS;

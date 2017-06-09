@@ -66,11 +66,13 @@ namespace dbt {
 
     void setMemByteAt(uint32_t, uint8_t);
     uint8_t getMemByteAt(uint32_t);
+    uint16_t getMemHalfAt(uint32_t);
     Word getMemValueAt(uint32_t);
     void setMemValueAt(uint32_t, uint32_t);
 
     int32_t*  getRegisterPtr();
     uint32_t* getMemoryPtr();
+    char* getByteMemoryPtr();
 
     uint32_t getNumInst();
     uint32_t getCodeStartAddrs();
