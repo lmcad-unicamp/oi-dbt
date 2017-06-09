@@ -60,6 +60,11 @@ void MRET2::finishPhase() {
 }
 
 void MRET2::onBranch(Machine& M) {
+  if (Recording) { 
+    for (uint32_t I = LastTarget; I <= M.getLastPC(); I += 4)
+      RecordingBufferTmp1.push_back({I, M.getInstAt(I).asI_});
+  }
+
   if (M.getPC() < M.getLastPC()) {
     if (!Recording) { 
       ++ExecFreq[M.getPC()];
@@ -84,10 +89,7 @@ void MRET2::onBranch(Machine& M) {
     ++ExecFreq[Next];
     if (ExecFreq[M.getPC()] > HotnessThreshold)
       startRegionFormation(Next);
-  } else if (Recording) { 
-    for (uint32_t I = LastTarget; I <= M.getLastPC(); I += 4)
-      RecordingBufferTmp1.push_back({I, M.getInstAt(I).asI_});
-  }
+  } 
 
   LastTarget = M.getPC();
 }

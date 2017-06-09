@@ -27,6 +27,8 @@ namespace dbt {
     uint32_t RecordingEntry;
 
     uint32_t LastTarget;
+
+    unsigned RegionLimitSize = -1;
     
     Manager& TheManager;
 
@@ -40,6 +42,10 @@ namespace dbt {
     ~RFT() {}
 
     void printRegions();
+
+    void setRegionLimitSize(unsigned Limit) {
+      RegionLimitSize = Limit;
+    };
 
     virtual void onBranch(dbt::Machine&) = 0;
   };

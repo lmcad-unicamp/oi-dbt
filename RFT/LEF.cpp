@@ -49,6 +49,16 @@ void LEF::endRecording(Machine& M) {
 }
 
 void LEF::onBranch(Machine& M) {
+  if (Recording) { 
+    for (uint32_t I = LastTarget; I <= M.getLastPC(); I += 4) {
+      insertInstruction(I, M.getInstAt(I).asI_);
+      OIDecoder::OIInstType InstType = OIDecoder::decode(M.getInstAt(I).asI_).Type;
+      hasRet = hasRet || InstType == OIDecoder::OIInstType::Jumpr;
+      if (InstType == OIDecoder::OIInstType::Call) // TODO: Should also test callr
+        CamesFromCall[RecordingEntry] = true; 
+    }
+  }
+
   if (M.getPC() < M.getLastPC()) {
     if (!Recording) { 
       ++ExecFreq[M.getPC()];
@@ -72,15 +82,7 @@ void LEF::onBranch(Machine& M) {
     ++ExecFreq[Next];
     if (ExecFreq[M.getPC()] > HotnessThreshold)
       startRegionFormation(Next);
-  } else if (Recording) { 
-    for (uint32_t I = LastTarget; I <= M.getLastPC(); I += 4) {
-      insertInstruction(I, M.getInstAt(I).asI_);
-      OIDecoder::OIInstType InstType = OIDecoder::decode(M.getInstAt(I).asI_).Type;
-      hasRet = hasRet || InstType == OIDecoder::OIInstType::Jumpr;
-      if (InstType == OIDecoder::OIInstType::Call) // TODO: Should also test callr
-        CamesFromCall[RecordingEntry] = true; 
-    }
-  }
+  } 
 
   LastTarget = M.getPC();
 }

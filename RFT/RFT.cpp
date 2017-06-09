@@ -33,7 +33,7 @@ void dbt::RFT::printRegions() {
 
   int i = 1;
   for (auto Region = TheManager.oiregions_begin(); Region != TheManager.oiregions_end(); Region++) {
-    std::cout << std::endl << "#" << i++ << '\n';
+    std::cout << std::endl << "#" << i++ << " entry: " << std::hex << Region->first << '\n';
     for (auto Pair : Region->second) {
       auto Addrs = Pair[0];
       dbt::Word W;

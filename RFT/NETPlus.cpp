@@ -110,6 +110,11 @@ void NETPlus::expandAndFinish(Machine& M) {
 }
 
 void NETPlus::onBranch(Machine& M) {
+  if (Recording) {
+    for (uint32_t I = LastTarget; I <= M.getLastPC(); I += 4)
+      OIRegion.push_back({I, M.getInstAt(I).asI_});
+  }
+
   if (M.getPC() < M.getLastPC()) {
     if (!Recording) { 
       ++ExecFreq[M.getPC()];
@@ -130,10 +135,7 @@ void NETPlus::onBranch(Machine& M) {
     ++ExecFreq[Next];
     if (ExecFreq[M.getPC()] > HotnessThreshold)
       startRegionFormation(Next);
-  } else if (Recording) {
-    for (uint32_t I = LastTarget; I <= M.getLastPC(); I += 4)
-      OIRegion.push_back({I, M.getInstAt(I).asI_});
-  }
+  }  
 
   LastTarget = M.getPC();
 }

@@ -13,6 +13,7 @@ clarg::argBool   InterpreterFlag("-interpret",  "Only interpret.");
 clarg::argString BinaryFlag("-bin",  "path to the binary which will should be emulated.", "");
 clarg::argBool   VerboseFlag("-v",  "display the compiled regions");
 clarg::argBool   HelpFlag("-h",  "display the help message");
+clarg::argInt    RegionLimitSize("-l", "region size limit", 400);
 
 void usage(char* PrgName) {
   cout << "Version: 0.0.1 (03-01-2017)\n\n";
@@ -105,6 +106,9 @@ int main(int argc, char** argv) {
       return 1;
     }
   }
+
+  if (RegionLimitSize.was_set()) 
+    RftChosen->setRegionLimitSize(RegionLimitSize.get_value());
 
   std::unique_ptr<dbt::SyscallManager> SyscallM;
   SyscallM = std::make_unique<dbt::LinuxSyscallManager>();
