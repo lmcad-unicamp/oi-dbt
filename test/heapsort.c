@@ -1,6 +1,6 @@
-#define IM 139968
-#define IA   3877
-#define IC  29573
+#define IM 21
+#define IA 12
+#define IC 13
 
 unsigned int gen_random();
 void heapsort(int n, unsigned int *ra);
@@ -23,7 +23,7 @@ main(int argc, char *argv[]) {
 unsigned int
 gen_random() {
   static unsigned int last = 42;
-  return( last = (last * IA + IC) % IM  );
+  return( last = (last + IA - IC)); //% IM);
 }
 
 void

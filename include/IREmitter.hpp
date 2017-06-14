@@ -7,6 +7,8 @@
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/IR/Module.h"
 #include "llvm/IR/IRBuilder.h"
+#include "llvm/IR/DerivedTypes.h"
+#include "llvm/IR/Type.h"
 
 #include <vector>
 #include <array>
@@ -39,8 +41,11 @@ namespace dbt {
     void processBranchesTargets(const OIInstList&);
     void generateInstIR(const uint32_t, const OIDecoder::OIInst);
 
+    llvm::Value* genDataVecPtr(llvm::Value*, llvm::Function*, llvm::Type*, unsigned);
     llvm::Value* genDataMemVecPtr(llvm::Value*, llvm::Function*);
     llvm::Value* genDataByteVecPtr(llvm::Value*, llvm::Function*);
+    llvm::Value* genDataHalfVecPtr(llvm::Value*, llvm::Function*);
+    llvm::Value* genDataWordVecPtr(llvm::Value*, llvm::Function*);
     llvm::Value* genRegisterVecPtr(uint8_t, llvm::Function*);
     llvm::Value* genRegisterVecPtr(llvm::Value*, llvm::Function*);
     llvm::Value* genLoadRegister(uint8_t, llvm::Function*);

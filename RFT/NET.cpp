@@ -4,14 +4,17 @@
 
 using namespace dbt;
 
+unsigned Total = 0;
 void NET::onBranch(Machine& M) {
   if (Recording) {
+
     for (uint32_t I = LastTarget; I <= M.getLastPC(); I += 4) {
-      insertInstruction(I, M.getInstAt(I).asI_);
-      if (OIRegion.size() > RegionLimitSize) {
+      if (Total > RegionLimitSize) {
         finishRegionFormation();
-        break;
+        return;
       }
+      Total++;
+      insertInstruction(I, M.getInstAt(I).asI_);
     }
   }
 
@@ -25,7 +28,6 @@ void NET::onBranch(Machine& M) {
     }
   } 
   
-  
   if (TheManager.isNativeRegionEntry(M.getPC())) {
     if (Recording) 
       finishRegionFormation(); 
@@ -33,9 +35,10 @@ void NET::onBranch(Machine& M) {
     auto Next = TheManager.jumpToRegion(M.getPC(), M); 
     M.setPC(Next);
 
-    ++ExecFreq[Next];
-    if (ExecFreq[M.getPC()] > HotnessThreshold)
-      startRegionFormation(Next);
+    ++ExecFreq[M.getPC()];
+    if (ExecFreq[M.getPC()] > HotnessThreshold) {
+      startRegionFormation(M.getPC());
+    }
   } 
 
   LastTarget = M.getPC();

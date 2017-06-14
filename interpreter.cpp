@@ -39,10 +39,10 @@ unsigned total = 0;
 #define IMPLEMENT_BR(Label, Code)\
   Label:\
     I = getDecodedInst(M.getPC());\
-    M.incPC();\
     {\
       Code\
     }\
+    M.incPC();\
     goto next;
 
 
@@ -194,7 +194,6 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
     );
   
   IMPLEMENT(ldw,
-			//std::cout << M.getRegister(I.RS) + I.Imm << " | "<< (M.getMemValueAt(M.getRegister(I.RS) + I.Imm).asI_) << "\n";
       M.setRegister(I.RT, M.getMemValueAt(M.getRegister(I.RS) + I.Imm).asI_);
     );
   
@@ -245,16 +244,6 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
         M.setRegister(I.RD, M.getRegister(I.RS));
     );
   
-  IMPLEMENT_JMP(call,
-      M.setRegister(31, M.getPC()+4);
-      M.setPC((M.getPC() & 0xF0000000) | (I.Addrs << 2));
-    );
-
-  IMPLEMENT_JMP(callr,
-      M.setRegister(31, M.getPC()+4);
-      M.setPC(M.getRegister(I.RT));
-    );
-  
   IMPLEMENT(ldb,
       M.setRegister(I.RT, (int32_t) M.getMemByteAt(M.getRegister(I.RS) + I.Imm));
     );
@@ -271,13 +260,8 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
       M.setMemByteAt(M.getRegister(I.RS) + I.Imm, (unsigned char) M.getRegister(I.RT) & 0xFF);
     );
   
-  IMPLEMENT_JMP(jumpr,
-      M.setPC(M.getRegister(I.RT));
-    );
-  
   IMPLEMENT(stw,
       M.setMemValueAt(M.getRegister(I.RS) + I.Imm, M.getRegister(I.RT));
-			//std::cout << M.getRegister(I.RS) + I.Imm << " <- " << M.getRegister(I.RT) << "\n";
     );
   
   IMPLEMENT(sltiu,
@@ -310,58 +294,80 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
   
   IMPLEMENT_BR(jeq,
       if (M.getRegister(I.RS) == M.getRegister(I.RT)) { 
-        M.setPC(M.getPC() + (I.Imm << 2));
+        M.setPC(M.getPC() + (I.Imm << 2) + 4);
         ImplRFT.onBranch(M);
+        goto next;
       }
     );
   
   IMPLEMENT_BR(jeqz,
       if (M.getRegister(I.RS) == 0) { 
-        M.setPC(M.getPC() + (I.Imm << 2));
+        M.setPC(M.getPC() + (I.Imm << 2) + 4);
         ImplRFT.onBranch(M);
+        goto next;
       }
     );
   
   IMPLEMENT_BR(jgtz,
       if (!(M.getRegister(I.RT) & 0x80000000) && (M.getRegister(I.RT) != 0)) { 
-        M.setPC(M.getPC() + (I.Imm << 2));
+        M.setPC(M.getPC() + (I.Imm << 2) + 4);
         ImplRFT.onBranch(M);
+        goto next;
       }
     );
   
   IMPLEMENT_BR(jgez,
       if (!(M.getRegister(I.RT) & 0x80000000)) { 
-        M.setPC(M.getPC() + (I.Imm << 2));
+        M.setPC(M.getPC() + (I.Imm << 2) + 4);
         ImplRFT.onBranch(M);
+        goto next;
       }
     );
   
   IMPLEMENT_BR(jlez,
       if ((M.getRegister(I.RT) == 0) || (M.getRegister(I.RT) & 0x80000000)) { 
-        M.setPC(M.getPC() + (I.Imm << 2));
+        M.setPC(M.getPC() + (I.Imm << 2) + 4);
         ImplRFT.onBranch(M);
+        goto next;
       }
     );
   
   IMPLEMENT_BR(jltz,
       if (M.getRegister(I.RT) & 0x80000000) { 
-        M.setPC(M.getPC() + (I.Imm << 2));
+        M.setPC(M.getPC() + (I.Imm << 2) + 4);
         ImplRFT.onBranch(M);
+        goto next;
       }
     );
   
   IMPLEMENT_BR(jne,
       if (M.getRegister(I.RS) != M.getRegister(I.RT)) { 
-        M.setPC(M.getPC() + (I.Imm << 2));
+        M.setPC(M.getPC() + (I.Imm << 2) + 4);
         ImplRFT.onBranch(M);
+        goto next;
       }
     );
   
   IMPLEMENT_BR(jnez,
       if (M.getRegister(I.RS) != 0) { 
-        M.setPC(M.getPC() + (I.Imm << 2));
+        M.setPC(M.getPC() + (I.Imm << 2) + 4);
         ImplRFT.onBranch(M);
+        goto next;
       }
+    );
+
+  IMPLEMENT_JMP(call,
+      M.setRegister(31, M.getPC()+4);
+      M.setPC((M.getPC() & 0xF0000000) | (I.Addrs << 2));
+    );
+
+  IMPLEMENT_JMP(callr,
+      M.setRegister(31, M.getPC()+4);
+      M.setPC(M.getRegister(I.RT));
+    );
+
+  IMPLEMENT_JMP(jumpr,
+      M.setPC(M.getRegister(I.RT));
     );
   
   IMPLEMENT_JMP(jump,

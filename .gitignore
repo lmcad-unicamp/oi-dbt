@@ -29,3 +29,6 @@
 *.app
 
 docs/html/
+test/experiments/
+build/
+docs/

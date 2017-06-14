@@ -333,7 +333,7 @@ namespace dbt {
         case dbt::OIDecoder::Jnez:
         case dbt::OIDecoder::Jgtz:
         case dbt::OIDecoder::Jeq: 
-          return {(PC + (Inst.Imm << 2)) + 4, PC + 4};
+          return {(PC + (Inst.Imm << 2) + 4), PC + 4};
         case dbt::OIDecoder::Jump: 
         case dbt::OIDecoder::Call: 
           return {(PC & 0xF0000000) | (Inst.Addrs << 2), 0};

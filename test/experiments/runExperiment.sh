@@ -54,7 +54,7 @@ run_all_tests() {
       continue
     fi
 
-    for rft in "net" "mret2" "netplus"; do
+    for rft in "net" "mret2" "netplus" "lei" "lef"; do
       executeDBT $rft $test 10;
     done;
   done;

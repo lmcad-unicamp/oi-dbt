@@ -4,7 +4,7 @@
  */
 
 int main(int argc, char *argv[]) {
-#define LENGTH 18
+#define LENGTH 15
   int n = LENGTH;
   int a, b, c, d, e, f, x=0;
 
@@ -13,8 +13,9 @@ int main(int argc, char *argv[]) {
       for (c=0; c<n; c++)
         for (d=0; d<n; d++)
           for (e=0; e<n; e++)
-            for (f=0; f<n; f++)
-              x++;
+            if (e % 2 == 0)
+              for (f=0; f<n; f++)
+                x++;
 
     return(x);
 }

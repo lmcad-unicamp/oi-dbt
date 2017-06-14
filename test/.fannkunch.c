@@ -68,7 +68,6 @@ fannkuch( int n )
       if( r == n ) {
         return flipsMax;
       }
-      /* rotate down perm[0..r] by one */
       {
         Int	perm0 = perm1[0];
         i = 0;
@@ -90,6 +89,6 @@ fannkuch( int n )
   int
 main( int argc, char* argv[] )
 {
-  int		n = 9;
+  int		n = 8;
   return fannkuch(n);
 }

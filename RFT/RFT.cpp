@@ -18,13 +18,22 @@ void dbt::RFT::insertInstruction(std::array<uint32_t, 2>& Inst) {
 void dbt::RFT::startRegionFormation(uint32_t PC) {
   Recording = true; 
   RecordingEntry = PC;
+  OIRegion.clear();
+  ExecFreq[PC] = 0;
+}
+
+bool dbt::RFT::hasRecordedAddrs(uint32_t Addrs) {
+  for (auto I : OIRegion) 
+    if (I[0] == Addrs)
+      return true;
+  return false;
 }
 
 void dbt::RFT::finishRegionFormation() {
-  if (OIRegion.size() > 0) {
+  if (OIRegion.size() > 0 && hasRecordedAddrs(RecordingEntry)) { 
     TheManager.addOIRegion(RecordingEntry, OIRegion);
-    OIRegion.clear();
   }
+  OIRegion.clear();
   Recording = false;
 }
 

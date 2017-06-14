@@ -7,7 +7,8 @@ int main() {
 
   for (int i = 0; i < 1000; i++) {
     s[i] = 0;
-    a += b;
+    if (i % 2 == 0)
+      a += b/10;
     if (a > 10) b = 0;
   }
 
@@ -15,5 +16,5 @@ int main() {
     s[i] += 1;
   }
 
-  return s[a] + s[b] + s[b+a];
+  return s[a] + s[b];
 }

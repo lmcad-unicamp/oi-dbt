@@ -45,7 +45,7 @@ void Manager::runPipeline() {
 
     IRO->optimizeIRFunction(Module, IROpt::OptLevel::Basic); 
 
-    unsigned OSize = 0;
+    unsigned OSize = 1;
     for (auto& F : *Module) 
       for (auto& BB : F)
         OSize += BB.size(); 

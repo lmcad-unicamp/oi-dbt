@@ -16,3 +16,4 @@ int main(int argc, char *argv[]) {
 
   return y[n-50];
 }
+

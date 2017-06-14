@@ -36,6 +36,7 @@ namespace dbt {
     void finishRegionFormation(); 
     void insertInstruction(uint32_t, uint32_t);
     void insertInstruction(std::array<uint32_t, 2>&);
+    bool hasRecordedAddrs(uint32_t);
   public:
     RFT(Manager& M) : TheManager(M) {};
 

@@ -6,7 +6,7 @@
 char flags[8192 + 1];
 
 int main(int argc, char *argv[]) {
-#define LENGTH 1700
+#define LENGTH 1300
   int NUM = LENGTH;
   long i, k;
   int count = 0;

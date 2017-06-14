@@ -4,6 +4,7 @@
 
 using namespace dbt;
 
+unsigned Total2 = 0;
 void MRET2::mergePhases() {
   uint32_t addr1, addr2;
   unsigned i = 0, j = 0;
@@ -15,10 +16,17 @@ void MRET2::mergePhases() {
     addr1 = RecordingBufferTmp1[i][0];
     addr2 = RecordingBufferTmp2[j][0];
 
-    if (addr1 == addr2) 
+    if (addr1 == addr2) { 
+      if (Total2 > RegionLimitSize) {
+        finishRegionFormation();
+        return;
+      }
+      Total2++;
+
       insertInstruction(RecordingBufferTmp1[i]);
-    else
+    } else {
       break;
+    }
 
     i++;
     j++;
@@ -86,9 +94,9 @@ void MRET2::onBranch(Machine& M) {
     auto Next = TheManager.jumpToRegion(M.getPC(), M); 
     M.setPC(Next);
 
-    ++ExecFreq[Next];
+    ++ExecFreq[M.getPC()];
     if (ExecFreq[M.getPC()] > HotnessThreshold)
-      startRegionFormation(Next);
+      startRegionFormation(M.getPC());
   } 
 
   LastTarget = M.getPC();

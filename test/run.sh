@@ -17,17 +17,17 @@ executeDBT() {
   n=$?
 
   echo "executing oi in o0 with $to_test:"
-  oi-dbt -bin a0.out -rft $to_test > /dev/null
+  oi-dbt -bin a0.out -rft $to_test > /dev/null;
   aux=$?
   if [[ "$n" -ne "$aux" ]]; then return 1; fi;
 
   echo "executing oi in o1 with dbt $to_test:"
-  oi-dbt -bin a1.out -rft $to_test> /dev/null
+  oi-dbt -bin a1.out -rft $to_test > /dev/null;
   aux=$?
   if [[ "$n" -ne "$aux" ]]; then return 1; fi;
 
   echo "executing oi in o2 with dbt $to_test:"
-  oi-dbt -bin a2.out -rft $to_test > /dev/null
+  oi-dbt -bin a2.out -rft $to_test > /dev/null;
   aux=$?
   if [[ "$n" -ne "$aux" ]]; then return 1; fi;
 }
@@ -79,7 +79,7 @@ run_all_tests() {
       let oks=$oks+1
     fi
 
-    for rft in "net" "mret2" "netplus"; do
+    for rft in "net" "mret2" "netplus" "lei" "lef"; do #"lef" ; do # "lei" "netplus"; do
       let total=$total+1
       if ! executeDBT $rft; then
         echo -e "\e[31mFailed during DBT ($rft)\e[0m"
@@ -87,7 +87,7 @@ run_all_tests() {
         echo -e ">> \e[34m[OK] $test ($rft)\e[0m"
         let oks=$oks+1
       fi
-    done;
+      done;
     clean;
   done;
   echo -e "\e[1m>>> Passed $oks/$total tests\e[0m"
