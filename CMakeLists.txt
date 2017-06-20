@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 project(openisa-dbt)
 
-set(CMAKE_CXX_FLAGS "-O3 -Werror -std=c++17 -fno-rtti -flto -DNDEBUG")
+set(CMAKE_CXX_FLAGS "-O3 -Werror -Wall -Wextra -Wno-unused-function -std=c++17 -fno-rtti -flto -DNDEBUG")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -O3 -flto")
 
 include_directories(include)

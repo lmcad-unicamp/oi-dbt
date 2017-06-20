@@ -5,8 +5,7 @@
 
 using namespace dbt;
 
-void LEF::expand(uint32_t RecordingEntry, Machine& M) {
-  llvm::errs() << "Trying to Expand!!!\n"; 
+void LEF::expand(uint32_t RecordingEntry) {
   std::set<uint32_t> Visited;
   std::queue<uint32_t> ToProcess;
   ToProcess.push(RecordingEntry);
@@ -34,23 +33,26 @@ void LEF::expand(uint32_t RecordingEntry, Machine& M) {
   }
 
   if (ExpandedEntry != 0 && ExpandedEntry != RecordingEntry) {
-    llvm::errs() << "Expanding!!!\n"; 
     startRegionFormation(ExpandedEntry);
     OIRegion = ExpandedRegion;
     finishRegionFormation();
   }
 }
 
-void LEF::endRecording(Machine& M) {
+void LEF::endRecording() {
   finishRegionFormation(); 
   if (hasRet) 
-    expand(RecordingEntry, M);
+    expand(RecordingEntry);
   hasRet = false;
 }
 
 void LEF::onBranch(Machine& M) {
   if (Recording) { 
     for (uint32_t I = LastTarget; I <= M.getLastPC(); I += 4) {
+      if (TheManager.isRegionEntry(I)) {
+        endRecording();
+        break;
+      }
       insertInstruction(I, M.getInstAt(I).asI_);
       OIDecoder::OIInstType InstType = OIDecoder::decode(M.getInstAt(I).asI_).Type;
       hasRet = hasRet || InstType == OIDecoder::OIInstType::Jumpr;
@@ -68,13 +70,13 @@ void LEF::onBranch(Machine& M) {
           CamesFromCall[M.getPC()] = true; 
       }
     } else {
-      endRecording(M);
+      endRecording();
     }
   }
 
   if (TheManager.isNativeRegionEntry(M.getPC())) {
     if (Recording) 
-      endRecording(M);
+      endRecording();
 
     auto Next = TheManager.jumpToRegion(M.getPC(), M); 
     M.setPC(Next);

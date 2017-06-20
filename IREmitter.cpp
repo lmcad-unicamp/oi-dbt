@@ -65,6 +65,13 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         break;
       }
 
+    case dbt::OIDecoder::Shlr: {
+        Value* Shifted = Builder->CreateAnd(genLoadRegister(Inst.RS, Func), genImm(0x1F));
+        Value* Res = Builder->CreateShl(genLoadRegister(Inst.RT, Func), Shifted);
+        genStoreRegister(Inst.RD, Res, Func);
+        break;
+      }
+
     case dbt::OIDecoder::Shr: {
         Value* Res = Builder->CreateLShr(genLoadRegister(Inst.RT, Func), genImm(Inst.RS));
         genStoreRegister(Inst.RD, Res, Func);
@@ -115,10 +122,21 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         break;
       }
 
+    case dbt::OIDecoder::Xor: {
+        Value* Res = Builder->CreateXor(genLoadRegister(Inst.RS, Func), genLoadRegister(Inst.RT, Func));
+        genStoreRegister(Inst.RD, Res, Func);
+        break;
+      }
 
     case dbt::OIDecoder::Or: {
         Value* Res = Builder->CreateOr(genLoadRegister(Inst.RS, Func), genLoadRegister(Inst.RT, Func));
         genStoreRegister(Inst.RD, Res, Func);
+        break;
+      }
+
+    case dbt::OIDecoder::Nor: {
+        Value* Res = Builder->CreateOr(genLoadRegister(Inst.RS, Func), genLoadRegister(Inst.RT, Func));
+        genStoreRegister(Inst.RD, Builder->CreateNot(Res), Func);
         break;
       }
 
@@ -201,6 +219,12 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         break;
       }
 
+    case dbt::OIDecoder::Seb: {
+        Value* Res = Builder->CreateIntCast(genLoadRegister(Inst.RT, Func), Type::getInt8Ty(TheContext), true);
+        genStoreRegister(Inst.RS, Builder->CreateIntCast(Res, Type::getInt32Ty(TheContext), true), Func);
+        break;
+    }
+
     case dbt::OIDecoder::Stb: {
         Value* RawAddrs = Builder->CreateAdd(genLoadRegister(Inst.RS, Func), genImm(Inst.Imm));
         Value* RT = Builder->CreateAnd(genLoadRegister(Inst.RT, Func), genImm(0xFF));
@@ -241,7 +265,7 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         Value* Res = Builder->CreateICmpEQ(genLoadRegister(Inst.RT, Func), genImm(0));
         BasicBlock* TBB = BasicBlock::Create(TheContext, "", Func);
         BasicBlock* FBB = BasicBlock::Create(TheContext, "", Func);
-        BranchInst* Br = Builder->CreateCondBr(Res, TBB, FBB);
+        Builder->CreateCondBr(Res, TBB, FBB);
         Builder->SetInsertPoint(TBB);
         genStoreRegister(Inst.RD, genLoadRegister(Inst.RS, Func), Func);
         Builder->CreateBr(FBB);
@@ -253,7 +277,7 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         Value* Res = Builder->CreateICmpNE(genLoadRegister(Inst.RT, Func), genImm(0));
         BasicBlock* TBB = BasicBlock::Create(TheContext, "", Func);
         BasicBlock* FBB = BasicBlock::Create(TheContext, "", Func);
-        BranchInst* Br = Builder->CreateCondBr(Res, TBB, FBB);
+        Builder->CreateCondBr(Res, TBB, FBB);
         Builder->SetInsertPoint(TBB);
         genStoreRegister(Inst.RD, genLoadRegister(Inst.RS, Func), Func);
         Builder->CreateBr(FBB);
@@ -410,7 +434,7 @@ Module* dbt::IREmitter::generateRegionIR(uint32_t EntryAddress, const OIInstList
   //int32_t execRegion(int32_t* IntRegisters, int32_t* DataMemory);
   std::array<Type*, 2> ArgsType = {Type::getInt32PtrTy(TheContext), Type::getInt32PtrTy(TheContext)};
   FunctionType *FT = FunctionType::get(Type::getInt32Ty(TheContext), ArgsType, false);
-  Function *F = Function::Create(FT, Function::ExternalLinkage, "r"+std::to_string(EntryAddress), TheModule);
+  Function     *F  = Function::Create(FT, Function::ExternalLinkage, "r"+std::to_string(EntryAddress), TheModule);
   F->addAttribute(1, Attribute::NoAlias);
   F->addAttribute(2, Attribute::NoAlias);
   F->addAttribute(1, Attribute::NoCapture);
@@ -418,7 +442,7 @@ Module* dbt::IREmitter::generateRegionIR(uint32_t EntryAddress, const OIInstList
 
   // Entry block to function must not have predecessors!
   BasicBlock *Entry = BasicBlock::Create(TheContext, "entry", F);
-  BasicBlock *BB = BasicBlock::Create(TheContext, "", F);
+  BasicBlock *BB    = BasicBlock::Create(TheContext, "", F);
 
   Builder->SetInsertPoint(Entry);
   Builder->CreateBr(BB);

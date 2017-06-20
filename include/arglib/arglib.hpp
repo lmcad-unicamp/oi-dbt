@@ -289,10 +289,12 @@ namespace clarg
       value = def_value;
     }
   protected:
-    int parse_parameters (int argc, char* argv [])
-    { value = true; return 0; }
-    void write_parameters (ostream& os, bool def) const
-    {}
+    int parse_parameters(int, char*[]) { 
+      value = true; 
+      return 0; 
+    }
+
+    void write_parameters(ostream&, bool) const {};
   };
 
 }

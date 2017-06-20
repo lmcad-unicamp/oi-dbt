@@ -58,7 +58,7 @@ namespace clarg {
      *       all the arguments used in a given run and re-use them by parsing
      *       from the file. To do so, you may infoke this method.
      */
-    int parse_arguments_from_file(std::istream& is)
+    int parse_arguments_from_file()
     {
       /* Suggestion: parse lines, one by one. For each line:
        * - discard characters after '#'
@@ -193,9 +193,8 @@ namespace clarg {
    * Read the arguments from file.
    * Returns 0 if ok, != 0 otherwise.
    */
-  int parse_arguments_from_file(std::istream& is)
-  {
-    return cm.get_container()->parse_arguments_from_file(is);
+  int parse_arguments_from_file() {
+    return cm.get_container()->parse_arguments_from_file();
   }
 
 }

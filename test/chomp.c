@@ -331,13 +331,15 @@ int main(void)
   int *win,*current,*temp;
   struct _play *tree,*look;
   row = 2;
-  ncol = 7;
-  nrow = 8;
+  ncol = 4;
+  nrow = 6;
 	tree = make_play(1); /* create entire tree structure, not just the */
 	player = 0;          /* needed part for first move */
 	current = make_data(nrow,ncol); /* start play at full board */
+  int i = 0;
 	while (current != NULL)
 	  {
+      i++;
 	    temp = get_good_move(where(current,tree)); /* get best move */
 	    if (temp != NULL)  /* temp = NULL when the poison pill is taken */
 	      {
@@ -349,7 +351,7 @@ int main(void)
 	    current = temp; /* update board */
 	  }
 	dump_play(tree); /* dump unneeded tree */
-  return 0;
+  return i;
 }
 
 /*****************************************************************************/

@@ -30,17 +30,17 @@ namespace dbt {
 
       mutable std::shared_mutex OIRegionsMtx, IRRegionsMtx, NativeRegionsMtx, CompiledOIRegionsMtx;
 
-      uint32_t DataMemOffset;
-
       unsigned NumOfThreads;
       OptPolitic OptMode;
+
+      uint32_t DataMemOffset;
 
       std::unique_ptr<IREmitter> IRE;
       std::unique_ptr<IROpt> IRO;
       llvm::orc::IRLazyJIT* IRJIT;
 
-      std::thread Thr;
       std::atomic<bool> isRunning;
+      std::thread Thr;
 
       unsigned CompiledRegions = 0;
       unsigned OICompiled = 0;
@@ -50,8 +50,8 @@ namespace dbt {
       void runPipeline();
 
     public:
-      Manager(unsigned T, OptPolitic O, uint32_t DMO) : NumOfThreads(T), OptMode(O), isRunning(true), 
-                                          Thr(&Manager::runPipeline, this), DataMemOffset(DMO) {}
+      Manager(unsigned T, OptPolitic O, uint32_t DMO) : NumOfThreads(T), OptMode(O), DataMemOffset(DMO), isRunning(true), 
+                                          Thr(&Manager::runPipeline, this) {}
 
       ~Manager() {
         isRunning = false;

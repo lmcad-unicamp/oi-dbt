@@ -18,7 +18,7 @@ void LEI::formTrace(uint32_t start, int old, Machine& M) {
     unsigned long long branch_src = Buffer[branch].src;
     unsigned long long branch_tgt = Buffer[branch].tgt;
 
-    for (int InstAddrs = prev; InstAddrs <= branch_src; InstAddrs += 4) {
+    for (unsigned long long InstAddrs = prev; InstAddrs <= branch_src; InstAddrs += 4) {
         // Stop if next instruction begins a trace
         if (TheManager.isRegionEntry(InstAddrs)) {
           break;
@@ -27,7 +27,7 @@ void LEI::formTrace(uint32_t start, int old, Machine& M) {
     }
 
     // Stop if branch forms a cycle
-    if (OIAddrs.count(branch_tgt) != 0) 
+    if (hasRecordedAddrs(branch_tgt)) 
       break;
 
     prev = branch_tgt;
@@ -37,7 +37,7 @@ void LEI::formTrace(uint32_t start, int old, Machine& M) {
 }
 
 bool LEI::isFollowedByExit(int old) {
-  return true;
+  return true || old;
 }
 
 void LEI::onBranch(Machine& M) {
@@ -65,8 +65,8 @@ void LEI::onBranch(Machine& M) {
         formTrace(tgt, old, M);
 
         // remove all elements of Buf after old
-        for (int i = old+1; i < Buffer.size(); i++) 
-          BufferHash.erase(Buffer[i].tgt);
+        for (unsigned I = old+1; I < Buffer.size(); I++) 
+          BufferHash.erase(Buffer[I].tgt);
         Buffer.erase(Buffer.begin()+old+1, Buffer.end());
 
         // recycle counter associated with tgt

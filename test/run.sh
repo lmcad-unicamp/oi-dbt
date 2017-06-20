@@ -4,10 +4,10 @@ oiclang=~/dev/mestrado/openisa/oi-toolchain/bin/clang
 
 
 compile() {
-  $oiclang -O0 $1 -o a0.out 
-  $oiclang -O1 $1 -o a1.out 
-  $oiclang -O2 $1 -o a2.out 
-  clang -O1 $1 -o native
+  $oiclang -O0 $1 -w -o a0.out 
+  $oiclang -O1 $1 -w -o a1.out 
+  $oiclang -O2 $1 -w -o a2.out 
+  clang -O1 $1 -w -o native
 }
 
 executeDBT() {
@@ -79,15 +79,15 @@ run_all_tests() {
       let oks=$oks+1
     fi
 
-    for rft in "net" "mret2" "netplus" "lei" "lef"; do #"lef" ; do # "lei" "netplus"; do
-      let total=$total+1
-      if ! executeDBT $rft; then
-        echo -e "\e[31mFailed during DBT ($rft)\e[0m"
-      else
-        echo -e ">> \e[34m[OK] $test ($rft)\e[0m"
-        let oks=$oks+1
-      fi
-      done;
+#    for rft in "net" "mret2"; do # "mret2" "netplus" "lei" "lef"; do #"lef" ; do # "lei" "netplus"; do
+#      let total=$total+1
+#      if ! executeDBT $rft; then
+#        echo -e "\e[31mFailed during DBT ($rft)\e[0m"
+#      else
+#        echo -e ">> \e[34m[OK] $test ($rft)\e[0m"
+#        let oks=$oks+1
+#      fi
+#      done;
     clean;
   done;
   echo -e "\e[1m>>> Passed $oks/$total tests\e[0m"

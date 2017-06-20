@@ -1,4 +1,4 @@
-#define LENGTH 150
+#define LENGTH 1500
 
 int x[LENGTH];
 int y[LENGTH];

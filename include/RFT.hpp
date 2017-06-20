@@ -21,7 +21,6 @@ namespace dbt {
     const unsigned HotnessThreshold = 20;
     std::unordered_map<uint32_t, uint8_t> ExecFreq;
     OIInstList OIRegion;
-    std::set<uint32_t> OIAddrs;
 
     bool Recording = false;
     uint32_t RecordingEntry;
@@ -93,8 +92,8 @@ namespace dbt {
     std::unordered_map<uint32_t, bool> CamesFromCall;
     bool hasRet;
 
-    void expand(uint32_t, Machine&);
-    void endRecording(Machine&);
+    void expand(uint32_t);
+    void endRecording();
   public:
     LEF(Manager& M) : RFT(M), hasRet(false) {};
 

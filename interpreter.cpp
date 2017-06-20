@@ -18,6 +18,9 @@ unsigned total = 0;
     setDispatchValue(Addrs, static_cast<int*>(Offset));\
     break;
 
+#define GOTO_NEXT\
+    goto *getDispatchValue(M.getPC());
+
 #define IMPLEMENT(Label, Code)\
   Label:\
     I = getDecodedInst(M.getPC());\
@@ -25,16 +28,16 @@ unsigned total = 0;
        Code\
     }\
     M.incPC();\
-    goto next;
+    GOTO_NEXT
 
 #define IMPLEMENT_JMP(Label, Code)\
   Label:\
     I = getDecodedInst(M.getPC());\
     {\
       Code\
+      ImplRFT.onBranch(M);\
     }\
-    ImplRFT.onBranch(M);\
-    goto next;
+    GOTO_NEXT
 
 #define IMPLEMENT_BR(Label, Code)\
   Label:\
@@ -43,8 +46,10 @@ unsigned total = 0;
       Code\
     }\
     M.incPC();\
-    goto next;
+    GOTO_NEXT
 
+bool isnan(double x) { return x != x; }
+bool isnan(float x)  { return x != x; }
 
 bool ITDInterpreter::isAddrsContainedIn(uint32_t StartAddrs, uint32_t EndAddrs) {
   return !(StartAddrs < LastStartAddrs || EndAddrs > LastEndAddrs);
@@ -105,6 +110,8 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
       SET_DISPACH(Addrs, Mulu,    &&mulu);
       SET_DISPACH(Addrs, Div,     &&div);
       SET_DISPACH(Addrs, Mod,     &&mod);
+      SET_DISPACH(Addrs, Divu,    &&divu);
+      SET_DISPACH(Addrs, Modu,    &&modu);
       SET_DISPACH(Addrs, Syscall, &&syscall);
       SET_DISPACH(Addrs, Shr,     &&shr);
       SET_DISPACH(Addrs, Asr,     &&asr);
@@ -121,6 +128,15 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
       SET_DISPACH(Addrs, Ldhu,    &&ldhu);
       SET_DISPACH(Addrs, Sth,     &&sth);
       SET_DISPACH(Addrs, Seh,     &&seh);
+      SET_DISPACH(Addrs, Seb,     &&seb);
+      SET_DISPACH(Addrs, Ijmphi,  &&ijmphi);
+      SET_DISPACH(Addrs, Ijmp,    &&ijmp);
+      SET_DISPACH(Addrs, Ldc1,    &&ldc1);
+      SET_DISPACH(Addrs, Sdc1,    &&sdc1);
+      SET_DISPACH(Addrs, Mtlc1,   &&mtlc1);
+      SET_DISPACH(Addrs, Mthc1,   &&mthc1);
+      SET_DISPACH(Addrs, Ceqs,    &&ceqs);
+      SET_DISPACH(Addrs, Ceqd,    &&ceqd);
       SET_DISPACH(Addrs, Nop,     &&nop);
       case Null:
         exit(1);
@@ -131,11 +147,14 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
   // ---------------------------------------- Trampoline Zone ------------------------------------------ //
 
   OIInst I;
-  constexpr int32_t ldiReg = 64;
-  goto next;
+  constexpr int32_t ldiReg  = 64;
+  constexpr int32_t ijmpReg = 65;
+  GOTO_NEXT;
 
   IMPLEMENT(nop, );
   
+  /**********************   Int Inst   **************************/
+
   IMPLEMENT(add, 
       M.setRegister(I.RD, M.getRegister(I.RS)+M.getRegister(I.RT));
     );
@@ -166,6 +185,14 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
   
   IMPLEMENT(mod, 
       M.setRegister(I.RV, M.getRegister(I.RS) % M.getRegister(I.RT));
+    );
+
+  IMPLEMENT(divu, 
+      M.setRegister(I.RD, (uint32_t) M.getRegister(I.RS) / (uint32_t) M.getRegister(I.RT));
+    );
+
+  IMPLEMENT(modu, 
+      M.setRegister(I.RV, (uint32_t) M.getRegister(I.RS) % (uint32_t) M.getRegister(I.RT));
     );
 
   IMPLEMENT(ldhu, 
@@ -253,7 +280,11 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
     );
 
   IMPLEMENT(seh,
-      M.setRegister(I.RS, (M.getRegister(I.RT) >> 16) << 16);
+      M.setRegister(I.RS, (int32_t) ((int16_t) M.getRegister(I.RT)));
+    );
+
+  IMPLEMENT(seb,
+      M.setRegister(I.RS, (int32_t) ((int8_t) M.getRegister(I.RT)));
     );
   
   IMPLEMENT(stb,
@@ -291,68 +322,117 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
   IMPLEMENT(ori,
       M.setRegister(I.RT, M.getRegister(I.RS) | (I.Imm & 0x3FFF));
     );
+
+  IMPLEMENT(ijmphi, 
+        M.setRegister(ijmpReg, 0);
+        M.setRegister(ijmpReg, M.getRegister(ijmpReg) | I.Addrs << 12); 
+    );
   
+  /**********************  Float Inst  **************************/
+
+   IMPLEMENT(ldc1, 
+      M.setRegister(130 + I.RT + 1, M.getMemValueAt(M.getRegister(I.RS) + I.Imm).asI_);
+      M.setRegister(130 + I.RT    , M.getMemValueAt(M.getRegister(I.RS) + I.Imm + 4).asI_);
+    );
+
+   IMPLEMENT(sdc1, 
+      M.setMemValueAt(M.getRegister(I.RS) + I.Imm + 4, M.getRegister(130 + I.RT));
+      M.setMemValueAt(M.getRegister(I.RS) + I.Imm    , M.getRegister(130 + I.RT + 1));
+    );
+
+   IMPLEMENT(mtlc1, 
+       double Temp = M.getDoubleRegister(I.RT);
+       uint64_t ToInt;
+       memcpy(&ToInt, &Temp, sizeof(uint64_t));
+       ToInt = (ToInt & 0xFFFFFFFF00000000ULL) + (((uint64_t) M.getDoubleRegister(I.RS)));
+       memcpy(&Temp, &ToInt, sizeof(uint64_t));
+       M.setDoubleRegister(I.RT, Temp);
+    );
+
+   IMPLEMENT(mthc1, 
+       double Temp = M.getDoubleRegister(I.RT);
+       uint64_t ToInt;
+       memcpy(&ToInt, &Temp, sizeof(uint64_t));
+       ToInt = (ToInt & 0xFFFFFFFFULL) + (((uint64_t) M.getDoubleRegister(I.RS)) << 32);
+       memcpy(&Temp, &ToInt, sizeof(uint64_t));
+       M.setDoubleRegister(I.RT, Temp);
+    );
+
+   IMPLEMENT(ceqd, 
+       double A = M.getDoubleRegister(I.RS);
+       double B = M.getDoubleRegister(I.RT);
+       M.setRegister(257, A == B ? (isnan(A) || isnan(B) ? false : true) : false);
+    );
+
+   IMPLEMENT(ceqs, 
+       float A = M.getFloatRegister(I.RS);
+       float B = M.getFloatRegister(I.RT);
+       M.setRegister(257, A == B ? (isnan(A) || isnan(B) ? false : true) : false);
+    );
+
+  /********************** JMPs and BRs **************************/
+
   IMPLEMENT_BR(jeq,
       if (M.getRegister(I.RS) == M.getRegister(I.RT)) { 
         M.setPC(M.getPC() + (I.Imm << 2) + 4);
-        ImplRFT.onBranch(M);
-        goto next;
+        ImplRFT.onBranch(M);\
+        GOTO_NEXT;
       }
     );
   
   IMPLEMENT_BR(jeqz,
       if (M.getRegister(I.RS) == 0) { 
         M.setPC(M.getPC() + (I.Imm << 2) + 4);
-        ImplRFT.onBranch(M);
-        goto next;
+        ImplRFT.onBranch(M);\
+        GOTO_NEXT;
       }
     );
   
   IMPLEMENT_BR(jgtz,
       if (!(M.getRegister(I.RT) & 0x80000000) && (M.getRegister(I.RT) != 0)) { 
         M.setPC(M.getPC() + (I.Imm << 2) + 4);
-        ImplRFT.onBranch(M);
-        goto next;
+        ImplRFT.onBranch(M);\
+        GOTO_NEXT;
       }
     );
   
   IMPLEMENT_BR(jgez,
       if (!(M.getRegister(I.RT) & 0x80000000)) { 
         M.setPC(M.getPC() + (I.Imm << 2) + 4);
-        ImplRFT.onBranch(M);
-        goto next;
+        ImplRFT.onBranch(M);\
+        GOTO_NEXT;
       }
     );
   
   IMPLEMENT_BR(jlez,
       if ((M.getRegister(I.RT) == 0) || (M.getRegister(I.RT) & 0x80000000)) { 
         M.setPC(M.getPC() + (I.Imm << 2) + 4);
-        ImplRFT.onBranch(M);
-        goto next;
+        ImplRFT.onBranch(M);\
+        GOTO_NEXT;
       }
     );
   
   IMPLEMENT_BR(jltz,
       if (M.getRegister(I.RT) & 0x80000000) { 
         M.setPC(M.getPC() + (I.Imm << 2) + 4);
-        ImplRFT.onBranch(M);
-        goto next;
+        ImplRFT.onBranch(M);\
+        GOTO_NEXT;
       }
     );
   
   IMPLEMENT_BR(jne,
       if (M.getRegister(I.RS) != M.getRegister(I.RT)) { 
         M.setPC(M.getPC() + (I.Imm << 2) + 4);
-        ImplRFT.onBranch(M);
-        goto next;
+        ImplRFT.onBranch(M);\
+        GOTO_NEXT;
       }
     );
   
   IMPLEMENT_BR(jnez,
       if (M.getRegister(I.RS) != 0) { 
         M.setPC(M.getPC() + (I.Imm << 2) + 4);
-        ImplRFT.onBranch(M);
-        goto next;
+        ImplRFT.onBranch(M);\
+        GOTO_NEXT;
       }
     );
 
@@ -373,15 +453,18 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
   IMPLEMENT_JMP(jump,
       M.setPC((M.getPC() & 0xF0000000) | (I.Addrs << 2));
     );
+
+  IMPLEMENT_JMP(ijmp,
+      M.setRegister(ijmpReg, M.getRegister(ijmpReg) & 0xFFFFF000); 
+      M.setRegister(ijmpReg, M.getRegister(ijmpReg) | (I.Imm & 0xFFF)); 
+      uint32_t Target = M.getMemValueAt(M.getRegister(ijmpReg) + M.getRegister(I.RT)).asI_;
+      M.setPC(Target);
+    );
   
 	IMPLEMENT(syscall,
     	if (SyscallM.processSyscall(M))
       	return;
 		);
-
-  next:
-    //DEBUG_PRINT(M.getPC(), getDecodedInst(M.getPC()));
-    goto *getDispatchValue(M.getPC());
 
   // --------------------------------------------------------------------------------------------------- //
 }

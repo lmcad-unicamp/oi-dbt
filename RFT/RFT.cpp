@@ -4,11 +4,15 @@
 #include <iostream>
 #include <iomanip>
 
+unsigned Total = 0;
 void dbt::RFT::insertInstruction(uint32_t Addrs, uint32_t Opcode) {
-  if (OIAddrs.count(Addrs) == 0) {
-    OIAddrs.insert(Addrs);
-    OIRegion.push_back({Addrs, Opcode});
+  if (Total > RegionLimitSize) {
+    finishRegionFormation();
+    return;
   }
+
+  if (!hasRecordedAddrs(Addrs)) 
+    OIRegion.push_back({Addrs, Opcode});
 }
 
 void dbt::RFT::insertInstruction(std::array<uint32_t, 2>& Inst) {
@@ -23,7 +27,7 @@ void dbt::RFT::startRegionFormation(uint32_t PC) {
 }
 
 bool dbt::RFT::hasRecordedAddrs(uint32_t Addrs) {
-  for (auto I : OIRegion) 
+  for (auto I : OIRegion)
     if (I[0] == Addrs)
       return true;
   return false;
@@ -32,6 +36,7 @@ bool dbt::RFT::hasRecordedAddrs(uint32_t Addrs) {
 void dbt::RFT::finishRegionFormation() {
   if (OIRegion.size() > 0 && hasRecordedAddrs(RecordingEntry)) { 
     TheManager.addOIRegion(RecordingEntry, OIRegion);
+    Total += OIRegion.size();
   }
   OIRegion.clear();
   Recording = false;

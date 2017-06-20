@@ -136,20 +136,38 @@ uint32_t Machine::getDataMemOffset() {
   return DataMemOffset;
 }
 
-int32_t Machine::getRegister(uint8_t R) {
+int32_t Machine::getRegister(uint16_t R) {
   return Register[R];
 }
 
-void Machine::setRegister(uint8_t R, int32_t V) {
+float Machine::getFloatRegister(uint16_t R) {
+  Word DW;
+  DW.asI_ = Register[R + 66];
+  return DW.asF_;
+}
+
+double Machine::getDoubleRegister(uint16_t R) {
+  QWord QW;
+  QW.asI32_[0] = Register[R + 129 + 1];
+  QW.asI32_[1] = Register[R + 129];
+  return QW.asD_;
+}
+
+void Machine::setRegister(uint16_t R, int32_t V) {
   Register[R] = V;
 }
 
-uint32_t Machine::getDoubleRegister(uint8_t R) {
-  return DoubleRegister[R];
+void Machine::setFloatRegister(uint16_t R, float V) {
+  Word DW;
+  DW.asF_ = V;
+  Register[R + 66] = DW.asI_;
 }
 
-void Machine::setDoubleRegister(uint8_t R, double V) {
-  DoubleRegister[R] = V;
+void Machine::setDoubleRegister(uint16_t R, double V) {
+  QWord QW;
+  QW.asD_ = V;
+  Register[R + 129]     = QW.asI32_[1];
+  Register[R + 129 + 1] = QW.asI32_[0];
 }
 
 int32_t* Machine::getRegisterPtr() {
@@ -166,7 +184,8 @@ uint32_t* Machine::getMemoryPtr() {
 
 using namespace ELFIO;
 
-#define STACK_SIZE 10485760
+#define STACK_SIZE 10 * 1024 * 1024
+#define HEAP_SIZE  10 * 1024 * 1024
 int Machine::loadELF(const std::string ElfPath) {
   elfio reader;
 
@@ -194,7 +213,7 @@ int Machine::loadELF(const std::string ElfPath) {
       Started = true;
   }
 
-  allocDataMemory(AddressOffset, (TotalDataSize + STACK_SIZE) + (4 - (TotalDataSize + STACK_SIZE) % 4));
+  allocDataMemory(AddressOffset, (TotalDataSize + STACK_SIZE + HEAP_SIZE) + (4 - (TotalDataSize + STACK_SIZE + HEAP_SIZE) % 4));
 
   Started = false;
   for (int i = 0; i < sec_num; ++i) {
@@ -209,8 +228,8 @@ int Machine::loadELF(const std::string ElfPath) {
     }
   }
 
-  setRegister(29, DataMemLimit/2); //StackPointer
-  setRegister(30, DataMemLimit/2); //StackPointer
+  setRegister(29, DataMemLimit-STACK_SIZE/4); //StackPointer
+  setRegister(30, DataMemLimit-STACK_SIZE/4); //StackPointer
   
   setPC(reader.get_entry());
 

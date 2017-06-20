@@ -43,10 +43,14 @@ int validateArguments() {
   return 0;
 }
 
+std::unique_ptr<dbt::RFT> RftChosen;
 dbt::Machine M;
 
 void  sigHandler(int sig) {
-  std::cerr << "Segfault while emulating at PC: " << std::hex << M.getPC() << "\n";
+  std::cerr << "Segfault (" << sig << ") while emulating at PC: " << std::hex << M.getPC() << "\n";
+
+  RftChosen->printRegions();
+
   //TODO: Implement a M.dump();
   exit(1);
 }
@@ -80,7 +84,6 @@ int main(int argc, char** argv) {
 
   dbt::Manager TheManager(1, dbt::Manager::OptPolitic::Normal, M.getDataMemOffset());
 
-  std::unique_ptr<dbt::RFT> RftChosen;
 
   if (InterpreterFlag.was_set()) {
     RftChosen = std::make_unique<dbt::NullRFT>(TheManager);

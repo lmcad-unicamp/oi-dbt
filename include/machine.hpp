@@ -30,13 +30,26 @@ namespace dbt {
     float asF_;
   };
 
+  union QWord {
+    char asC_[8];
+    uint32_t asI32_[2];
+    uint64_t asI_;
+    double asD_;
+  };
+
   class RFT;
 
   class Machine {
   private:
-    int32_t Register[65];
-    double FloatRegister[65];
-    double DoubleRegister[65];
+
+    // Int Regs     0   -  63
+    // LDI          64
+    // Ijmphi       65
+    // Float Regs   66  -  129
+    // Double Regs  130 -  256
+    // CC           257
+    int32_t Register[258];
+
     uptr<char[]> DataMemory;
     uptr<Word[]> CodeMemory;
 
@@ -64,11 +77,11 @@ namespace dbt {
     Word getInstAtPC();
     Word getNextInst();
 
-    void setMemByteAt(uint32_t, uint8_t);
-    uint8_t getMemByteAt(uint32_t);
+    void     setMemByteAt(uint32_t, uint8_t);
+    uint8_t  getMemByteAt(uint32_t);
     uint16_t getMemHalfAt(uint32_t);
-    Word getMemValueAt(uint32_t);
-    void setMemValueAt(uint32_t, uint32_t);
+    Word     getMemValueAt(uint32_t);
+    void     setMemValueAt(uint32_t, uint32_t);
 
     int32_t*  getRegisterPtr();
     uint32_t* getMemoryPtr();
@@ -79,11 +92,13 @@ namespace dbt {
     uint32_t getCodeEndAddrs();
     uint32_t getDataMemOffset();
 
-    int32_t getRegister(uint8_t);
-    void setRegister(uint8_t, int32_t);
+    int32_t getRegister(uint16_t);
+    float   getFloatRegister(uint16_t);
+    double  getDoubleRegister(uint16_t);
 
-    uint32_t getDoubleRegister(uint8_t);
-    void setDoubleRegister(uint8_t, double);
+    void setRegister(uint16_t, int32_t);
+    void setFloatRegister(uint16_t, float);
+    void setDoubleRegister(uint16_t, double);
 
     int loadELF(const std::string);
   };

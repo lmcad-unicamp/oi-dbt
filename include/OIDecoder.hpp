@@ -12,12 +12,13 @@ namespace dbt {
     };
 
     enum OIInstType
-    { Add, And, Andi, Or , Ldi , Ldihi, Ldw, Addi, Call , Jumpr, Stw , Sltiu, Slti, Jeq , Jne, Jump, Mul , Mulu, Syscall, 
-      Shr, Shl, Jeqz, Sub, Slt , Div  , Mod, Ori , Jgtz , Jlez , Jnez, Ldbu , Stb , Sltu, Asr, Jltz, Movn, Movz, Xori   ,
-      Nor, Ldh, Ldb , Sth, Ldhu, Jgez , Nop, Seh , Callr, Shlr , Xor , Null };
+    { Add, And, Andi, Or , Ldi , Ldihi, Ldw, Addi, Call , Jumpr, Stw , Sltiu, Slti  , Jeq , Jne , Jump, Mul , Mulu, Syscall, 
+      Shr, Shl, Jeqz, Sub, Slt , Div  , Mod, Ori , Jgtz , Jlez , Jnez, Ldbu , Stb   , Sltu, Asr , Jltz, Movn, Movz, Xori   ,
+      Nor, Ldh, Ldb , Sth, Ldhu, Jgez , Nop, Seh , Callr, Shlr , Xor , Seb  , Ijmphi, Ijmp, Divu, Modu, Ldc1, Sdc1, Mtlc1  ,
+      Mthc1, Ceqd, Ceqs, Null };
 
     enum EncodingType {
-      PL0, PL6, PL26j, PL26c, PL26i, PL12, PL18, PL16, PL24, PL18i, PL20 
+      PL0, PL6, PL26ij, PL26j, PL26c, PL26i, PL12, PL18, PL16, PL24, PL18i, PL20, PL20i
     };
 
     typedef struct OIInst {
@@ -26,6 +27,18 @@ namespace dbt {
       int16_t Imm;
       uint32_t Addrs;
     } OIInst;
+
+    constexpr uint8_t getCount(Word W) {
+      return (W.asI_) & 0xFF;
+    }
+
+    constexpr uint8_t getIndex(Word W) {
+      return (W.asI_ >> 8) & 0x3F;
+    }
+
+    constexpr uint16_t getPL12(Word W) {
+      return (W.asI_ >> 14) & 0xFFF;
+    }
 
     constexpr uint8_t getRS(Word W) {
       return (W.asI_ >> 6) & 0x3F;
@@ -51,10 +64,6 @@ namespace dbt {
     static int16_t getImm1(Word W) {
       uint16_t x = (W.asI_ >> 12) & 0x3FFF;
       return (x & 0x2000) ? (x | 0xc000) : x;
-    }
-
-    static uint16_t getUImm1(Word W) {
-      return (W.asI_ >> 12) & 0x3FFF;
     }
 
     constexpr uint32_t getPL18(Word W) {
@@ -89,11 +98,15 @@ namespace dbt {
         case OIInstType::Sth:
         case OIInstType::Ldh:
         case OIInstType::Ldhu:
+        case OIInstType::Sdc1:
+        case OIInstType::Ldc1:
           return EncodingType::PL26i;
         case OIInstType::Mulu:
         case OIInstType::Mul:
         case OIInstType::Div:
         case OIInstType::Mod:
+        case OIInstType::Divu:
+        case OIInstType::Modu:
           return EncodingType::PL24;
         case OIInstType::Ldihi:
           return EncodingType::PL18i;
@@ -118,22 +131,32 @@ namespace dbt {
         case OIInstType::Jgez:
         case OIInstType::Ldi:
           return EncodingType::PL20;
+        case OIInstType::Ijmphi:
+          return EncodingType::PL20i;
         case OIInstType::Call:
           return EncodingType::PL26c;
         case OIInstType::Jumpr:
           return EncodingType::PL6;
         case OIInstType::Jump:
           return EncodingType::PL26j;
+        case OIInstType::Ijmp:
+          return EncodingType::PL26ij;
         case OIInstType::Seh:
+        case OIInstType::Seb:
         case OIInstType::Callr:
+        case OIInstType::Mtlc1:
+        case OIInstType::Mthc1:
+        case OIInstType::Ceqs:
+        case OIInstType::Ceqd:
           return EncodingType::PL12;
         case OIInstType::Syscall:
+        case OIInstType::Nop:
         case OIInstType::Null:
           return EncodingType::PL0;
-        defaut:
-          std::cout << "Dammit! We have a bug on Encoding types!\n";
-          return EncodingType::PL0;
       }
+
+      std::cout << "Dammit! We have a bug on Encoding types!\n";
+      return EncodingType::PL0;
     }
 
     static void fillFields(OIInst& I, EncodingType E, Word W) {
@@ -161,6 +184,9 @@ namespace dbt {
           I.RT = getRT(W);
           I.Imm = getImm(W);
           break;
+        case EncodingType::PL20i:
+          I.Addrs = getAddr(W);
+          break;
         case EncodingType::PL26c:
           I.Addrs = getAddr(W);
           break;
@@ -169,6 +195,11 @@ namespace dbt {
           break;
         case EncodingType::PL26j:
           I.Addrs = getLAddr(W);
+          break;
+        case EncodingType::PL26ij:
+          I.RS  = getCount(W);
+          I.RT  = getIndex(W);
+          I.Imm = getPL12(W);
           break;
         case EncodingType::PL12:
           I.RS = getRS(W);
@@ -198,28 +229,57 @@ namespace dbt {
 
       uint8_t Ext;
       switch(Op) {
+      case 0b000000:
+        I.Type = OIInstType::Jump;
+        break;
+      case 0b000001:
+        I.Type = OIInstType::Call;
+        break;
+      case 0b000011:
+        I.Type = OIInstType::Ldbu;
+        break;
       case 0b000101:
         I.Type = OIInstType::Ldhu;
         break;
-      case 0b10010:
-        I.Type = OIInstType::Andi;
+      case 0b000110:
+        I.Type = OIInstType::Ldw;
+        break;
+      case 0b001001:
+        I.Type = OIInstType::Stb;
         break;
       case 0b001010:
         I.Type = OIInstType::Sth;
         break;
+      case 0b001011:
+        I.Type = OIInstType::Stw;
+        break;
+      case 0b001110:
+        I.Type = OIInstType::Addi;
+        break;
+      case 0b010010:
+        I.Type = OIInstType::Andi;
+        break;
+      case 0b011001:
+        I.Type = OIInstType::Sdc1;
+        break;
+      case 0b011010:
+        I.Type = OIInstType::Ldc1;
+        break;
       case 0b100101:
         I.Type = OIInstType::Mulu;
         break;
-      case 0b1001:
-        I.Type = OIInstType::Stb;
-        break;
-      case 0b11:
-        I.Type = OIInstType::Ldbu;
+      case 0b100110:
+        I.Type = OIInstType::Ijmp;
         break;
       case 0b100010:
         Ext = (W.asI_ & OpMask) >> 12;
-        if (Ext == 0b0  ) I.Type = OIInstType::Callr;
-        if (Ext == 0b100) I.Type = OIInstType::Seh;
+        if (Ext == 0b0     ) I.Type = OIInstType::Callr;
+        if (Ext == 0b11    ) I.Type = OIInstType::Seb;
+        if (Ext == 0b100   ) I.Type = OIInstType::Seh;
+        if (Ext == 0b111   ) I.Type = OIInstType::Ceqd;
+        if (Ext == 0b1000  ) I.Type = OIInstType::Ceqs;
+        if (Ext == 0b101010) I.Type = OIInstType::Mthc1;
+        if (Ext == 0b110010) I.Type = OIInstType::Mtlc1;
         break;
       case 0b100000:
         Ext = (W.asI_ & OpMask) >> 18;
@@ -241,26 +301,15 @@ namespace dbt {
         break;
       case 0b11111: 
         Ext = (W.asI_ & OpMask) >> 20;
-        if (Ext == 0b0  ) I.Type = OIInstType::Jlez;
-        if (Ext == 0b1  ) I.Type = OIInstType::Jgtz;
-        if (Ext == 0b10 ) I.Type = OIInstType::Jltz;
-        if (Ext == 0b11 ) I.Type = OIInstType::Jgez;
-        if (Ext == 0b100) I.Type = OIInstType::Ldi;
-        break;
-      case 0b110:
-        I.Type = OIInstType::Ldw;
-        break;
-      case 0b1110:
-        I.Type = OIInstType::Addi;
-        break;
-      case 0b1:
-        I.Type = OIInstType::Call;
+        if (Ext == 0b0   ) I.Type = OIInstType::Jlez;
+        if (Ext == 0b1   ) I.Type = OIInstType::Jgtz;
+        if (Ext == 0b10  ) I.Type = OIInstType::Jltz;
+        if (Ext == 0b11  ) I.Type = OIInstType::Jgez;
+        if (Ext == 0b100 ) I.Type = OIInstType::Ldi;
+        if (Ext == 0b10000) I.Type = OIInstType::Ijmphi;
         break;
       case 0b100011:
         I.Type = OIInstType::Jumpr;
-        break;
-      case 0b1011:
-        I.Type = OIInstType::Stw;
         break;
       case 0b10100:
         I.Type = OIInstType::Xori;
@@ -283,9 +332,6 @@ namespace dbt {
         else
           I.Type = OIInstType::Jne;
         break;
-      case 0b0:
-        I.Type = OIInstType::Jump;
-        break;
       case 0b011101: 
         Ext = (W.asI_ & OpMask) >> 24;
         if (Ext == 0b00) I.Type = OIInstType::Mul;
@@ -294,6 +340,12 @@ namespace dbt {
             I.Type = OIInstType::Div;
           if (getRV(W) != 0)
             I.Type = OIInstType::Mod;
+        }
+        if (Ext == 0b10) {
+          if (getRD(W) != 0)
+            I.Type = OIInstType::Divu;
+          if (getRV(W) != 0)
+            I.Type = OIInstType::Modu;
         }
         break;
       case 0b100100:
@@ -337,6 +389,9 @@ namespace dbt {
         case dbt::OIDecoder::Jump: 
         case dbt::OIDecoder::Call: 
           return {(PC & 0xF0000000) | (Inst.Addrs << 2), 0};
+        default:
+          std::cerr << "Panic!! Panic!! Panic!! getPossibleTargets cannot treat this type of branch!!\n";
+          exit(1);
       }
       return {PC, PC};
     }

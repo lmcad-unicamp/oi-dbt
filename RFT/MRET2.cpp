@@ -4,39 +4,30 @@
 
 using namespace dbt;
 
-unsigned Total2 = 0;
 void MRET2::mergePhases() {
   uint32_t addr1, addr2;
-  unsigned i = 0, j = 0;
+  unsigned i = 0;
 
   if (RecordingBufferTmp1.size() == 0 || RecordingBufferTmp2.size() == 0) 
     return;
 
-  while (i < RecordingBufferTmp1.size() && j < RecordingBufferTmp2.size()) {
+  while (i < RecordingBufferTmp1.size() && i < RecordingBufferTmp2.size()) {
     addr1 = RecordingBufferTmp1[i][0];
-    addr2 = RecordingBufferTmp2[j][0];
+    addr2 = RecordingBufferTmp2[i][0];
 
     if (addr1 == addr2) { 
-      if (Total2 > RegionLimitSize) {
-        finishRegionFormation();
-        return;
-      }
-      Total2++;
-
       insertInstruction(RecordingBufferTmp1[i]);
     } else {
       break;
     }
 
     i++;
-    j++;
   }
 }
 
 uint32_t MRET2::getStoredIndex(uint32_t addr) {
-  for (int i = 0; i < 1000; i++) { 
+  for (int i = 0; i < 1000; i++) 
     if (stored[i].size() > 0 && stored[i][0][0] == addr) return i;
-  }
   return 1001;
 }
 
@@ -48,7 +39,6 @@ uint32_t MRET2::getPhase(uint32_t addr) {
 void MRET2::finishPhase() {
   if (getPhase(RecordingEntry) == 1) {
     stored[stored_index] = RecordingBufferTmp1;
-    RecordingBufferTmp1.clear();
 
     stored_index++;
     if (stored_index == 1000) stored_index = 0;
@@ -62,6 +52,8 @@ void MRET2::finishPhase() {
     else 
       RecordingBufferTmp2 = RecordingBufferTmp1;
     mergePhases();
+    RecordingBufferTmp1.clear();
+    RecordingBufferTmp2.clear();
     phases[RecordingEntry] = 1;
     finishRegionFormation();
   }
@@ -69,21 +61,12 @@ void MRET2::finishPhase() {
 
 void MRET2::onBranch(Machine& M) {
   if (Recording) { 
-    for (uint32_t I = LastTarget; I <= M.getLastPC(); I += 4)
-      RecordingBufferTmp1.push_back({I, M.getInstAt(I).asI_});
-  }
-
-  if (M.getPC() < M.getLastPC()) {
-    if (!Recording) { 
-      ++ExecFreq[M.getPC()];
-      if (!TheManager.isRegionEntry(M.getPC()) && ExecFreq[M.getPC()] > HotnessThreshold/2) { 
-        startRegionFormation(M.getPC());
-        RecordingBufferTmp1.clear();
-        if (getPhase(M.getPC()) == 1) 
-          ExecFreq[M.getPC()] = 0;
+    for (uint32_t I = LastTarget; I <= M.getLastPC(); I += 4) {
+      if (TheManager.isRegionEntry(I)) {
+        finishRegionFormation(); 
+        break;
       }
-    } else {
-      finishPhase();
+      RecordingBufferTmp1.push_back({I, M.getInstAt(I).asI_});
     }
   }
 
@@ -95,9 +78,27 @@ void MRET2::onBranch(Machine& M) {
     M.setPC(Next);
 
     ++ExecFreq[M.getPC()];
-    if (ExecFreq[M.getPC()] > HotnessThreshold)
+    if (ExecFreq[M.getPC()] > HotnessThreshold) {
       startRegionFormation(M.getPC());
+      RecordingBufferTmp1.clear();
+      if (getPhase(M.getPC()) == 1)
+        ExecFreq[M.getPC()] = 0;
+    }
   } 
+
+  if (M.getPC() < M.getLastPC()) {
+    if (!Recording) { 
+      ++ExecFreq[M.getPC()];
+      if (!TheManager.isRegionEntry(M.getPC()) && ExecFreq[M.getPC()] > HotnessThreshold/2) { 
+        startRegionFormation(M.getPC());
+        RecordingBufferTmp1.clear();
+        if (getPhase(M.getPC()) == 1)
+          ExecFreq[M.getPC()] = 0;
+      }
+    } else {
+      finishPhase();
+    }
+  }
 
   LastTarget = M.getPC();
 }

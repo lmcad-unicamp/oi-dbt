@@ -111,8 +111,13 @@ void NETPlus::expandAndFinish(Machine& M) {
 
 void NETPlus::onBranch(Machine& M) {
   if (Recording) {
-    for (uint32_t I = LastTarget; I <= M.getLastPC(); I += 4)
+    for (uint32_t I = LastTarget; I <= M.getLastPC(); I += 4) {
+      if (TheManager.isRegionEntry(I)) {
+        expandAndFinish(M);
+        break;
+      }
       OIRegion.push_back({I, M.getInstAt(I).asI_});
+    }
   }
 
   if (M.getPC() < M.getLastPC()) {

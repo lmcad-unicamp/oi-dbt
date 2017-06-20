@@ -93,6 +93,12 @@ namespace dbt {
         case Mod:
           Out << "mod";
           break;
+        case Divu:
+          Out << "divu";
+          break;
+        case Modu:
+          Out << "modu";
+          break;
         case Syscall:
           Out << "sycall";
           break;
@@ -157,7 +163,34 @@ namespace dbt {
           Out << "ldhu";
           break;
         case Seh:
-          Out << "Seh";
+          Out << "seh";
+          break;
+        case Seb:
+          Out << "seb";
+          break;
+        case Ijmp:
+          Out << "ijmp";
+          break;
+        case Ijmphi:
+          Out << "ijmphi";
+          break;
+        case Ldc1:
+          Out << "ldc1";
+          break;
+        case Sdc1:
+          Out << "sdc1";
+          break;
+        case Mtlc1:
+          Out << "Mtlc1";
+          break;
+        case Mthc1:
+          Out << "Mthc1";
+          break;
+        case Ceqs:
+          Out << "c.eq.s";
+          break;
+        case Ceqd:
+          Out << "c.eq.d";
           break;
         default:
           Out << "null";
@@ -165,6 +198,7 @@ namespace dbt {
       }
 
       switch (dbt::OIDecoder::getEncodingType(I.Type)) {
+        // TODO PL26ij and PL20i
         case EncodingType::PL26i:
           if (I.Type == OIInstType::Ldw || I.Type == OIInstType::Stw) 
             Out << "  $" << (uint32_t) I.RT << ", " << I.Imm << "($" << (uint32_t) I.RS << ")";
@@ -208,7 +242,7 @@ namespace dbt {
       return Out.str();
     }
 
-  };
-};
+  }
+}
 
 #endif
