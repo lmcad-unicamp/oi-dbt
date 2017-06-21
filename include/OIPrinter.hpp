@@ -192,6 +192,33 @@ namespace dbt {
         case Ceqd:
           Out << "c.eq.d";
           break;
+        case Bc1f:
+          Out << "bc1f";
+          break;
+        case Bc1t:
+          Out << "bc1f";
+          break;
+        case Movd:
+          Out << "mov.d";
+          break;
+        case Lwc1:
+          Out << "Lwc1";
+          break;
+        case Adds:
+          Out << "Add.s";
+          break;
+        case Mtc1:
+          Out << "Mtc1";
+          break;
+        case Mfc1:
+          Out << "Mfc1";
+          break;
+        case Truncws:
+          Out << "Trunc.w.s";
+          break;
+        case Cvtsw:
+          Out << "Cvt.s.w";
+          break;
         default:
           Out << "null";
           break;
@@ -236,6 +263,7 @@ namespace dbt {
           break;
         case EncodingType::PL0:
         default: 
+          std::cout << "---";
           break;
       }
 

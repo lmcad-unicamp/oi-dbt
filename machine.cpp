@@ -148,8 +148,8 @@ float Machine::getFloatRegister(uint16_t R) {
 
 double Machine::getDoubleRegister(uint16_t R) {
   QWord QW;
-  QW.asI32_[0] = Register[R + 129 + 1];
-  QW.asI32_[1] = Register[R + 129];
+  QW.asI32_[0] = Register[(R * 2) + 129 + 1];
+  QW.asI32_[1] = Register[(R * 2) + 129];
   return QW.asD_;
 }
 
@@ -166,8 +166,8 @@ void Machine::setFloatRegister(uint16_t R, float V) {
 void Machine::setDoubleRegister(uint16_t R, double V) {
   QWord QW;
   QW.asD_ = V;
-  Register[R + 129]     = QW.asI32_[1];
-  Register[R + 129 + 1] = QW.asI32_[0];
+  Register[(R * 2) + 129]     = QW.asI32_[1];
+  Register[(R * 2) + 129 + 1] = QW.asI32_[0];
 }
 
 int32_t* Machine::getRegisterPtr() {

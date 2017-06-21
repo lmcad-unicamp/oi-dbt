@@ -75,17 +75,17 @@ namespace dbt {
       }
 
       bool isNativeRegionEntry(uint32_t EntryAddress) {
-        std::shared_lock<std::shared_mutex> lock(NativeRegionsMtx);
+        //std::shared_lock<std::shared_mutex> lock(NativeRegionsMtx);
         return NativeRegions.count(EntryAddress) != 0;
       }
 
       size_t getNumOfOIRegions() {
-        std::shared_lock<std::shared_mutex> lock(OIRegionsMtx);
+        //std::shared_lock<std::shared_mutex> lock(OIRegionsMtx);
         return OIRegions.size();
       }
 
       float getAvgRegionsSize() {
-        std::shared_lock<std::shared_mutex> lock(OIRegionsMtx);
+        //std::shared_lock<std::shared_mutex> lock(OIRegionsMtx);
         uint64_t total;
         for (auto Region : OIRegions) 
           total += Region.second.size();
@@ -97,7 +97,7 @@ namespace dbt {
       }
 
       OIInstList getCompiledOIRegion(uint32_t EntryAddrs) {
-        std::shared_lock<std::shared_mutex> lock(CompiledOIRegionsMtx);
+        //std::shared_lock<std::shared_mutex> lock(CompiledOIRegionsMtx);
         return CompiledOIRegions[EntryAddrs];
       }
 

@@ -12,10 +12,10 @@ namespace dbt {
     };
 
     enum OIInstType
-    { Add, And, Andi, Or , Ldi , Ldihi, Ldw, Addi, Call , Jumpr, Stw , Sltiu, Slti  , Jeq , Jne , Jump, Mul , Mulu, Syscall, 
-      Shr, Shl, Jeqz, Sub, Slt , Div  , Mod, Ori , Jgtz , Jlez , Jnez, Ldbu , Stb   , Sltu, Asr , Jltz, Movn, Movz, Xori   ,
-      Nor, Ldh, Ldb , Sth, Ldhu, Jgez , Nop, Seh , Callr, Shlr , Xor , Seb  , Ijmphi, Ijmp, Divu, Modu, Ldc1, Sdc1, Mtlc1  ,
-      Mthc1, Ceqd, Ceqs, Null };
+    { Add  , And , Andi, Or  , Ldi , Ldihi, Ldw , Addi, Call , Jumpr, Stw    , Sltiu, Slti  , Jeq , Jne , Jump, Mul , Mulu, Syscall, 
+      Shr  , Shl , Jeqz, Sub , Slt , Div  , Mod , Ori , Jgtz , Jlez , Jnez   , Ldbu , Stb   , Sltu, Asr , Jltz, Movn, Movz, Xori   ,
+      Nor  , Ldh , Ldb , Sth , Ldhu, Jgez , Nop , Seh , Callr, Shlr , Xor    , Seb  , Ijmphi, Ijmp, Divu, Modu, Ldc1, Sdc1, Mtlc1  ,
+      Mthc1, Ceqd, Ceqs, Bc1f, Bc1t, Movd , Lwc1, Adds, Mtc1 , Mfc1 , Truncws, Cvtsw, Null };
 
     enum EncodingType {
       PL0, PL6, PL26ij, PL26j, PL26c, PL26i, PL12, PL18, PL16, PL24, PL18i, PL20, PL20i
@@ -61,6 +61,11 @@ namespace dbt {
       return (x & 0x2000) ? (x | 0xc000) : x;
     }
 
+    static int16_t getHalfword(Word W) {
+      uint16_t x = (W.asI_) & 0x3FFF;
+      return (x & 0x2000) ? (x | 0xc000) : x;
+    }
+
     static int16_t getImm1(Word W) {
       uint16_t x = (W.asI_ >> 12) & 0x3FFF;
       return (x & 0x2000) ? (x | 0xc000) : x;
@@ -100,6 +105,7 @@ namespace dbt {
         case OIInstType::Ldhu:
         case OIInstType::Sdc1:
         case OIInstType::Ldc1:
+        case OIInstType::Lwc1:
           return EncodingType::PL26i;
         case OIInstType::Mulu:
         case OIInstType::Mul:
@@ -124,6 +130,7 @@ namespace dbt {
         case OIInstType::Movn:
         case OIInstType::Movz:
         case OIInstType::Xor:
+        case OIInstType::Adds:
           return EncodingType::PL18;
         case OIInstType::Jlez:
         case OIInstType::Jgtz:
@@ -148,7 +155,15 @@ namespace dbt {
         case OIInstType::Mthc1:
         case OIInstType::Ceqs:
         case OIInstType::Ceqd:
+        case OIInstType::Movd:
+        case OIInstType::Mtc1:
+        case OIInstType::Mfc1:
+        case OIInstType::Truncws:
+        case OIInstType::Cvtsw:
           return EncodingType::PL12;
+        case OIInstType::Bc1f:
+        case OIInstType::Bc1t:
+          return EncodingType::PL16;
         case OIInstType::Syscall:
         case OIInstType::Nop:
         case OIInstType::Null:
@@ -204,6 +219,9 @@ namespace dbt {
         case EncodingType::PL12:
           I.RS = getRS(W);
           I.RT = getRT(W);
+          break;
+        case EncodingType::PL16:
+          I.Imm = getHalfword(W); 
           break;
         case EncodingType::PL0:
           break;
@@ -265,6 +283,9 @@ namespace dbt {
       case 0b011010:
         I.Type = OIInstType::Ldc1;
         break;
+      case 0b011100:
+        I.Type = OIInstType::Lwc1;
+        break;
       case 0b100101:
         I.Type = OIInstType::Mulu;
         break;
@@ -278,6 +299,11 @@ namespace dbt {
         if (Ext == 0b100   ) I.Type = OIInstType::Seh;
         if (Ext == 0b111   ) I.Type = OIInstType::Ceqd;
         if (Ext == 0b1000  ) I.Type = OIInstType::Ceqs;
+        if (Ext == 0b11000 ) I.Type = OIInstType::Cvtsw;
+        if (Ext == 0b11001 ) I.Type = OIInstType::Mfc1;
+        if (Ext == 0b11010 ) I.Type = OIInstType::Movd;
+        if (Ext == 0b11100 ) I.Type = OIInstType::Mtc1;
+        if (Ext == 0b100000) I.Type = OIInstType::Truncws;
         if (Ext == 0b101010) I.Type = OIInstType::Mthc1;
         if (Ext == 0b110010) I.Type = OIInstType::Mtlc1;
         break;
@@ -298,6 +324,12 @@ namespace dbt {
         if (Ext == 0b1101 ) I.Type = OIInstType::Shlr;
         if (Ext == 0b10000) I.Type = OIInstType::Movz;
         if (Ext == 0b10001) I.Type = OIInstType::Movn;
+        if (Ext == 0b10101) I.Type = OIInstType::Adds;
+        break;
+      case 0b100001:
+        Ext = (W.asI_ & OpMask) >> 16;
+        if (Ext == 0b0 ) I.Type = OIInstType::Bc1t;
+        if (Ext == 0b10) I.Type = OIInstType::Bc1f;
         break;
       case 0b11111: 
         Ext = (W.asI_ & OpMask) >> 20;
@@ -390,8 +422,7 @@ namespace dbt {
         case dbt::OIDecoder::Call: 
           return {(PC & 0xF0000000) | (Inst.Addrs << 2), 0};
         default:
-          std::cerr << "Panic!! Panic!! Panic!! getPossibleTargets cannot treat this type of branch!!\n";
-          exit(1);
+          return {PC, PC};
       }
       return {PC, PC};
     }

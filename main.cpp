@@ -90,19 +90,19 @@ int main(int argc, char** argv) {
   } else {
     std::string RFTName = RFTFlag.get_value();
     if (RFTName == "net") {
-      std::cout << "NET RFT Selected\n";
+      std::cerr << "NET RFT Selected\n";
       RftChosen = std::make_unique<dbt::NET>(TheManager);
     } else if (RFTName == "mret2") {
-      std::cout << "MRET2 RFT Selected\n";
+      std::cerr << "MRET2 RFT Selected\n";
       RftChosen = std::make_unique<dbt::MRET2>(TheManager);
     } else if (RFTName == "netplus") {
-      std::cout << "NETPlus RFT Selected\n";
+      std::cerr << "NETPlus RFT Selected\n";
       RftChosen = std::make_unique<dbt::NETPlus>(TheManager);
     } else if (RFTName == "lei") {
-      std::cout << "LEI rft selected\n";
+      std::cerr << "LEI rft selected\n";
       RftChosen = std::make_unique<dbt::LEI>(TheManager);
     } else if (RFTName == "lef") {
-      std::cout << "LEF rft selected\n";
+      std::cerr << "LEF rft selected\n";
       RftChosen = std::make_unique<dbt::LEF>(TheManager);
     } else {
       std::cerr << "You should select a valid RFT!\n";

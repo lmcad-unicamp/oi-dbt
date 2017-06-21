@@ -393,7 +393,8 @@ void dbt::IREmitter::updateBranchTarget(uint32_t GuestAddr, std::array<uint32_t,
   for (int i = 0; i < 2; i++) {
     uint32_t AddrTarget = Tgts[i];
 
-    if (AddrTarget == 0) continue;
+    if (AddrTarget == 0)
+      continue;
 
     BasicBlock *BBTarget;
     if (IRMemoryMap.count(AddrTarget) != 0) {
@@ -434,7 +435,7 @@ Module* dbt::IREmitter::generateRegionIR(uint32_t EntryAddress, const OIInstList
   //int32_t execRegion(int32_t* IntRegisters, int32_t* DataMemory);
   std::array<Type*, 2> ArgsType = {Type::getInt32PtrTy(TheContext), Type::getInt32PtrTy(TheContext)};
   FunctionType *FT = FunctionType::get(Type::getInt32Ty(TheContext), ArgsType, false);
-  Function     *F  = Function::Create(FT, Function::ExternalLinkage, "r"+std::to_string(EntryAddress), TheModule);
+  Function *F = Function::Create(FT, Function::ExternalLinkage, "r" + std::to_string(EntryAddress), TheModule);
   F->addAttribute(1, Attribute::NoAlias);
   F->addAttribute(2, Attribute::NoAlias);
   F->addAttribute(1, Attribute::NoCapture);
