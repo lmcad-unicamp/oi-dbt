@@ -198,26 +198,53 @@ namespace dbt {
         case Bc1t:
           Out << "bc1f";
           break;
+        case Movs:
+          Out << "mov.s";
+          break;
         case Movd:
           Out << "mov.d";
           break;
         case Lwc1:
-          Out << "Lwc1";
+          Out << "lwc1";
           break;
         case Adds:
-          Out << "Add.s";
+          Out << "add.s";
+          break;
+        case Addd:
+          Out << "add.d";
           break;
         case Mtc1:
-          Out << "Mtc1";
+          Out << "mtc1";
           break;
         case Mfc1:
-          Out << "Mfc1";
+          Out << "mfc1";
           break;
         case Truncws:
-          Out << "Trunc.w.s";
+          Out << "trunc.w.s";
+          break;
+        case Truncwd:
+          Out << "trunc.w.d";
           break;
         case Cvtsw:
-          Out << "Cvt.s.w";
+          Out << "cvt.s.w";
+          break;
+        case Cvtdw:
+          Out << "cvt.d.w";
+          break;
+        case Cvtds:
+          Out << "cvt.d.s";
+          break;
+        case Cvtsd:
+          Out << "cvt.s.d";
+          break;
+        case Lwxc1:
+          Out << "lwxc1";
+          break;
+        case Swc1:
+          Out << "Swc1";
+          break;
+        case Swxc1:
+          Out << "Swxc1";
           break;
         default:
           Out << "null";

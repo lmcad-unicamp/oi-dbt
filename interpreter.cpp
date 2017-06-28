@@ -144,12 +144,22 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
       SET_DISPACH(Addrs, Bc1f,    &&bc1f);
       SET_DISPACH(Addrs, Bc1t,    &&bc1t);
       SET_DISPACH(Addrs, Movd,    &&movd);
+      SET_DISPACH(Addrs, Movs,    &&movs);
       SET_DISPACH(Addrs, Lwc1,    &&lwc1);
       SET_DISPACH(Addrs, Adds,    &&adds);
+      SET_DISPACH(Addrs, Addd,    &&addd);
+      SET_DISPACH(Addrs, Maddd,   &&maddd);
       SET_DISPACH(Addrs, Mtc1,    &&mtc1);
       SET_DISPACH(Addrs, Mfc1,    &&mfc1);
       SET_DISPACH(Addrs, Truncws, &&truncws);
+      SET_DISPACH(Addrs, Truncwd, &&truncwd);
       SET_DISPACH(Addrs, Cvtsw,   &&cvtsw);
+      SET_DISPACH(Addrs, Cvtdw,   &&cvtdw);
+      SET_DISPACH(Addrs, Cvtds,   &&cvtds);
+      SET_DISPACH(Addrs, Cvtsd,   &&cvtsd);
+      SET_DISPACH(Addrs, Lwxc1,   &&lwxc1);
+      SET_DISPACH(Addrs, Swc1,    &&swc1);
+      SET_DISPACH(Addrs, Swxc1,   &&swxc1);
       SET_DISPACH(Addrs, Nop,     &&nop);
       case Null:
         exit(1);
@@ -342,13 +352,29 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
   /**********************  Float Inst  **************************/
 
    IMPLEMENT(ldc1, 
-      M.setRegister(130 + I.RT + 1, M.getMemValueAt(M.getRegister(I.RS) + I.Imm).asI_);
-      M.setRegister(130 + I.RT    , M.getMemValueAt(M.getRegister(I.RS) + I.Imm + 4).asI_);
+      M.setRegister(130 + I.RT*2 + 1, M.getMemValueAt(M.getRegister(I.RS) + I.Imm  ).asI_);
+      M.setRegister(130 + I.RT*2    , M.getMemValueAt(M.getRegister(I.RS) + I.Imm+4).asI_);
+    );
+
+   IMPLEMENT(lwc1, 
+       M.setFloatRegister(I.RT, M.getMemValueAt(M.getRegister(I.RS) + I.Imm).asF_);
+    );
+
+   IMPLEMENT(lwxc1, 
+       M.setFloatRegister(I.RD, M.getMemValueAt(M.getRegister(I.RT) + M.getRegister(I.RS)).asF_);
     );
 
    IMPLEMENT(sdc1, 
-      M.setMemValueAt(M.getRegister(I.RS) + I.Imm + 4, M.getRegister(130 + I.RT));
-      M.setMemValueAt(M.getRegister(I.RS) + I.Imm    , M.getRegister(130 + I.RT + 1));
+      M.setMemValueAt(M.getRegister(I.RS) + I.Imm + 4, M.getRegister(130 + I.RT*2    ));
+      M.setMemValueAt(M.getRegister(I.RS) + I.Imm    , M.getRegister(130 + I.RT*2 + 1));
+    );
+
+   IMPLEMENT(swc1, 
+      M.setMemValueAt(M.getRegister(I.RS) + I.Imm, M.getRegister(66 + I.RT));
+    );
+
+   IMPLEMENT(swxc1, 
+      M.setMemValueAt(M.getRegister(I.RT) + M.getRegister(I.RS), M.getRegister(66 + I.RD));
     );
 
    IMPLEMENT(mtlc1, 
@@ -385,13 +411,21 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
        M.setDoubleRegister(I.RS, M.getDoubleRegister(I.RT));
     );
 
-   IMPLEMENT(lwc1, 
-       M.setFloatRegister(I.RT, M.getMemValueAt(M.getRegister(I.RS) + I.Imm).asF_);
+   IMPLEMENT(movs, 
+       M.setFloatRegister(I.RS, M.getFloatRegister(I.RT));
     );
 
    IMPLEMENT(adds, 
        M.setFloatRegister(I.RD, M.getFloatRegister(I.RS) + M.getFloatRegister(I.RT));
     );
+
+   IMPLEMENT(addd, 
+       M.setDoubleRegister(I.RD, M.getDoubleRegister(I.RS) + M.getDoubleRegister(I.RT));
+   );
+
+   IMPLEMENT(maddd, 
+       M.setDoubleRegister(I.RD, M.getDoubleRegister(I.RS) * M.getDoubleRegister(I.RT) + M.getDoubleRegister(I.RV));
+   );
 
    IMPLEMENT(mtc1, 
        M.setFloatRegister(I.RT, M.getRegister(I.RS));
@@ -405,10 +439,26 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
        M.setFloatRegister(I.RS, (int32_t) M.getFloatRegister(I.RT));
     );
 
-   IMPLEMENT(cvtsw, 
-       float Tmp = (float) (int) M.getFloatRegister(I.RT);
-       M.setFloatRegister(I.RS, Tmp);
+   IMPLEMENT(truncwd, 
+       M.setFloatRegister(I.RS, (int32_t) M.getDoubleRegister(I.RT));
     );
+
+   IMPLEMENT(cvtsw, 
+       M.setFloatRegister(I.RS, (float) (int) M.getFloatRegister(I.RT));
+    );
+   
+   IMPLEMENT(cvtdw, 
+       M.setDoubleRegister(I.RS, (double) (int) M.getFloatRegister(I.RT));
+    );
+
+   IMPLEMENT(cvtds, 
+       M.setDoubleRegister(I.RS, (double) M.getFloatRegister(I.RT));
+    );
+
+   IMPLEMENT(cvtsd, 
+       M.setFloatRegister(I.RS, (float) M.getDoubleRegister(I.RT));
+    );
+
 
   /********************** JMPs and BRs **************************/
 
@@ -528,7 +578,7 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
 void ITDInterpreter::execute(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs) {
   if (DispatchValues.size() == 0 || !isAddrsContainedIn(StartAddrs, EndAddrs)) { 
     DispatchValues.reserve((EndAddrs - StartAddrs)/4);
-    DecodedInsts.reserve((EndAddrs - StartAddrs)/4);
+    DecodedInsts  .reserve((EndAddrs - StartAddrs)/4);
   }
 
   LastStartAddrs = StartAddrs;
