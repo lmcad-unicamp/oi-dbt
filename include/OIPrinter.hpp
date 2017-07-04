@@ -114,6 +114,9 @@ namespace dbt {
         case Shlr:
           Out << "shlr";
           break;
+        case Shrr:
+          Out << "shrr";
+          break;
         case Ori:
           Out << "ori";
           break;
@@ -180,6 +183,12 @@ namespace dbt {
         case Sdc1:
           Out << "sdc1";
           break;
+        case Ldxc1:
+          Out << "ldxc1";
+          break;
+        case Sdxc1:
+          Out << "sdxc1";
+          break;
         case Mtlc1:
           Out << "Mtlc1";
           break;
@@ -203,6 +212,12 @@ namespace dbt {
           break;
         case Movd:
           Out << "mov.d";
+          break;
+        case Movf:
+          Out << "movf";
+          break;
+        case Movt:
+          Out << "movt";
           break;
         case Lwc1:
           Out << "lwc1";
@@ -241,10 +256,58 @@ namespace dbt {
           Out << "lwxc1";
           break;
         case Swc1:
-          Out << "Swc1";
+          Out << "swc1";
           break;
         case Swxc1:
-          Out << "Swxc1";
+          Out << "swxc1";
+          break;
+        case Muls:
+          Out << "mul.s";
+          break;
+        case Muld:
+          Out << "mul.d";
+          break;
+        case Coltd:
+          Out << "c.olt.d";
+          break;
+        case Coled:
+          Out << "c.ole.d";
+          break;
+        case Culed:
+          Out << "c.ule.d";
+          break;
+        case Divs:
+          Out << "div.s";
+          break;
+        case Divd:
+          Out << "div.d";
+          break;
+        case Negd:
+          Out << "neg.d";
+          break;
+        case Negs:
+          Out << "neg.s";
+          break;
+        case Mflc1:
+          Out << "mflc1";
+          break;
+        case Subs:
+          Out << "sub.s";
+          break;
+        case Mfhc1:
+          Out << "mfhc1";
+          break;
+        case Msubs:
+          Out << "msub.s";
+          break;
+        case Msubd:
+          Out << "msub.d";
+          break;
+        case Madds:
+          Out << "madd.s";
+          break;
+        case Ext:
+          Out << "ext";
           break;
         default:
           Out << "null";
@@ -287,6 +350,9 @@ namespace dbt {
           break;
         case EncodingType::PL26j:
           Out << " " << I.Addrs;
+          break;
+        case EncodingType::PL16:
+          Out << " " << ((I.Imm << 2) + 4);
           break;
         case EncodingType::PL0:
         default: 

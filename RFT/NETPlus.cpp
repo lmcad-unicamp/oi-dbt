@@ -64,9 +64,7 @@ void NETPlus::expand(unsigned Deepness, Machine& M) {
         InstPair it = {Target, M.getInstAt(Target).asI_};
 
         while (it[0] < M.getCodeEndAddrs()) {
-          if (LoopEntries.count(it[0]) != 0 && Distance[Current[0]] > 0) {
-            LoopEntries.insert(Current[0]);
-
+          if (hasRecordedAddrs(it[0]) && Distance[Current[0]] > 0) {
             OIInstList NewPath;
             uint32_t Begin = it[0];
             uint32_t Prev = Target;
@@ -105,7 +103,7 @@ void NETPlus::expand(unsigned Deepness, Machine& M) {
 }
 
 void NETPlus::expandAndFinish(Machine& M) {
-  expand(8, M); 
+  expand(10, M); 
   finishRegionFormation(); 
 }
 
@@ -118,17 +116,14 @@ void NETPlus::onBranch(Machine& M) {
       }
       OIRegion.push_back({I, M.getInstAt(I).asI_});
     }
+  } else if (M.getPC() < M.getLastPC()) {
+    ++ExecFreq[M.getPC()];
+    if (!TheManager.isRegionEntry(M.getPC()) && ExecFreq[M.getPC()] > HotnessThreshold) 
+      startRegionFormation(M.getPC());
   }
 
-  if (M.getPC() < M.getLastPC()) {
-    if (!Recording) { 
-      ++ExecFreq[M.getPC()];
-      if (!TheManager.isRegionEntry(M.getPC()) && ExecFreq[M.getPC()] > HotnessThreshold) 
-        startRegionFormation(M.getPC());
-    } else {
-      expandAndFinish(M);
-    }
-  }
+  if (hasRecordedAddrs(M.getPC())) 
+    expandAndFinish(M);
 
   if (TheManager.isNativeRegionEntry(M.getPC())) {
     if (Recording) 

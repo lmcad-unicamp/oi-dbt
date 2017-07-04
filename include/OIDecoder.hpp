@@ -16,7 +16,8 @@ namespace dbt {
       Shr  , Shl , Jeqz, Sub , Slt , Div  , Mod , Ori , Jgtz , Jlez , Jnez, Ldbu   , Stb    , Sltu  , Asr  , Jltz , Movn ,
       Nor  , Ldh , Ldb , Sth , Ldhu, Jgez , Nop , Seh , Callr, Shlr , Xor , Seb    , Ijmphi , Ijmp  , Divu , Modu , Ldc1 , 
       Mthc1, Ceqd, Ceqs, Bc1f, Bc1t, Movd , Lwc1, Adds, Addd , Mtc1 , Mfc1, Truncws, Truncwd, Cvtsw , Cvtdw, Cvtds, Cvtsd, 
-      Mulu , Movz, Xori, Sdc1, Swc1, Maddd, Movs, Swxc1, Lwxc1, Mtlc1, Syscall, Null };
+      Mulu , Movz, Xori, Sdc1, Swc1, Maddd, Movs, Muls, Coltd, Swxc1, Negd, Lwxc1  , Syscall, Mtlc1 , Divs , Subs , Mflc1, 
+      Mfhc1, Divd, Subd, Negs, Ext , Madds, Shrr, Movf, Movt , Ldxc1, Muld, Sdxc1  , Msubs  , Coled , Culed, Msubd, Null };
 
     enum EncodingType {
       PL0, PL6, PL26ij, PL26j, PL26c, PL26i, PL12, PL18, PL16, PL24, PL18i, PL20, PL20i
@@ -117,6 +118,10 @@ namespace dbt {
         case OIInstType::Divu:
         case OIInstType::Modu:
         case OIInstType::Maddd:
+        case OIInstType::Madds:
+        case OIInstType::Msubs:
+        case OIInstType::Msubd:
+        case OIInstType::Ext:
           return EncodingType::PL24;
         case OIInstType::Ldihi:
           return EncodingType::PL18i;
@@ -138,6 +143,15 @@ namespace dbt {
         case OIInstType::Addd:
         case OIInstType::Lwxc1:
         case OIInstType::Swxc1:
+        case OIInstType::Muls:
+        case OIInstType::Muld:
+        case OIInstType::Divs:
+        case OIInstType::Divd:
+        case OIInstType::Subd:
+        case OIInstType::Subs:
+        case OIInstType::Sdxc1:
+        case OIInstType::Ldxc1:
+        case OIInstType::Shrr:
           return EncodingType::PL18;
         case OIInstType::Jlez:
         case OIInstType::Jgtz:
@@ -172,6 +186,15 @@ namespace dbt {
         case OIInstType::Cvtdw:
         case OIInstType::Cvtds:
         case OIInstType::Cvtsd:
+        case OIInstType::Coltd:
+        case OIInstType::Coled:
+        case OIInstType::Culed:
+        case OIInstType::Negd:
+        case OIInstType::Negs:
+        case OIInstType::Mflc1:
+        case OIInstType::Mfhc1:
+        case OIInstType::Movf:
+        case OIInstType::Movt:
           return EncodingType::PL12;
         case OIInstType::Bc1f:
         case OIInstType::Bc1t:
@@ -307,6 +330,7 @@ namespace dbt {
       case 0b100110:
         I.Type = OIInstType::Ijmp;
         break;
+
       case 0b100010:
         Ext = (W.asI_ & OpMask) >> 12;
         if (Ext == 0b0     ) I.Type = OIInstType::Callr;
@@ -314,6 +338,9 @@ namespace dbt {
         if (Ext == 0b100   ) I.Type = OIInstType::Seh;
         if (Ext == 0b111   ) I.Type = OIInstType::Ceqd;
         if (Ext == 0b1000  ) I.Type = OIInstType::Ceqs;
+        if (Ext == 0b1001  ) I.Type = OIInstType::Coled;
+        if (Ext == 0b1011  ) I.Type = OIInstType::Coltd;
+        if (Ext == 0b1111  ) I.Type = OIInstType::Culed;
         if (Ext == 0b10101 ) I.Type = OIInstType::Cvtsd;
         if (Ext == 0b10110 ) I.Type = OIInstType::Cvtds;
         if (Ext == 0b10111 ) I.Type = OIInstType::Cvtdw;
@@ -322,9 +349,15 @@ namespace dbt {
         if (Ext == 0b11010 ) I.Type = OIInstType::Movd;
         if (Ext == 0b11011 ) I.Type = OIInstType::Movs;
         if (Ext == 0b11100 ) I.Type = OIInstType::Mtc1;
+        if (Ext == 0b11101 ) I.Type = OIInstType::Negd;
+        if (Ext == 0b11110 ) I.Type = OIInstType::Negs;
         if (Ext == 0b11111 ) I.Type = OIInstType::Truncwd;
         if (Ext == 0b100000) I.Type = OIInstType::Truncws;
+        if (Ext == 0b100111) I.Type = OIInstType::Movf;
+        if (Ext == 0b101000) I.Type = OIInstType::Movt;
+        if (Ext == 0b101001) I.Type = OIInstType::Mfhc1;
         if (Ext == 0b101010) I.Type = OIInstType::Mthc1;
+        if (Ext == 0b110001) I.Type = OIInstType::Mflc1;
         if (Ext == 0b110010) I.Type = OIInstType::Mtlc1;
         break;
       case 0b100000:
@@ -342,10 +375,19 @@ namespace dbt {
         if (Ext == 0b1011  ) I.Type = OIInstType::Shr;
         if (Ext == 0b1100  ) I.Type = OIInstType::Asr;
         if (Ext == 0b1101  ) I.Type = OIInstType::Shlr;
+        if (Ext == 0b1110  ) I.Type = OIInstType::Shrr;
         if (Ext == 0b10000 ) I.Type = OIInstType::Movz;
         if (Ext == 0b10001 ) I.Type = OIInstType::Movn;
         if (Ext == 0b10100 ) I.Type = OIInstType::Addd;
         if (Ext == 0b10101 ) I.Type = OIInstType::Adds;
+        if (Ext == 0b10110 ) I.Type = OIInstType::Divd;
+        if (Ext == 0b10111 ) I.Type = OIInstType::Divs;
+        if (Ext == 0b11000 ) I.Type = OIInstType::Muld;
+        if (Ext == 0b11001 ) I.Type = OIInstType::Muls;
+        if (Ext == 0b11010 ) I.Type = OIInstType::Subd;
+        if (Ext == 0b11011 ) I.Type = OIInstType::Subs;
+        if (Ext == 0b100000) I.Type = OIInstType::Ldxc1;
+        if (Ext == 0b100001) I.Type = OIInstType::Sdxc1;
         if (Ext == 0b100010) I.Type = OIInstType::Lwxc1;
         if (Ext == 0b100011) I.Type = OIInstType::Swxc1;
         break;
@@ -356,7 +398,10 @@ namespace dbt {
         break;
       case 0b11110:
         Ext = (W.asI_ & OpMask) >> 24;
-        if (Ext == 0) I.Type = OIInstType::Maddd;
+        if (Ext == 0b0 ) I.Type = OIInstType::Maddd;
+        if (Ext == 0b01) I.Type = OIInstType::Madds;
+        if (Ext == 0b10) I.Type = OIInstType::Msubd;
+        if (Ext == 0b11) I.Type = OIInstType::Msubs;
         break;
       case 0b11111: 
         Ext = (W.asI_ & OpMask) >> 20;
@@ -367,6 +412,7 @@ namespace dbt {
         if (Ext == 0b100 ) I.Type = OIInstType::Ldi;
         if (Ext == 0b10000) I.Type = OIInstType::Ijmphi;
         break;
+
       case 0b100011:
         I.Type = OIInstType::Jumpr;
         break;
@@ -406,6 +452,7 @@ namespace dbt {
           if (getRV(W) != 0)
             I.Type = OIInstType::Modu;
         }
+        if (Ext == 0b11) I.Type = OIInstType::Ext;
         break;
       case 0b100100:
         I.Type = OIInstType::Syscall;

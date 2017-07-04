@@ -13,17 +13,14 @@ void NET::onBranch(Machine &M) {
       }
       insertInstruction(I, M.getInstAt(I).asI_);
     }
+  } else if (M.getPC() < M.getLastPC()) {
+    ++ExecFreq[M.getPC()];
+    if (!TheManager.isRegionEntry(M.getPC()) && ExecFreq[M.getPC()] > HotnessThreshold) 
+      startRegionFormation(M.getPC());
   }
 
-  if (M.getPC() < M.getLastPC()) {
-    if (!Recording) { 
-      ++ExecFreq[M.getPC()];
-      if (!TheManager.isRegionEntry(M.getPC()) && ExecFreq[M.getPC()] > HotnessThreshold) 
-        startRegionFormation(M.getPC());
-    } else {
-      finishRegionFormation(); 
-    }
-  }
+  if (hasRecordedAddrs(M.getPC())) 
+    finishRegionFormation(); 
 
   if (TheManager.isNativeRegionEntry(M.getPC())) {
     if (Recording) 

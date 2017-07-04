@@ -13,10 +13,11 @@ void dbt::IROpt::optimizeIRFunction(llvm::Module *M, OptLevel Level) {
   if (Level == OptLevel::Basic) {
     auto BasicPM = std::make_unique<llvm::legacy::FunctionPassManager>(M);
 
-    BasicPM->add(llvm::createInstructionCombiningPass());
+    //BasicPM->add(llvm::createInstructionCombiningPass());
     BasicPM->add(llvm::createGVNPass());
+    //BasicPM->add(llvm::createDSEPass());
     BasicPM->add(llvm::createLICMPass());
-    BasicPM->add(llvm::createInstructionCombiningPass());
+    //BasicPM->add(llvm::createInstructionCombiningPass());
     BasicPM->add(llvm::createGVNPass());
 
     for (auto &F : *M)

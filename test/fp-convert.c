@@ -8,7 +8,7 @@ double loop(float *x, float *y, long length) {
 }
 
 //#ifdef SMALL_PROBLEM_SIZE
-#define COUNT 100
+#define COUNT 1000
 //#else
 //#define COUNT 500000
 //#endif
@@ -29,12 +29,12 @@ int main(int argc, char *argv[]) {
       a += 0.1f;
       b += 0.2f;
     }
-    for (j=0; j < 2048; ++j) {
+    for (j=0; j<2048; ++j) {
       x[j] = a + (float)j;
       y[j] = b + (float)j;
     }
     total += loop(x, y, 2048);
   }
   
-  return (int) (x[10] + y[5]);
+  return total;
 }
