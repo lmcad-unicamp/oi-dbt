@@ -2,7 +2,6 @@
 #include <machine.hpp>
 
 #include <cstring>
-#include <cassert>
 
 using namespace dbt;
 
@@ -51,17 +50,11 @@ void Machine::incPC() {
 }
 
 void Machine::setPC(uint32_t NewPC) {
-  assert((NewPC >= CodeMemOffset && NewPC < CodeMemLimit) &&
-      "Jumping for an address out of border!");
-
   LastPC = PC;
   PC = NewPC;
 }
 
 Word Machine::getInstAt(uint32_t Addr) {
-  assert((Addr >= CodeMemOffset && Addr < CodeMemLimit) &&
-      "Trying to access an address out of border!");
-
   return CodeMemory[Addr - CodeMemOffset];
 }
 
@@ -75,34 +68,22 @@ Word Machine::getNextInst() {
 }
 
 void Machine::setMemByteAt(uint32_t Addr, uint8_t Value) {
-  assert((Addr >= DataMemOffset && Addr < DataMemLimit) &&
-      "Trying to access an address out of border!");
-
   uint32_t CorrectAddr = Addr - DataMemOffset;
   DataMemory[CorrectAddr] = Value;
 }
 
 uint8_t Machine::getMemByteAt(uint32_t Addr) {
-  assert((Addr >= DataMemOffset && Addr < DataMemLimit) &&
-      "Trying to access an address out of border!");
-
   uint32_t CorrectAddr = Addr - DataMemOffset;
   return DataMemory[CorrectAddr];
 }
 
 uint16_t Machine::getMemHalfAt(uint32_t Addr) {
-  assert((Addr >= DataMemOffset && Addr < DataMemLimit) &&
-      "Trying to access an address out of border!");
-
   uint32_t CorrectAddr = Addr - DataMemOffset;
   HalfUn Half = {DataMemory[CorrectAddr], DataMemory[CorrectAddr+1]};
   return Half.asH_;
 }
 
 Word Machine::getMemValueAt(uint32_t Addr) {
-  assert((Addr >= DataMemOffset && Addr < DataMemLimit) &&
-      "Trying to access an address out of border!");
-
   uint32_t CorrectAddr = Addr - DataMemOffset;
   Word Bytes = {DataMemory[CorrectAddr], DataMemory[CorrectAddr+1], DataMemory[CorrectAddr+2], DataMemory[CorrectAddr+3]};
 
@@ -110,9 +91,6 @@ Word Machine::getMemValueAt(uint32_t Addr) {
 }
 
 void Machine::setMemValueAt(uint32_t Addr, uint32_t Value) {
-  assert((Addr >= DataMemOffset && Addr < DataMemLimit) &&
-      "Trying to access an address out of border!");
-
   uint32_t CorrectAddr = Addr - DataMemOffset;
   DataMemory[CorrectAddr+3] = (Value >> 24) & 0xFF;
   DataMemory[CorrectAddr+2] = (Value >> 16) & 0xFF;
@@ -141,16 +119,11 @@ int32_t Machine::getRegister(uint16_t R) {
 }
 
 float Machine::getFloatRegister(uint16_t R) {
-  Word DW;
-  DW.asI_ = Register[R + 66];
-  return DW.asF_;
+  return ((float*)Register)[R + 66];
 }
 
 double Machine::getDoubleRegister(uint16_t R) {
-  QWord QW;
-  QW.asI32_[0] = Register[(R * 2) + 130 + 1];
-  QW.asI32_[1] = Register[(R * 2) + 130];
-  return QW.asD_;
+  return ((double*)Register)[R + 65];
 }
 
 void Machine::setRegister(uint16_t R, int32_t V) {
@@ -158,16 +131,11 @@ void Machine::setRegister(uint16_t R, int32_t V) {
 }
 
 void Machine::setFloatRegister(uint16_t R, float V) {
-  Word DW;
-  DW.asF_ = V;
-  Register[R + 66] = DW.asI_;
+  ((float*)Register)[R + 66] = V;
 }
 
 void Machine::setDoubleRegister(uint16_t R, double V) {
-  QWord QW;
-  QW.asD_ = V;
-  Register[(R * 2) + 130]     = QW.asI32_[1];
-  Register[(R * 2) + 130 + 1] = QW.asI32_[0];
+  ((double*)Register)[R + 65] = V;
 }
 
 int32_t* Machine::getRegisterPtr() {
@@ -184,9 +152,22 @@ uint32_t* Machine::getMemoryPtr() {
 
 using namespace ELFIO;
 
-#define STACK_SIZE 10 * 1024 * 1024
-#define HEAP_SIZE  10 * 1024 * 1024
+#define STACK_SIZE 100 * 1024 * 1024 /*100mb*/
+#define HEAP_SIZE  100 * 1024 * 1024 /*100mb*/
+
+void Machine::reset() {
+  for (int I = 0; I < 258; I++) 
+    Register[I] = 0;
+
+  for (unsigned I = DataMemOffset; I < DataMemLimit; I++) 
+    (DataMemory.get())[I] = 0;
+
+  loadELF(BinPath);
+}
+
 int Machine::loadELF(const std::string ElfPath) {
+  BinPath = ElfPath;
+
   elfio reader;
 
   if (!reader.load(ElfPath))

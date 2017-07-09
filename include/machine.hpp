@@ -48,7 +48,7 @@ namespace dbt {
     // Float Regs   66  -  129
     // Double Regs  130 -  256
     // CC           257
-    int32_t Register[258];
+    int32_t Register[258] __attribute__ ((aligned (16)));
 
     uptr<char[]> DataMemory;
     uptr<Word[]> CodeMemory;
@@ -61,8 +61,12 @@ namespace dbt {
 
     uint32_t LastPC;
     uint32_t PC;
+
+    std::string BinPath;
   public:
     Machine() { Register[0] = 0; };
+
+    void reset();
 
     void allocDataMemory(uint32_t, uint32_t);
     void setCodeMemory(uint32_t, uint32_t, const char*);

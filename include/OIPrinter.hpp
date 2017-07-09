@@ -12,6 +12,12 @@ namespace dbt {
     static std::string getString(OIInst I) {
       std::ostringstream Out;
       switch (I.Type) {
+        case Absd:
+          Out << "abs.d";
+          break;
+        case Abss:
+          Out << "abs.s";
+          break;
         case Add:
           Out << "add";
           break;
@@ -144,11 +150,17 @@ namespace dbt {
         case Asr:
           Out << "asr";
           break;
+        case Asrr:
+          Out << "asrr";
+          break;
         case Movn:
           Out << "movn";
           break;
         case Movz:
           Out << "movz";
+          break;
+        case Ror:
+          Out << "ror";
           break;
         case Xori:
           Out << "xori";
@@ -210,6 +222,27 @@ namespace dbt {
         case Movs:
           Out << "mov.s";
           break;
+        case Movzd:
+          Out << "movz.d";
+          break;
+        case Movzs:
+          Out << "movz.s";
+          break;
+        case Movnd:
+          Out << "movn.d";
+          break;
+        case Movns:
+          Out << "movn.s";
+          break;
+        case Movtd:
+          Out << "movt.d";
+          break;
+        case Movfd:
+          Out << "movf.d";
+          break;
+        case Movfs:
+          Out << "movf.s";
+          break;
         case Movd:
           Out << "mov.d";
           break;
@@ -270,11 +303,29 @@ namespace dbt {
         case Coltd:
           Out << "c.olt.d";
           break;
+        case Colts:
+          Out << "c.olt.s";
+          break;
         case Coled:
           Out << "c.ole.d";
           break;
+        case Coles:
+          Out << "c.ole.s";
+          break;
         case Culed:
           Out << "c.ule.d";
+          break;
+        case Cules:
+          Out << "c.ule.s";
+          break;
+        case Cults:
+          Out << "c.ult.s";
+          break;
+        case Cultd:
+          Out << "c.ult.d";
+          break;
+        case Cund:
+          Out << "C.un.d";
           break;
         case Divs:
           Out << "div.s";
@@ -305,6 +356,12 @@ namespace dbt {
           break;
         case Madds:
           Out << "madd.s";
+          break;
+        case Sqrts:
+          Out << "sqrt.s";
+          break;
+        case Sqrtd:
+          Out << "sqrt.d";
           break;
         case Ext:
           Out << "ext";

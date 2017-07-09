@@ -1,21 +1,17 @@
-#include <OIDecoder.hpp>
 #include <interpreter.hpp>
-#include <timer.hpp>
 
 #include <cmath>
-#include <ctime>
 #include <iostream>
 
 using namespace dbt;
 using namespace dbt::OIDecoder;
-unsigned TotalInst = 0;
 
-#define LDI_REG   64
-#define IJMP_REG  65
-#define CC_REG    257
-
+#if DEBUG
 #include <OIPrinter.hpp>
-#define DEBUG_PRINT(Addr, Inst) //std::cout << std::hex << Addr << "\t" << OIPrinter::getString(Inst) << std::dec << "\n";
+#define DEBUG_PRINT(Addr, Inst) std::cout << std::hex << Addr << "\t" << OIPrinter::getString(Inst) << std::dec << "\n";
+#else
+#define DEBUG_PRINT(Addr, Inst) 
+#endif
 
 #define SET_DISPACH(Addrs, Label, Offset)\
   case Label:\
@@ -53,6 +49,8 @@ unsigned TotalInst = 0;
     M.incPC();\
     GOTO_NEXT
 
+#define rotate_right(x, n) (((x) >> (n)) | ((x) << ((sizeof(x) * 8) - (n))))
+
 bool isnan(double x) { return x != x; }
 bool isnan(float x)  { return x != x; }
 
@@ -83,6 +81,8 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
     Word W = M.getInstAt(Addrs);
     OIInst I = decode(W.asI_);
     switch(I.Type) {
+      SET_DISPACH(Addrs, Absd,    &&absd);
+      SET_DISPACH(Addrs, Abss,    &&abss);
       SET_DISPACH(Addrs, Add,     &&add);
       SET_DISPACH(Addrs, Sub,     &&sub);
       SET_DISPACH(Addrs, Ldihi,   &&ldihi);
@@ -120,11 +120,13 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
       SET_DISPACH(Addrs, Syscall, &&syscall);
       SET_DISPACH(Addrs, Shr,     &&shr);
       SET_DISPACH(Addrs, Asr,     &&asr);
+      SET_DISPACH(Addrs, Asrr,     &&asrr);
       SET_DISPACH(Addrs, Shl,     &&shl);
       SET_DISPACH(Addrs, Shlr,    &&shlr);
       SET_DISPACH(Addrs, Shrr,    &&shrr);
       SET_DISPACH(Addrs, Movn,    &&movn);
       SET_DISPACH(Addrs, Movz,    &&movz);
+      SET_DISPACH(Addrs, Ror,     &&ror);
       SET_DISPACH(Addrs, Ori,     &&ori);
       SET_DISPACH(Addrs, Xori,    &&xori);
       SET_DISPACH(Addrs, Xor,     &&xor_);
@@ -151,6 +153,13 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
       SET_DISPACH(Addrs, Movf,    &&movf);
       SET_DISPACH(Addrs, Movt,    &&movt);
       SET_DISPACH(Addrs, Movs,    &&movs);
+      SET_DISPACH(Addrs, Movzd,   &&movzd);
+      SET_DISPACH(Addrs, Movzs,   &&movzs);
+      SET_DISPACH(Addrs, Movnd,   &&movnd);
+      SET_DISPACH(Addrs, Movns,   &&movns);
+      SET_DISPACH(Addrs, Movtd,   &&movtd);
+      SET_DISPACH(Addrs, Movfd,   &&movfd);
+      SET_DISPACH(Addrs, Movfs,   &&movfs);
       SET_DISPACH(Addrs, Lwc1,    &&lwc1);
       SET_DISPACH(Addrs, Adds,    &&adds);
       SET_DISPACH(Addrs, Addd,    &&addd);
@@ -169,8 +178,14 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
       SET_DISPACH(Addrs, Muls,    &&muls);
       SET_DISPACH(Addrs, Muld,    &&muld);
       SET_DISPACH(Addrs, Coltd,   &&coltd);
+      SET_DISPACH(Addrs, Colts,   &&colts);
       SET_DISPACH(Addrs, Coled,   &&coled);
+      SET_DISPACH(Addrs, Coles,   &&coles);
       SET_DISPACH(Addrs, Culed,   &&culed);
+      SET_DISPACH(Addrs, Cults,   &&cults);
+      SET_DISPACH(Addrs, Cultd,   &&cultd);
+      SET_DISPACH(Addrs, Cules,   &&cules);
+      SET_DISPACH(Addrs, Cund,    &&cund);
       SET_DISPACH(Addrs, Negd,    &&negd);
       SET_DISPACH(Addrs, Negs,    &&negs);
       SET_DISPACH(Addrs, Divs,    &&divs);
@@ -182,6 +197,8 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
       SET_DISPACH(Addrs, Msubs,   &&msubs);
       SET_DISPACH(Addrs, Msubd,   &&msubd);
       SET_DISPACH(Addrs, Madds,   &&madds);
+      SET_DISPACH(Addrs, Sqrts,   &&sqrts);
+      SET_DISPACH(Addrs, Sqrtd,   &&sqrtd);
       SET_DISPACH(Addrs, Ext,     &&ext);
       SET_DISPACH(Addrs, Nop,     &&nop);
       case Null:
@@ -316,6 +333,10 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
   IMPLEMENT(asr,
       M.setRegister(I.RD, ((int32_t) M.getRegister(I.RT)) >> I.RS);
     );
+
+  IMPLEMENT(asrr,
+      M.setRegister(I.RD, ((int32_t) M.getRegister(I.RT)) >> (M.getRegister(I.RS) & 0x1F));
+    );
   
   IMPLEMENT(shl,
       M.setRegister(I.RD, M.getRegister(I.RT) << I.RS);
@@ -394,6 +415,10 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
       M.setRegister(I.RT, M.getRegister(I.RS) | (I.Imm & 0x3FFF));
     );
 
+  IMPLEMENT(ror,
+      M.setRegister(I.RD, rotate_right(M.getRegister(I.RT), I.RS));
+    );
+
   IMPLEMENT(ijmphi, 
         M.setRegister(IJMP_REG, 0);
         M.setRegister(IJMP_REG, M.getRegister(IJMP_REG) | I.Addrs << 12); 
@@ -401,9 +426,17 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
   
   /**********************  Float Inst  **************************/
 
+   IMPLEMENT(absd, 
+       M.setDoubleRegister(I.RS, fabs(M.getDoubleRegister(I.RT)));
+    );
+
+   IMPLEMENT(abss, 
+       M.setFloatRegister(I.RS, fabs(M.getFloatRegister(I.RT)));
+    );
+
    IMPLEMENT(ldc1, 
-      M.setRegister(130 + I.RT*2 + 1, M.getMemValueAt(M.getRegister(I.RS) + I.Imm  ).asI_);
-      M.setRegister(130 + I.RT*2    , M.getMemValueAt(M.getRegister(I.RS) + I.Imm+4).asI_);
+      M.setRegister(130 + I.RT*2 + 0, M.getMemValueAt(M.getRegister(I.RS) + I.Imm  ).asI_);
+      M.setRegister(130 + I.RT*2 + 1, M.getMemValueAt(M.getRegister(I.RS) + I.Imm+4).asI_);
     );
 
    IMPLEMENT(lwc1, 
@@ -415,18 +448,18 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
     );
 
    IMPLEMENT(ldxc1, 
-      M.setRegister(130 + I.RD*2 + 1,  M.getMemValueAt(M.getRegister(I.RT) + M.getRegister(I.RS)).asI_);
-      M.setRegister(130 + I.RD*2    ,  M.getMemValueAt(M.getRegister(I.RT) + M.getRegister(I.RS) + 4).asI_);
+      M.setRegister(130 + I.RD*2 + 0,  M.getMemValueAt(M.getRegister(I.RT) + M.getRegister(I.RS)).asI_);
+      M.setRegister(130 + I.RD*2 + 1,  M.getMemValueAt(M.getRegister(I.RT) + M.getRegister(I.RS) + 4).asI_);
     );
 
    IMPLEMENT(sdxc1, 
-      M.setMemValueAt(M.getRegister(I.RT) + M.getRegister(I.RS) + 4, M.getRegister(130 + I.RT*2    ));
-      M.setMemValueAt(M.getRegister(I.RT) + M.getRegister(I.RS)    , M.getRegister(130 + I.RT*2 + 1));
+      M.setMemValueAt(M.getRegister(I.RT) + M.getRegister(I.RS) + 4, M.getRegister(130 + I.RT*2 + 1));
+      M.setMemValueAt(M.getRegister(I.RT) + M.getRegister(I.RS)    , M.getRegister(130 + I.RT*2 + 0));
     );
 
    IMPLEMENT(sdc1, 
-      M.setMemValueAt(M.getRegister(I.RS) + I.Imm + 4, M.getRegister(130 + I.RT*2    ));
-      M.setMemValueAt(M.getRegister(I.RS) + I.Imm    , M.getRegister(130 + I.RT*2 + 1));
+      M.setMemValueAt(M.getRegister(I.RS) + I.Imm + 4, M.getRegister(130 + I.RT*2 + 1));
+      M.setMemValueAt(M.getRegister(I.RS) + I.Imm    , M.getRegister(130 + I.RT*2 + 0));
     );
 
    IMPLEMENT(swc1, 
@@ -505,6 +538,41 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
 
    IMPLEMENT(movs, 
        M.setFloatRegister(I.RS, M.getFloatRegister(I.RT));
+    );
+
+   IMPLEMENT(movzd, 
+       if (M.getRegister(I.RT) == 0) 
+        M.setDoubleRegister(I.RD, M.getDoubleRegister(I.RS));
+    );
+
+   IMPLEMENT(movzs, 
+       if (M.getRegister(I.RT) == 0) 
+        M.setFloatRegister(I.RD, M.getFloatRegister(I.RS));
+    );
+
+   IMPLEMENT(movnd, 
+       if (M.getRegister(I.RT) != 0) 
+        M.setDoubleRegister(I.RD, M.getDoubleRegister(I.RS));
+    );
+
+   IMPLEMENT(movns, 
+       if (M.getRegister(I.RT) != 0) 
+        M.setFloatRegister(I.RD, M.getFloatRegister(I.RS));
+    );
+
+   IMPLEMENT(movfd, 
+       if (M.getRegister(CC_REG) == 0) 
+        M.setDoubleRegister(I.RS, M.getDoubleRegister(I.RT));
+    );
+
+   IMPLEMENT(movfs, 
+       if (M.getRegister(CC_REG) == 0) 
+        M.setFloatRegister(I.RS, M.getFloatRegister(I.RT));
+    );
+
+   IMPLEMENT(movtd, 
+       if (M.getRegister(CC_REG) != 0) 
+        M.setDoubleRegister(I.RS, M.getDoubleRegister(I.RT));
     );
 
    IMPLEMENT(adds, 
@@ -593,9 +661,21 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
        M.setRegister(CC_REG, A < B ? (isnan(A) || isnan(B) ? 0 : 1) : 0);
     );
 
+   IMPLEMENT(colts,
+       double A = M.getFloatRegister(I.RS);
+       double B = M.getFloatRegister(I.RT);
+       M.setRegister(CC_REG, A < B ? (isnan(A) || isnan(B) ? 0 : 1) : 0);
+    );
+
    IMPLEMENT(coled,
        double A = M.getDoubleRegister(I.RS);
        double B = M.getDoubleRegister(I.RT);
+       M.setRegister(CC_REG, A <= B ? (isnan(A) || isnan(B) ? 0 : 1) : 0);
+    );
+
+   IMPLEMENT(coles,
+       float A = M.getFloatRegister(I.RS);
+       float B = M.getFloatRegister(I.RT);
        M.setRegister(CC_REG, A <= B ? (isnan(A) || isnan(B) ? 0 : 1) : 0);
     );
 
@@ -603,6 +683,29 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
        M.setRegister(CC_REG, M.getDoubleRegister(I.RS) <= M.getDoubleRegister(I.RT) ? 1 : 0);
     );
 
+   IMPLEMENT(cules,
+       M.setRegister(CC_REG, M.getFloatRegister(I.RS) <= M.getFloatRegister(I.RT) ? 1 : 0);
+    );
+
+   IMPLEMENT(cults,
+       M.setRegister(CC_REG, M.getFloatRegister(I.RS) < M.getFloatRegister(I.RT) ? 1 : 0);
+    );
+
+   IMPLEMENT(cultd,
+       M.setRegister(CC_REG, M.getDoubleRegister(I.RS) < M.getDoubleRegister(I.RT) ? 1 : 0);
+    );
+
+   IMPLEMENT(cund,
+       M.setRegister(CC_REG, (isnan(M.getDoubleRegister(I.RS)) || isnan(M.getDoubleRegister(I.RT))) ? 1 : 0);
+    );
+
+   IMPLEMENT(sqrtd, 
+       M.setDoubleRegister(I.RS, sqrt(M.getDoubleRegister(I.RT)));
+    );
+
+   IMPLEMENT(sqrts, 
+       M.setFloatRegister(I.RS, sqrt(M.getFloatRegister(I.RT)));
+    );
 
   /********************** JMPs and BRs **************************/
 

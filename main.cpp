@@ -11,6 +11,7 @@
 clarg::argString RFTFlag("-rft", "Region Formation Technique (net)", "net");
 clarg::argBool   InterpreterFlag("-interpret",  "Only interpret.");
 clarg::argString BinaryFlag("-bin",  "path to the binary which will should be emulated.", "");
+clarg::argBool   PreheatFlag("-p",  "Run one time to compile all regions and then reexecute measuring the time.");
 clarg::argBool   VerboseFlag("-v",  "display the compiled regions");
 clarg::argBool   HelpFlag("-h",  "display the help message");
 clarg::argInt    RegionLimitSize("-l", "region size limit", 400);
@@ -84,7 +85,6 @@ int main(int argc, char** argv) {
 
   dbt::Manager TheManager(1, dbt::Manager::OptPolitic::Normal, M.getDataMemOffset());
 
-
   if (InterpreterFlag.was_set()) {
     RftChosen = std::make_unique<dbt::NullRFT>(TheManager);
   } else {
@@ -116,8 +116,22 @@ int main(int argc, char** argv) {
   std::unique_ptr<dbt::SyscallManager> SyscallM;
   SyscallM = std::make_unique<dbt::LinuxSyscallManager>();
 
+  if (PreheatFlag.was_set()) {
+    std::cout << "Preheating...";
+    dbt::ITDInterpreter I(*SyscallM.get(), *RftChosen.get());
+    I.executeAll(M);
+    std::cout << "done\n";
+
+    std::cout << "Cleaning VM...";
+    M.reset();
+    std::cout << "done\n";
+
+    RftChosen = std::make_unique<dbt::PreheatRFT>(TheManager);
+  }
+
   GlobalTimer.startClock();
   dbt::ITDInterpreter I(*SyscallM.get(), *RftChosen.get());
+  std::cout << "Starting execution:\n";
   I.executeAll(M);
   GlobalTimer.stopClock();
 

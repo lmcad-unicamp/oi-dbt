@@ -126,6 +126,13 @@ namespace dbt {
 
     void onBranch(dbt::Machine&) {};
   };
+
+  class PreheatRFT : public RFT {
+  public:
+    PreheatRFT(Manager& M) : RFT(M) {};
+
+    void onBranch(dbt::Machine&);
+  };
 }
 
 #endif

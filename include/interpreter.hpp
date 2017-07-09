@@ -2,8 +2,9 @@
 #include <machine.hpp>
 #include <syscall.hpp>
 
-#include <memory>
-#include <array>
+#define LDI_REG   64
+#define IJMP_REG  65
+#define CC_REG    257
 
 namespace dbt {
   class Interpreter {
