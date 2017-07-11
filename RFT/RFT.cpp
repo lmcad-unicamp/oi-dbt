@@ -11,8 +11,7 @@ void dbt::RFT::insertInstruction(uint32_t Addrs, uint32_t Opcode) {
     return;
   }
 
-  if (!hasRecordedAddrs(Addrs)) 
-    OIRegion.push_back({Addrs, Opcode});
+  OIRegion.push_back({Addrs, Opcode});
 }
 
 void dbt::RFT::insertInstruction(std::array<uint32_t, 2>& Inst) {

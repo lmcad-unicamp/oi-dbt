@@ -18,7 +18,7 @@ namespace dbt {
 
   class RFT {
   protected:
-    const unsigned HotnessThreshold = 20;
+    const unsigned HotnessThreshold = 50;
     std::unordered_map<uint32_t, uint8_t> ExecFreq;
     OIInstList OIRegion;
 

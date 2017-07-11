@@ -9,6 +9,7 @@
 #include <mutex>
 #include <shared_mutex>
 #include <timer.hpp>
+#include <sparsepp/spp.h>
 
 #include "llvm/Support/TargetSelect.h"
 
@@ -23,10 +24,11 @@ namespace dbt {
     private:
       llvm::LLVMContext TheContext;
 
-      std::unordered_map<uint32_t, OIInstList> OIRegions;
+      spp::sparse_hash_map<uint32_t, OIInstList> OIRegions;
       std::unordered_map<uint32_t, OIInstList> CompiledOIRegions;
-      std::unordered_map<uint32_t, llvm::Module*> IRRegions;
-      std::unordered_map<uint32_t, intptr_t> NativeRegions;
+      spp::sparse_hash_map<uint32_t, llvm::Module*> IRRegions;
+      intptr_t NativeRegions[100000];
+      //spp::sparse_hash_map<uint32_t, intptr_t> NativeRegions;
 
       mutable std::shared_mutex OIRegionsMtx, IRRegionsMtx, NativeRegionsMtx, CompiledOIRegionsMtx;
 
@@ -71,12 +73,12 @@ namespace dbt {
       bool isRegionEntry(uint32_t EntryAddress) {
         std::shared_lock<std::shared_mutex> lockOI(OIRegionsMtx);
         std::shared_lock<std::shared_mutex> lockNative(NativeRegionsMtx);
-        return OIRegions.count(EntryAddress) != 0 || NativeRegions.count(EntryAddress) != 0;
+        return OIRegions.count(EntryAddress) != 0 || NativeRegions[EntryAddress] != 0;//NativeRegions.count(EntryAddress) != 0;
       }
 
       bool isNativeRegionEntry(uint32_t EntryAddress) {
         //std::shared_lock<std::shared_mutex> lock(NativeRegionsMtx);
-        return NativeRegions.count(EntryAddress) != 0;
+        return NativeRegions[EntryAddress] != 0; //NativeRegions.count(EntryAddress) != 0;
       }
 
       size_t getNumOfOIRegions() {
