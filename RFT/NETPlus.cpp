@@ -29,8 +29,8 @@ void NETPlus::expand(unsigned Deepness, Machine& M) {
   if (OIRegion.size() == 0) return;
 
   std::queue<InstPair> S;
-  std::unordered_map<uint32_t, unsigned> Distance;
-  std::unordered_map<uint32_t, InstPair> Next, Parent;
+  spp::sparse_hash_map<uint32_t, unsigned> Distance;
+  spp::sparse_hash_map<uint32_t, InstPair> Next, Parent;
   std::set<uint32_t> LoopEntries;
 
   // Init BFS frontier
@@ -110,10 +110,15 @@ void NETPlus::expandAndFinish(Machine& M) {
 void NETPlus::onBranch(Machine& M) {
   if (Recording) {
     for (uint32_t I = LastTarget; I <= M.getLastPC(); I += 4) {
-      if (TheManager.isRegionEntry(I)) {
+      if (TheManager.isRegionEntry(I) || M.getInstAt(I).asI_ == 0x90000001) {
         expandAndFinish(M);
         break;
       }
+      if (hasRecordedAddrs(I)) {
+        finishRegionFormation(); 
+        break;
+      }
+
       OIRegion.push_back({I, M.getInstAt(I).asI_});
     }
   } else if (M.getPC() < M.getLastPC()) {
@@ -121,9 +126,6 @@ void NETPlus::onBranch(Machine& M) {
     if (!TheManager.isRegionEntry(M.getPC()) && ExecFreq[M.getPC()] > HotnessThreshold) 
       startRegionFormation(M.getPC());
   }
-
-  if (hasRecordedAddrs(M.getPC())) 
-    expandAndFinish(M);
 
   if (TheManager.isNativeRegionEntry(M.getPC())) {
     if (Recording) 

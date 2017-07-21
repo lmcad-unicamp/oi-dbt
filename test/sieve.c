@@ -3,11 +3,14 @@
  * http://www.bagley.org/~doug/shootout/
  */
 
-char flags[8192 + 1];
+#include <stdio.h>
+#include <stdlib.h>
 
-int main(int argc, char *argv[]) {
-#define LENGTH 1300
+int
+main(int argc, char *argv[]) {
+#define LENGTH 12000
   int NUM = LENGTH;
+  static char flags[8192 + 1];
   long i, k;
   int count = 0;
 
@@ -18,6 +21,7 @@ int main(int argc, char *argv[]) {
     }
     for (i=2; i <= 8192; i++) {
       if (flags[i]) {
+        /* remove all multiples of prime: i */
         for (k=i+i; k <= 8192; k+=i) {
           flags[k] = 0;
         }

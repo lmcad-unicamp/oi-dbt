@@ -5,7 +5,7 @@
 #include <manager.hpp>
 #include <timer.hpp>
 
-#include <unordered_map>
+#include <sparsepp/spp.h>
 #include <vector>
 #include <array>
 #include <set>
@@ -19,7 +19,7 @@ namespace dbt {
   class RFT {
   protected:
     const unsigned HotnessThreshold = 50;
-    std::unordered_map<uint32_t, uint8_t> ExecFreq;
+    spp::sparse_hash_map<uint32_t, uint8_t> ExecFreq;
     OIInstList OIRegion;
 
     bool Recording = false;
@@ -62,7 +62,7 @@ namespace dbt {
     OIInstList RecordingBufferTmp1, RecordingBufferTmp2;
 
     uint32_t header;
-    std::unordered_map<uint32_t, unsigned> phases;
+    spp::sparse_hash_map<uint32_t, unsigned> phases;
 
     unsigned stored_index = 0;
     OIInstList stored[1000];
@@ -89,7 +89,7 @@ namespace dbt {
   };
 
   class LEF : public RFT {
-    std::unordered_map<uint32_t, bool> CamesFromCall;
+    spp::sparse_hash_map<uint32_t, bool> CamesFromCall;
     bool hasRet;
 
     void expand(uint32_t);
@@ -109,7 +109,7 @@ namespace dbt {
 		};
 
 		std::vector<branch_t> Buffer;
-    std::unordered_map<uint32_t, int> BufferHash;
+    spp::sparse_hash_map<uint32_t, int> BufferHash;
 
     void circularBufferInsert(uint32_t, uint32_t);
     void formTrace(uint32_t, int, Machine& M);

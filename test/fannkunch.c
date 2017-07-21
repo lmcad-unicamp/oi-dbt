@@ -89,6 +89,6 @@ fannkuch( int n )
   int
 main( int argc, char* argv[] )
 {
-  int		n = 8;
+  int		n = 7;
   return fannkuch(n);
 }

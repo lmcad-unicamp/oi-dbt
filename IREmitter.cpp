@@ -225,6 +225,14 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         break;
     }
 
+    case dbt::OIDecoder::Seh: {
+        Value* Res = Builder->CreateIntCast(
+            Builder->CreateIntCast(genLoadRegister(Inst.RT, Func), Type::getInt16Ty(TheContext), true), 
+            Type::getInt32Ty(TheContext), true);
+        genStoreRegister(Inst.RS, Res, Func);
+        break;
+    }
+
     case dbt::OIDecoder::Stb: {
         Value* RawAddrs = Builder->CreateAdd(genLoadRegister(Inst.RS, Func), genImm(Inst.Imm));
         Value* RT = Builder->CreateAnd(genLoadRegister(Inst.RT, Func), genImm(0xFF));
@@ -284,6 +292,446 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         Builder->SetInsertPoint(FBB);
         break;
       } 
+
+    case dbt::OIDecoder::Ijmphi: {  
+        Value* Res = Builder->CreateOr(genImm(0), genImm(Inst.Addrs << 12));
+        genStoreRegister(IJMP_REG, Res, Func, RegType::Int);
+        break;
+      } 
+
+    /************************************** FLOAT *****************************************/ 
+
+    case dbt::OIDecoder::Movd: {  
+        Value* Value = genLoadRegister(Inst.RT, Func, RegType::Double);
+        genStoreRegister(Inst.RS, Value, Func, RegType::Double);
+        break;
+      } 
+
+    case dbt::OIDecoder::Movs: {  
+        Value* Value = genLoadRegister(Inst.RT, Func, RegType::Float);
+        genStoreRegister(Inst.RS, Value, Func, RegType::Float);
+        break;
+      } 
+
+    case dbt::OIDecoder::Movt: {  
+        Value* Res = Builder->CreateICmpNE(genLoadRegister(CC_REG, Func), genImm(0));
+        BasicBlock* TBB = BasicBlock::Create(TheContext, "", Func);
+        BasicBlock* FBB = BasicBlock::Create(TheContext, "", Func);
+        Builder->CreateCondBr(Res, TBB, FBB);
+        Builder->SetInsertPoint(TBB);
+        genStoreRegister(Inst.RS, genLoadRegister(Inst.RT, Func), Func);
+        Builder->CreateBr(FBB);
+        Builder->SetInsertPoint(FBB);
+        break;
+      } 
+
+    case dbt::OIDecoder::Movtd: {  
+        Value* Res = Builder->CreateICmpNE(genLoadRegister(CC_REG, Func), genImm(0));
+        BasicBlock* TBB = BasicBlock::Create(TheContext, "", Func);
+        BasicBlock* FBB = BasicBlock::Create(TheContext, "", Func);
+        Builder->CreateCondBr(Res, TBB, FBB);
+        Builder->SetInsertPoint(TBB);
+        genStoreRegister(Inst.RS, genLoadRegister(Inst.RT, Func, RegType::Double), Func, RegType::Double);
+        Builder->CreateBr(FBB);
+        Builder->SetInsertPoint(FBB);
+        break;
+      } 
+
+    case dbt::OIDecoder::Cvtds: {  
+        Value* FloatValue  = genLoadRegister(Inst.RT, Func, RegType::Float);
+        Value* DoubleValue = Builder->CreateFPExt(FloatValue, Type::getDoubleTy(TheContext));
+        genStoreRegister(Inst.RS, DoubleValue, Func, RegType::Double);
+        break;
+      } 
+
+    case dbt::OIDecoder::Cvtdw: {  
+        Value* FloatValue  = genLoadRegister(Inst.RT, Func, RegType::Float);
+        Value* IntValue    = Builder->CreateFPExt(FloatValue, Type::getInt32Ty(TheContext));
+        Value* DoubleValue = Builder->CreateFPExt(IntValue, Type::getDoubleTy(TheContext));
+        genStoreRegister(Inst.RS, DoubleValue, Func, RegType::Double);
+        break;
+      } 
+
+    case dbt::OIDecoder::Cvtsw: {  
+        Value* RT  = genLoadRegister(Inst.RT, Func, RegType::Float);
+        Value* Int = Builder->CreateFPToSI(RT, Type::getInt32Ty(TheContext));
+        Value* Float = Builder->CreateSIToFP(Int, Type::getFloatTy(TheContext));
+        genStoreRegister(Inst.RS, Float, Func, RegType::Float);
+        break;
+      } 
+
+    case dbt::OIDecoder::Cvtsd: {  
+        Value* RT  = genLoadRegister(Inst.RT, Func, RegType::Double);
+        Value* Float = Builder->CreateFPCast(RT, Type::getFloatTy(TheContext));
+        genStoreRegister(Inst.RS, Float, Func, RegType::Float);
+        break;
+      } 
+    
+    case dbt::OIDecoder::Cund: {  
+        Value* A = genLoadRegister(Inst.RS, Func, RegType::Double);
+        Value* B = genLoadRegister(Inst.RT, Func, RegType::Double);
+        Value* Res = Builder->CreateFCmpUNO(A, B); //FIXME: Isn't a ||?
+        genStoreRegister(CC_REG, Res, Func, RegType::Int);
+        break;
+      }
+
+    case dbt::OIDecoder::Coled: {  
+        Value* A = genLoadRegister(Inst.RS, Func, RegType::Double);
+        Value* B = genLoadRegister(Inst.RT, Func, RegType::Double);
+        Value* Res = Builder->CreateFCmpOLE(A, B);
+        genStoreRegister(CC_REG, Res, Func, RegType::Int);
+        break;
+      }
+
+    case dbt::OIDecoder::Coles: {  
+        Value* A = genLoadRegister(Inst.RS, Func, RegType::Float);
+        Value* B = genLoadRegister(Inst.RT, Func, RegType::Float);
+        Value* Res = Builder->CreateFCmpOLE(A, B);
+        genStoreRegister(CC_REG, Res, Func, RegType::Int);
+        break;
+      }
+
+    case dbt::OIDecoder::Coltd: {  
+        Value* A = genLoadRegister(Inst.RS, Func, RegType::Double);
+        Value* B = genLoadRegister(Inst.RT, Func, RegType::Double);
+        Value* Res = Builder->CreateFCmpOLT(A, B);
+        genStoreRegister(CC_REG, Res, Func, RegType::Int);
+        break;
+      }
+
+    case dbt::OIDecoder::Colts: {  
+        Value* A = genLoadRegister(Inst.RS, Func, RegType::Float);
+        Value* B = genLoadRegister(Inst.RT, Func, RegType::Float);
+        Value* Res = Builder->CreateFCmpOLT(A, B);
+        genStoreRegister(CC_REG, Res, Func, RegType::Int);
+        break;
+      }
+
+    case dbt::OIDecoder::Negs: {  
+        Value* RT  = genLoadRegister(Inst.RT, Func, RegType::Float);
+        Value* Res = Builder->CreateFNeg(RT);
+        genStoreRegister(Inst.RS, Res, Func, RegType::Float);
+        break;
+      } 
+
+    case dbt::OIDecoder::Negd: {  
+        Value* RT  = genLoadRegister(Inst.RT, Func, RegType::Double);
+        Value* Res = Builder->CreateFNeg(RT);
+        genStoreRegister(Inst.RS, Res, Func, RegType::Double);
+        break;
+      } 
+
+    case dbt::OIDecoder::Muld: {  
+        Value* RS  = genLoadRegister(Inst.RS, Func, RegType::Double);
+        Value* RT  = genLoadRegister(Inst.RT, Func, RegType::Double);
+        Value* Res = Builder->CreateFMul(RS, RT);
+        genStoreRegister(Inst.RD, Res, Func, RegType::Double);
+        break;
+      } 
+
+    case dbt::OIDecoder::Muls: {  
+        Value* RS  = genLoadRegister(Inst.RS, Func, RegType::Float);
+        Value* RT  = genLoadRegister(Inst.RT, Func, RegType::Float);
+        Value* Res = Builder->CreateFMul(RS, RT);
+        genStoreRegister(Inst.RD, Res, Func, RegType::Float);
+        break;
+      } 
+
+    case dbt::OIDecoder::Divd: {  
+        Value* RS  = genLoadRegister(Inst.RS, Func, RegType::Double);
+        Value* RT  = genLoadRegister(Inst.RT, Func, RegType::Double);
+        Value* Res = Builder->CreateFDiv(RS, RT);
+        genStoreRegister(Inst.RD, Res, Func, RegType::Double);
+        break;
+      } 
+
+    case dbt::OIDecoder::Divs: {  
+        Value* RS  = genLoadRegister(Inst.RS, Func, RegType::Float);
+        Value* RT  = genLoadRegister(Inst.RT, Func, RegType::Float);
+        Value* Res = Builder->CreateFDiv(RS, RT);
+        genStoreRegister(Inst.RD, Res, Func, RegType::Float);
+        break;
+      } 
+
+    case dbt::OIDecoder::Adds: {  
+        //M.setFloatRegister(I.RD, M.getFloatRegister(I.RS) + M.getFloatRegister(I.RT));
+        Value* RS  = genLoadRegister(Inst.RS, Func, RegType::Float);
+        Value* RT  = genLoadRegister(Inst.RT, Func, RegType::Float);
+        Value* Res = Builder->CreateFAdd(RS, RT);
+        genStoreRegister(Inst.RD, Res, Func, RegType::Float);
+        break;
+      } 
+
+    case dbt::OIDecoder::Addd: {  
+        //M.setDoubleRegister(I.RD, M.getDoubleRegister(I.RS) + M.getDoubleRegister(I.RT));
+        Value* RS  = genLoadRegister(Inst.RS, Func, RegType::Double);
+        Value* RT  = genLoadRegister(Inst.RT, Func, RegType::Double);
+        Value* Res = Builder->CreateFAdd(RS, RT);
+        genStoreRegister(Inst.RD, Res, Func, RegType::Double);
+        break;
+      } 
+
+    case dbt::OIDecoder::Subs: {  
+        Value* RS  = genLoadRegister(Inst.RS, Func, RegType::Float);
+        Value* RT  = genLoadRegister(Inst.RT, Func, RegType::Float);
+        Value* Res = Builder->CreateFSub(RS, RT);
+        genStoreRegister(Inst.RD, Res, Func, RegType::Float);
+        break;
+      } 
+
+    case dbt::OIDecoder::Subd: {  
+        Value* RS  = genLoadRegister(Inst.RS, Func, RegType::Double);
+        Value* RT  = genLoadRegister(Inst.RT, Func, RegType::Double);
+        Value* Res = Builder->CreateFSub(RS, RT);
+        genStoreRegister(Inst.RD, Res, Func, RegType::Double);
+        break;
+      } 
+
+    case dbt::OIDecoder::Madds: {  
+        Value* RS  = genLoadRegister(Inst.RS, Func, RegType::Float);
+        Value* RT  = genLoadRegister(Inst.RT, Func, RegType::Float);
+        Value* RV  = genLoadRegister(Inst.RV, Func, RegType::Float);
+        Value* Res1 = Builder->CreateFMul(RS, RT);
+        Value* Res2 = Builder->CreateFAdd(Res1, RV);
+        genStoreRegister(Inst.RD, Res2, Func, RegType::Float);
+        break;
+      } 
+
+    case dbt::OIDecoder::Maddd: {  
+        Value* RS  = genLoadRegister(Inst.RS, Func, RegType::Double);
+        Value* RT  = genLoadRegister(Inst.RT, Func, RegType::Double);
+        Value* RV  = genLoadRegister(Inst.RV, Func, RegType::Double);
+        Value* Res1 = Builder->CreateFMul(RS, RT);
+        Value* Res2 = Builder->CreateFAdd(Res1, RV);
+        genStoreRegister(Inst.RD, Res2, Func, RegType::Double);
+        break;
+      } 
+
+    case dbt::OIDecoder::Msubs: {  
+        Value* RS  = genLoadRegister(Inst.RS, Func, RegType::Float);
+        Value* RT  = genLoadRegister(Inst.RT, Func, RegType::Float);
+        Value* RV  = genLoadRegister(Inst.RV, Func, RegType::Float);
+        Value* Res1 = Builder->CreateFMul(RS, RT);
+        Value* Res2 = Builder->CreateFSub(Res1, RV);
+        genStoreRegister(Inst.RD, Res2, Func, RegType::Float);
+        break;
+      } 
+
+    case dbt::OIDecoder::Msubd: {  
+        Value* RS  = genLoadRegister(Inst.RS, Func, RegType::Double);
+        Value* RT  = genLoadRegister(Inst.RT, Func, RegType::Double);
+        Value* RV  = genLoadRegister(Inst.RV, Func, RegType::Double);
+        Value* Res1 = Builder->CreateFMul(RS, RT);
+        Value* Res2 = Builder->CreateFSub(Res1, RV);
+        genStoreRegister(Inst.RD, Res2, Func, RegType::Double);
+        break;
+      } 
+
+    case dbt::OIDecoder::Mtc1: {
+        Value* RS  = genLoadRegister(Inst.RS, Func);
+        Value* Res = Builder->CreateUIToFP(RS, Type::getFloatTy(TheContext));
+        genStoreRegister(Inst.RT, Res, Func, RegType::Float);
+        break;
+      } 
+
+    case dbt::OIDecoder::Mfc1: {
+        Value* RT  = genLoadRegister(Inst.RT, Func, RegType::Float);
+        Value* Res = Builder->CreateFPToUI(RT, Type::getInt32Ty(TheContext));
+        genStoreRegister(Inst.RS, Res, Func, RegType::Int);
+        break;
+      } 
+
+    case dbt::OIDecoder::Mflc1: {
+        Value* RT    = genLoadRegister(Inst.RT, Func, RegType::Double);
+        Value* RTInt = Builder->CreateBitCast(RT, Type::getInt64Ty(TheContext)); 
+        Value* Res   = Builder->CreateAnd(RTInt, 0xFFFFFFFF);
+        genStoreRegister(Inst.RS, Res, Func, RegType::Int);
+        break;
+      } 
+
+    case dbt::OIDecoder::Mfhc1: {
+        Value* RT    = genLoadRegister(Inst.RT, Func, RegType::Double);
+        Value* RTInt = Builder->CreateBitCast(RT, Type::getInt64Ty(TheContext)); 
+        Value* Res   = Builder->CreateLShr(RTInt, 32);
+        genStoreRegister(Inst.RS, Res, Func, RegType::Int);
+        break;
+      } 
+
+    case dbt::OIDecoder::Mtlc1: {
+        Value* RT    = genLoadRegister(Inst.RT, Func, RegType::Double);
+        Value* RTInt = Builder->CreateBitCast(RT, Type::getInt64Ty(TheContext)); 
+        Value* L     = Builder->CreateAnd(RTInt, 0xFFFFFFFF00000000ULL);
+        Value* Res   = Builder->CreateAdd(L, 
+            Builder->CreateBitCast(genLoadRegister(Inst.RS, Func, RegType::Double), Type::getInt64Ty(TheContext)));
+        genStoreRegister(Inst.RT, Res, Func, RegType::Double);
+        break;
+      } 
+
+    case dbt::OIDecoder::Mthc1: {
+        Value* RT    = genLoadRegister(Inst.RT, Func, RegType::Double);
+        Value* RTInt = Builder->CreateBitCast(RT, Type::getInt64Ty(TheContext)); 
+        Value* L     = Builder->CreateAnd(RTInt, 0xFFFFFFFFULL);
+        Value* Res   = Builder->CreateAdd(L, 
+            Builder->CreateShl(Builder->CreateBitCast(genLoadRegister(Inst.RS, Func, RegType::Double), 
+                Type::getInt64Ty(TheContext)), 32));
+        genStoreRegister(Inst.RT, Res, Func, RegType::Double);
+        break;
+      } 
+
+    case dbt::OIDecoder::Truncwd: {
+        Value* RT    = genLoadRegister(Inst.RT, Func, RegType::Double);
+        Value* Int   = Builder->CreateIntCast(RT, Type::getInt32Ty(TheContext), true);
+        Value* Float = Builder->CreateFPCast(Int, Type::getFloatTy(TheContext));
+        genStoreRegister(Inst.RS, Float, Func, RegType::Float);
+        break;
+      }
+
+    case dbt::OIDecoder::Truncws: {
+        Value* RT    = genLoadRegister(Inst.RT, Func, RegType::Float);
+        Value* Int   = Builder->CreateFPToSI(RT, Type::getInt32Ty(TheContext));
+        Value* Float = Builder->CreateSIToFP(Int, Type::getFloatTy(TheContext));
+        genStoreRegister(Inst.RS, Float, Func, RegType::Float);
+        break;
+      }
+
+    case dbt::OIDecoder::Ldc1: {
+        Value* Reg = Builder->CreateAdd(genImm(Inst.RT*2), genImm(130));
+
+        //M.setRegister(130 + I.RT*2 + 0, M.getMemValueAt(M.getRegister(I.RS) + I.Imm  ).asI_);
+        Value* RS    = genLoadRegister(Inst.RS, Func, RegType::Int);
+        Value* Addrs = Builder->CreateAdd(RS, genImm(Inst.Imm));
+        Value* Res1  = Builder->CreateLoad(genDataWordVecPtr(Addrs, Func));
+        genStoreRegister(Reg, Res1, Func, RegType::Int);
+
+        //M.setRegister(130 + I.RT*2 + 1, M.getMemValueAt(M.getRegister(I.RS) + I.Imm + 4).asI_);
+        Value* Addrs2 = Builder->CreateAdd(RS, genImm(Inst.Imm + 4));
+        Value* Res2   = Builder->CreateLoad(genDataWordVecPtr(Addrs2, Func));
+        Value* Reg2   = Builder->CreateAdd(Reg, genImm(1));
+        genStoreRegister(Reg2, Res2, Func, RegType::Int);
+        break;
+      } 
+
+    case dbt::OIDecoder::Lwc1: {
+        //M.setFloatRegister(I.RT, M.getMemValueAt(M.getRegister(I.RS) + I.Imm).asF_);
+        Value* RS    = genLoadRegister(Inst.RS, Func, RegType::Int);
+        Value* Addrs = Builder->CreateAdd(RS, genImm(Inst.Imm));
+        Value* Res   = Builder->CreateLoad(genDataWordVecPtr(Addrs, Func));
+        Value* ResCasted = Builder->CreateBitCast(Res, Type::getFloatTy(TheContext));
+        genStoreRegister(Inst.RT, ResCasted, Func, RegType::Float);
+        break;
+      } 
+
+    case dbt::OIDecoder::Lwxc1: {
+        //M.setFloatRegister(I.RT, M.getMemValueAt(M.getRegister(I.RS) + I.Imm).asF_);
+        Value* RS    = genLoadRegister(Inst.RS, Func, RegType::Int);
+        Value* RT    = genLoadRegister(Inst.RT, Func, RegType::Int);
+        Value* Addrs = Builder->CreateAdd(RS, RT);
+        Value* Res   = Builder->CreateLoad(genDataWordVecPtr(Addrs, Func));
+        Value* ResCasted = Builder->CreateBitCast(Res, Type::getFloatTy(TheContext));
+        genStoreRegister(Inst.RD, ResCasted, Func, RegType::Float);
+        break;
+      } 
+
+    case dbt::OIDecoder::Ldxc1: {
+        Value* T1  = Builder->CreateMul(genImm(Inst.RD), genImm(2));
+        Value* Reg = Builder->CreateAdd(T1, genImm(130));
+
+        //M.setRegister(130 + I.RT*2 + 0, M.getMemValueAt(M.getRegister(I.RS) + I.Imm  ).asI_);
+        Value* RS    = genLoadRegister(Inst.RS, Func, RegType::Int);
+        Value* Addrs = Builder->CreateAdd(RS, genLoadRegister(Inst.RT, Func, RegType::Int));
+        Value* Res1  = Builder->CreateLoad(genDataWordVecPtr(Addrs, Func));
+        genStoreRegister(Reg, Res1, Func, RegType::Int);
+
+        //M.setRegister(130 + I.RT*2 + 1, M.getMemValueAt(M.getRegister(I.RS) + I.Imm + 4).asI_);
+        Value* Addrs2 = Builder->CreateAdd(RS, genImm(Inst.Imm + 4));
+        Value* Res2   = Builder->CreateLoad(genDataWordVecPtr(Addrs2, Func));
+        Value* Reg2   = Builder->CreateAdd(Reg, genImm(1));
+        genStoreRegister(Reg2, Res2, Func, RegType::Int);
+        break;
+      } 
+
+    case dbt::OIDecoder::Swc1: {
+        //M.setMemValueAt(M.getRegister(I.RS) + I.Imm, M.getRegister(66 + I.RT));
+        Value* RS    = genLoadRegister(Inst.RS, Func, RegType::Int);
+        Value* Addrs = Builder->CreateAdd(RS, genImm(Inst.Imm));
+
+        Value* Reg = Builder->CreateAdd(genImm(Inst.RT), genImm(66));
+        Value* Res  = genLoadRegister(Reg, Func, RegType::Int);
+
+        Builder->CreateStore(Res, genDataWordVecPtr(Addrs, Func));
+        break;
+      } 
+
+    case dbt::OIDecoder::Swxc1: {
+        Value* RS    = genLoadRegister(Inst.RS, Func, RegType::Int);
+        Value* RT    = genLoadRegister(Inst.RT, Func, RegType::Int);
+        Value* Addrs = Builder->CreateAdd(RS, RT);
+
+        Value* Reg = Builder->CreateAdd(genImm(Inst.RD), genImm(66));
+        Value* Res  = genLoadRegister(Reg, Func, RegType::Int);
+
+        Builder->CreateStore(Res, genDataWordVecPtr(Addrs, Func));
+        break;
+      } 
+
+    case dbt::OIDecoder::Sdc1: {
+        Value* RS    = genLoadRegister(Inst.RS, Func, RegType::Int);
+        Value* Addrs = Builder->CreateAdd(RS, genImm(Inst.Imm));
+
+        Value* T1  = Builder->CreateMul(genImm(Inst.RT), genImm(2));
+        Value* Reg = Builder->CreateAdd(T1, genImm(130));
+       
+        //M.setMemValueAt(M.getRegister(I.RS) + I.Imm + 4, M.getRegister(130 + I.RT*2 + 1));
+        Value* R1   = Builder->CreateAdd(Reg, genImm(1));
+        Value* Res1 = genLoadRegister(R1, Func, RegType::Int);
+        Value* Addrs1 = Builder->CreateAdd(Addrs, genImm(4));
+        Builder->CreateStore(Res1, genDataWordVecPtr(Addrs1, Func));
+
+        //M.setMemValueAt(M.getRegister(I.RS) + I.Imm, M.getRegister(130 + I.RT*2));
+        Value* Res2 = genLoadRegister(Reg, Func, RegType::Int);
+        Builder->CreateStore(Res2, genDataWordVecPtr(Addrs, Func));
+        break;
+      } 
+
+    case dbt::OIDecoder::Sdxc1: {
+        Value* RS    = genLoadRegister(Inst.RS, Func, RegType::Int);
+        Value* Addrs = Builder->CreateAdd(RS, genLoadRegister(Inst.RT, Func, RegType::Int));
+
+        Value* T1  = Builder->CreateMul(genImm(Inst.RD), genImm(2));
+        Value* Reg = Builder->CreateAdd(T1, genImm(130));
+       
+        //M.setMemValueAt(M.getRegister(I.RS) + I.Imm + 4, M.getRegister(130 + I.RT*2 + 1));
+        Value* R1   = Builder->CreateAdd(Reg, genImm(1));
+        Value* Res1 = genLoadRegister(R1, Func, RegType::Int);
+        Value* Addrs1 = Builder->CreateAdd(Addrs, genImm(4));
+        Builder->CreateStore(Res1, genDataWordVecPtr(Addrs1, Func));
+
+        //M.setMemValueAt(M.getRegister(I.RS) + I.Imm, M.getRegister(130 + I.RT*2));
+        Value* Res2 = genLoadRegister(Reg, Func, RegType::Int);
+        Builder->CreateStore(Res2, genDataWordVecPtr(Addrs, Func));
+        break;
+      } 
+
+
+    /************************************** JUMPS  ****************************************/ 
+
+    case dbt::OIDecoder::Bc1t: {
+        BasicBlock* BB = BasicBlock::Create(TheContext, "", Func);
+        Value* Res = Builder->CreateICmpEQ(genLoadRegister(CC_REG, Func), genImm(1));
+        BranchInst* Br = Builder->CreateCondBr(Res, BB, BB);
+        Builder->SetInsertPoint(BB);
+        IRBranchMap[GuestAddr] = Br;
+        break;
+      }
+
+    case dbt::OIDecoder::Bc1f: {
+        BasicBlock* BB = BasicBlock::Create(TheContext, "", Func);
+        Value* Res = Builder->CreateICmpEQ(genLoadRegister(CC_REG, Func), genImm(0));
+        BranchInst* Br = Builder->CreateCondBr(Res, BB, BB);
+        Builder->SetInsertPoint(BB);
+        IRBranchMap[GuestAddr] = Br;
+        break;
+      }
 
     case dbt::OIDecoder::Jeqz: {
         BasicBlock* BB = BasicBlock::Create(TheContext, "", Func);
@@ -375,6 +823,28 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         Builder->SetInsertPoint(BB);
         setIfNotTheFirstInstGen(Res);
         IRBranchMap[GuestAddr] = Br;
+        break;
+      }
+
+    case dbt::OIDecoder::Callr: { // TODO: improve indirect Jump
+        Value* Res = genStoreRegister(31, genImm(GuestAddr + 4), Func);
+        Builder->CreateRet(genLoadRegister(Inst.RT, Func));
+        BasicBlock* BB = BasicBlock::Create(TheContext, "", Func);
+        Builder->SetInsertPoint(BB);
+        setIfNotTheFirstInstGen(Res);
+        break;
+      }
+
+    case dbt::OIDecoder::Ijmp: { // TODO: improve indirect Jump
+        Value* IjmpReg  = genLoadRegister(IJMP_REG, Func);
+        Value* IjmpReg2 = Builder->CreateAnd(IjmpReg, 0xFFFFF000);
+        Value* IjmpReg3 = Builder->CreateOr(IjmpReg2, Inst.Imm & 0xFFF);
+        genStoreRegister(IJMP_REG, IjmpReg3, Func);
+        Value* Target   = Builder->CreateLoad(genDataWordVecPtr(IjmpReg3, Func));
+        Builder->CreateRet(Target);
+        BasicBlock* BB = BasicBlock::Create(TheContext, "", Func);
+        Builder->SetInsertPoint(BB);
+        setIfNotTheFirstInstGen(IjmpReg);
         break;
       }
 

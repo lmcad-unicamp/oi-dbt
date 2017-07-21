@@ -1,21 +1,100 @@
+/*
+ *
+ *	"DHRYSTONE" Benchmark Program
+ *
+ *	Version:	C/1.1, 12/01/84
+ *
+ *	Date:		PROGRAM updated 01/06/86, COMMENTS changed 01/31/87
+ *
+ *	Author:		Reinhold P. Weicker,  CACM Vol 27, No 10, 10/84 pg. 1013
+ *			Translated from ADA by Rick Richardson
+ *			Every method to preserve ADA-likeness has been used,
+ *			at the expense of C-ness.
+ *
+ *	Compile:	cc -O dry.c -o drynr			: No registers
+ *			cc -O -DREG=register dry.c -o dryr	: Registers
+ *
+ *	Defines:	Defines are provided for old C compiler's
+ *			which don't have enums, and can't assign structures.
+ *			The time(2) function is library dependent; Most
+ *			return the time in seconds, but beware of some, like
+ *			Aztec C, which return other units.
+ *			The LOOPS define is initially set for 50000 loops.
+ *			If you have a machine with large integers and is
+ *			very fast, please change this number to 500000 to
+ *			get better accuracy.  Please select the way to
+ *			measure the execution time using the TIME define.
+ *			For single user machines, time(2) is adequate. For
+ *			multi-user machines where you cannot get single-user
+ *			access, use the times(2) function.  If you have
+ *			neither, use a stopwatch in the dead of night.
+ *			Use a "printf" at the point marked "start timer"
+ *			to begin your timings. DO NOT use the UNIX "time(1)"
+ *			command, as this will measure the total time to
+ *			run this program, which will (erroneously) include
+ *			the time to malloc(3) storage and to compute the
+ *			time it takes to do nothing.
+ *
+ *	Run:		drynr; dryr
+ *
+ *	Results:	If you get any new machine/OS results, please send to:
+ *
+ *				ihnp4!castor!pcrat!rick
+ *
+ *			and thanks to all that do.
+ *
+ *	Note:		I order the list in increasing performance of the
+ *			"with registers" benchmark.  If the compiler doesn't
+ *			provide register variables, then the benchmark
+ *			is the same for both REG and NOREG.
+ *
+ *	PLEASE:		Send complete information about the machine type,
+ *			clock speed, OS and C manufacturer/version.  If
+ *			the machine is modified, tell me what was done.
+ *			On UNIX, execute uname -a and cc -V to get this info.
+ *
+ *	80x8x NOTE:	80x8x benchers: please try to do all memory models
+ *			for a particular compiler.
+ *
+ *
+ *	The following program contains statements of a high-level programming
+ *	language (C) in a distribution considered representative:
+ *
+ *	assignments			53%
+ *	control statements		32%
+ *	procedure, function calls	15%
+ *
+ *	100 statements are dynamically executed.  The program is balanced with
+ *	respect to the three aspects:
+ *		- statement type
+ *		- operand type (for simple data types)
+ *		- operand access
+ *			operand global, local, parameter, or constant.
+ *
+ *	The combination of these three aspects is balanced only approximately.
+ *
+ *	The program does not compute anything meaningfull, but it is
+ *	syntactically and semantically correct.
+ *
+ */
+
+/*#include "defns.h"*/
+
 #include <stdlib.h>
+
+/* Define if should use homemade str* functions. */
 
 /*#define MYSTRFNS */
 
 /* Accuracy of timings and human fatigue controlled by next two lines */
-//#define SMALL_PROBLEM_SIZE
-//#ifdef SMALL_PROBLEM_SIZE
-//#define LOOPS	2000000
-//#else
-#define LOOPS	101002
-//#endif
+#define LOOPS	1000000
 
 /* Compiler dependent options */
 #undef	NOENUM			/* Define if compiler has no enum's */
 #undef	NOSTRUCTASSIGN		/* Define if compiler can't assign structures */
 
 /* define only one of the next three defines */
-/*#define CLOCK */
+#define CLOCK
 /*#define TIMES			/* Use times(2) time function */
 /*#define TIME			/* Use time(2) time function */
 
@@ -87,6 +166,12 @@ extern boolean		Func2();
 
 #include <string.h>
 
+main()
+{
+	Proc0();
+        return 0;
+}
+
 /*
  * Package 1
  */
@@ -98,13 +183,6 @@ Array1Dim	Array1Glob;
 Array2Dim	Array2Glob;
 RecordPtr	PtrGlb;
 RecordPtr	PtrGlbNext;
-unsigned TotalExecution;
-
-int main()
-{
-	Proc0();
-  return TotalExecution;
-}
 
 Proc0()
 {
@@ -187,16 +265,12 @@ Proc0()
 			IntLoc3 = 5 * IntLoc1 - IntLoc2;
 			Proc7(IntLoc1, IntLoc2, &IntLoc3);
 			++IntLoc1;
-      TotalExecution++;
 		}
 		Proc8(Array1Glob, Array2Glob, IntLoc1, IntLoc3);
 		Proc1(PtrGlb);
 		for (CharIndex = 'A'; CharIndex <= Char2Glob; ++CharIndex)
-			if (EnumLoc == Func1(CharIndex, 'C')) {
+			if (EnumLoc == Func1(CharIndex, 'C'))
 				Proc6(Ident1, &EnumLoc);
-        TotalExecution++;
-      }
-    TotalExecution++;
 		IntLoc3 = IntLoc2 * IntLoc1;
 		IntLoc2 = IntLoc3 / IntLoc1;
 		IntLoc2 = 7 * (IntLoc3 - IntLoc2) - IntLoc1;
@@ -272,7 +346,6 @@ OneToFifty	*IntParIO;
 	{
 		if (Char1Glob == 'A')
 		{
-      TotalExecution++;
 			--IntLoc;
 			*IntParIO = IntLoc - IntGlob;
 			EnumLoc = Ident1;
@@ -352,10 +425,8 @@ OneToFifty	IntParI2;
 	Array1Par[IntLoc] = IntParI2;
 	Array1Par[IntLoc+1] = Array1Par[IntLoc];
 	Array1Par[IntLoc+30] = IntLoc;
-	for (IntIndex = IntLoc; IntIndex <= (IntLoc+1); ++IntIndex) {
+	for (IntIndex = IntLoc; IntIndex <= (IntLoc+1); ++IntIndex)
 		Array2Par[IntLoc][IntIndex] = IntLoc;
-    TotalExecution++;
-  }
 	++Array2Par[IntLoc][IntLoc-1];
 	Array2Par[IntLoc+20][IntLoc] = Array1Par[IntLoc];
 	IntGlob = 5;
@@ -387,7 +458,6 @@ String30	StrParI2;
 	while (IntLoc <= 1)
 		if (Func1(StrParI1[IntLoc], StrParI2[IntLoc+1]) == Ident1)
 		{
-      TotalExecution++;
 			CharLoc = 'A';
 			++IntLoc;
 		}
@@ -399,7 +469,6 @@ String30	StrParI2;
 	{
 		if (strcmp(StrParI1, StrParI2) > 0)
 		{
-      TotalExecution++;
 			IntLoc += 7;
 			return (TRUE);
 		}

@@ -6,7 +6,9 @@
 using namespace dbt;
 using namespace dbt::OIDecoder;
 
-#if DEBUG
+//#define PRINTINST
+
+#ifdef PRINTINST
 #include <OIPrinter.hpp>
 #define DEBUG_PRINT(Addr, Inst) std::cout << std::hex << Addr << "\t" << OIPrinter::getString(Inst) << std::dec << "\n";
 #else
@@ -420,8 +422,7 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
     );
 
   IMPLEMENT(ijmphi, 
-        M.setRegister(IJMP_REG, 0);
-        M.setRegister(IJMP_REG, M.getRegister(IJMP_REG) | I.Addrs << 12); 
+        M.setRegister(IJMP_REG, 0 | I.Addrs << 12); 
     );
   
   /**********************  Float Inst  **************************/
@@ -453,8 +454,8 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
     );
 
    IMPLEMENT(sdxc1, 
-      M.setMemValueAt(M.getRegister(I.RT) + M.getRegister(I.RS) + 4, M.getRegister(130 + I.RT*2 + 1));
-      M.setMemValueAt(M.getRegister(I.RT) + M.getRegister(I.RS)    , M.getRegister(130 + I.RT*2 + 0));
+      M.setMemValueAt(M.getRegister(I.RT) + M.getRegister(I.RS) + 4, M.getRegister(130 + I.RD*2 + 1));
+      M.setMemValueAt(M.getRegister(I.RT) + M.getRegister(I.RS)    , M.getRegister(130 + I.RD*2 + 0));
     );
 
    IMPLEMENT(sdc1, 

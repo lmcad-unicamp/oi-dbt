@@ -217,7 +217,7 @@ namespace dbt {
           Out << "bc1f";
           break;
         case Bc1t:
-          Out << "bc1f";
+          Out << "bc1t";
           break;
         case Movs:
           Out << "mov.s";
@@ -345,6 +345,9 @@ namespace dbt {
         case Subs:
           Out << "sub.s";
           break;
+        case Subd:
+          Out << "sub.d";
+          break;
         case Mfhc1:
           Out << "mfhc1";
           break;
@@ -356,6 +359,9 @@ namespace dbt {
           break;
         case Madds:
           Out << "madd.s";
+          break;
+        case Maddd:
+          Out << "madd.d";
           break;
         case Sqrts:
           Out << "sqrt.s";

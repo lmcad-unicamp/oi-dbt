@@ -4,6 +4,10 @@
 #include <memory>
 #include <iostream>
 
+#define LDI_REG   64
+#define IJMP_REG  65
+#define CC_REG    257
+
 namespace dbt {
   namespace OIDecoder {
     union Word {
@@ -531,6 +535,8 @@ namespace dbt {
         case dbt::OIDecoder::Jnez:
         case dbt::OIDecoder::Jgtz:
         case dbt::OIDecoder::Jeq: 
+        case dbt::OIDecoder::Bc1f:
+        case dbt::OIDecoder::Bc1t:
           return {(PC + (Inst.Imm << 2) + 4), PC + 4};
         case dbt::OIDecoder::Jump: 
         case dbt::OIDecoder::Call: 

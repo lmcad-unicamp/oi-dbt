@@ -50,8 +50,9 @@ void Manager::runPipeline() {
       for (auto& BB : F)
         OSize += BB.size(); 
 
-/*    for (auto& F : *Module) 
-      F.print(llvm::errs());*/
+    /*if (EntryAddress == 0x9b8)
+      for (auto& F : *Module) 
+        F.print(llvm::errs());*/
 
     IRJIT->addModule(std::unique_ptr<llvm::Module>(Module));
 
@@ -68,10 +69,11 @@ void Manager::runPipeline() {
     OIRegions.erase(EntryAddress);
     OIRegionsMtx.unlock();
   }
+  isFinished = true;
 }
 
 void Manager::addOIRegion(uint32_t EntryAddress, OIInstList OIRegion) {
-  if (!isRegionEntry(EntryAddress)) {
+  if (!isRegionEntry(EntryAddress) && OIRegion.size() > 3) {
     OIRegionsMtx.lock();
     OIRegions[EntryAddress] = OIRegion;
     OIRegionsMtx.unlock();

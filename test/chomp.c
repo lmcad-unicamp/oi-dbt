@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 
 #define NDATA (int *)malloc(ncol * sizeof(int))
@@ -118,12 +119,16 @@ void show_data(int *data) /* little display routine to give off results */
   int counter = 0;
   while (counter != ncol)
     {
+      printf("%d",data[counter ++]);
+      if (counter != ncol) putchar(',');
     }
 }
 
 void show_move(int *data) /* puts in the "(" and ")" for show_data() */
 {
+  putchar('(');
   show_data(data);
+  printf(")\n");
 }
 
 void show_list(struct _list *list) /* show the entire list of moves */
@@ -139,7 +144,10 @@ void show_play(struct _play *play) /* to diplay the whole tree */
 {
   while (play != NULL)
     {
+      printf("For state :\n");
       show_data(play -> state);
+      printf("  value = %d\n",play -> value);
+      printf("We get, in order :\n");
       show_list(play -> first);
       play = play -> next;
     }
@@ -330,28 +338,84 @@ int main(void)
   int row,col,maxrow,player;
   int *win,*current,*temp;
   struct _play *tree,*look;
+    /* allow user to select mode */
+  printf("Mode : 1 -> multiple first moves\n");
+  printf("       2 -> report game\n");
+  printf("       3 -> good positions\n");
+  printf(" Selection : ");
+#if 0
+  scanf("%d",&row); /* put it in row for now */
+#else
   row = 2;
-  ncol = 4;
+#endif
+  switch (row)
+    {
+      case 1:
+        printf("Enter number of Columns       : ");
+        scanf("%d",&ncol);
+        printf("Enter Initial number of Rows : ");
+        scanf("%d",&nrow);
+        printf("Enter Maximum number of Rows : ");
+        scanf("%d",&maxrow);
+        for (;nrow <= maxrow;nrow ++)
+          {
+            make_wanted(make_data(nrow,ncol)); /* created wanted list */
+            tree = make_play(0);               /* create tree */
+            win = get_winning_move(tree);      /* get the winning move */
+	        /* get the coordinates of this move */
+            get_real_move(win,make_data(nrow,ncol),&row,&col);
+	        /* print it out nicely */
+            printf("The winning initial move for %d x %d CHOMP is (%d,%d)\n",nrow,ncol,row,col);
+            dump_play(tree);  /* dump for memory management */
+            dump_list(wanted);
+          }
+        break;
+      case 2:
+        printf("Enter number of Columns : ");
+#if 0
+	scanf("%d",&ncol);
+#else
+        ncol = 6;
+#endif
+	printf("Enter number of Rows    : ");
   nrow = 6;
 	tree = make_play(1); /* create entire tree structure, not just the */
 	player = 0;          /* needed part for first move */
 	current = make_data(nrow,ncol); /* start play at full board */
-  int i = 0;
 	while (current != NULL)
 	  {
-      i++;
 	    temp = get_good_move(where(current,tree)); /* get best move */
 	    if (temp != NULL)  /* temp = NULL when the poison pill is taken */
 	      {
 	        get_real_move(temp,current,&row,&col); /* calculate coordinates */
 		    /* print it out nicely */
+	        printf("player %d plays at (%d,%d)\n",player,row,col);
 	        player = 1 - player; /* next player to do the same */
 	        free(current);  /* dump for memory management */
 	      }
 	    current = temp; /* update board */
 	  }
 	dump_play(tree); /* dump unneeded tree */
-  return i;
+	printf("player %d loses\n",1 - player); /* display winning player */
+	break;
+      case 3:
+        printf("Enter number of Columns : ");
+	scanf("%d",&ncol);
+	printf("Enter number of Rows    : ");
+	scanf("%d",&nrow);
+	printf("ATTENTION : representation is as in a _data structure\n");
+	tree = make_play(1); /* create tree */
+	look = tree;         /* start here */
+	while (look != NULL)
+	  {
+	    if (look -> value == 0) /* show all positions bad for player 2 */
+	        show_move(look -> state); /* i.e. bad positions to be in */
+	    look = look -> next;          /* with zero value */
+	  }
+	dump_play(tree); /* dump for memory management */
+        break;
+    }
+  return 0;
 }
 
 /*****************************************************************************/

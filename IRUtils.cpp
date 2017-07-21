@@ -54,43 +54,81 @@ Value *dbt::IREmitter::genDataWordVecPtr(Value *RawAddrs, Function *Func) {
   return genDataVecPtr(RawAddrs, Func, Type::getInt32Ty(TheContext), 4);
 }
 
-Value *dbt::IREmitter::genRegisterVecPtr(Value *RegNum, Function *Func) {
+
+Value *dbt::IREmitter::genRegisterVecPtr(Value *RegNum, Function *Func, RegType Type) {
   Argument *ArgIntRegPtr = &*Func->arg_begin();
-  Value *GEP = Builder->CreateGEP(ArgIntRegPtr, RegNum);
+
+  Value* CastedPtr = ArgIntRegPtr;
+  if (Type == RegType::Float) 
+    CastedPtr = Builder->CreatePointerCast(ArgIntRegPtr, Type::getFloatPtrTy(TheContext));
+  else if (Type == RegType::Double)
+    CastedPtr = Builder->CreatePointerCast(ArgIntRegPtr, Type::getDoublePtrTy(TheContext));
+
+  Value *GEP = Builder->CreateGEP(CastedPtr, RegNum);
   setIfNotTheFirstInstGen(GEP);
   return GEP;
 }
 
-Value *dbt::IREmitter::genRegisterVecPtr(uint8_t RegNum, Function *Func) {
-  Argument *ArgIntRegPtr = &*Func->arg_begin();
-  Value *GEP = Builder->CreateGEP(ArgIntRegPtr, ConstantInt::get(Type::getInt32Ty(TheContext), RegNum));
-  setIfNotTheFirstInstGen(GEP);
-  return GEP;
+Value *dbt::IREmitter::genRegisterVecPtr(uint16_t RegNum, Function *Func, RegType Type) {
+  return genRegisterVecPtr(ConstantInt::get(Type::getInt32Ty(TheContext), RegNum), Func, Type);
 }
 
-Value *dbt::IREmitter::genLoadRegister(Value *R, Function *Func) {
-  Value *Ptr = genRegisterVecPtr(R, Func);
+/********************************** Register Bank Interface *****************************************/ 
+
+Value *dbt::IREmitter::genLoadRegister(Value *R, Function *Func, RegType Type) {
+  Value *Right = R;
+  if (Type == RegType::Float) {
+    Right = Builder->CreateAdd(R, genImm(66));
+    setIfNotTheFirstInstGen(Right);
+  } else if (Type == RegType::Double) {
+    Right = Builder->CreateAdd(R, genImm(65));
+    setIfNotTheFirstInstGen(Right);
+  }
+
+  Value *Ptr = genRegisterVecPtr(Right, Func, Type);
   return Builder->CreateLoad(Ptr);
 }
 
-Value *dbt::IREmitter::genLoadRegister(uint8_t RegNum, Function *Func) {
-  if (RegNum == 0)
+Value *dbt::IREmitter::genLoadRegister(uint16_t RegNum, Function *Func, RegType Type) {
+  uint16_t Right = RegNum;
+  if (Type == RegType::Float) 
+    Right += 66;  
+  else if (Type == RegType::Double) 
+    Right += 65;  
+
+  if (Right == 0)
     return genImm(0);
 
-  Value *Ptr = genRegisterVecPtr(RegNum, Func);
+  Value *Ptr = genRegisterVecPtr(Right, Func, Type);
   return Builder->CreateLoad(Ptr);
 }
 
-Value *dbt::IREmitter::genStoreRegister(Value *R, Value *V, Function *Func) {
-  Value *Ptr = genRegisterVecPtr(R, Func);
+Value *dbt::IREmitter::genStoreRegister(Value *R, Value *V, Function *Func, RegType Type) {
+  Value *Right = R;
+  if (Type == RegType::Float) {
+    Right = Builder->CreateAdd(R, genImm(66));
+    setIfNotTheFirstInstGen(Right);
+  } else if (Type == RegType::Double) {
+    Right = Builder->CreateAdd(R, genImm(65));
+    setIfNotTheFirstInstGen(Right);
+  }
+
+  Value *Ptr = genRegisterVecPtr(Right, Func, Type);
   return Builder->CreateStore(V, Ptr);
 }
 
-Value *dbt::IREmitter::genStoreRegister(uint8_t RegNum, Value *V,
-                                        Function *Func) {
-  Value *Ptr = genRegisterVecPtr(RegNum, Func);
+Value *dbt::IREmitter::genStoreRegister(uint16_t RegNum, Value *V, Function *Func, RegType Type) {
+  uint16_t Right = RegNum;
+  if (Type == RegType::Float) 
+    Right += 66;  
+  else if (Type == RegType::Double) 
+    Right += 65;  
+
+  Value *Ptr = genRegisterVecPtr(Right, Func, Type);
   return Builder->CreateStore(V, Ptr);
 }
+
+/********************************************************************************************/ 
 
 Value *dbt::IREmitter::genImm(uint32_t Imm) {
   return ConstantInt::get(Type::getInt32Ty(TheContext), Imm);

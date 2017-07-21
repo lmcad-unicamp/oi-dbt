@@ -13,16 +13,15 @@ void LEI::circularBufferInsert(uint32_t src, uint32_t tgt) {
 void LEI::formTrace(uint32_t start, int old, Machine& M) {
   startRegionFormation(start);
   unsigned long long prev = start;
-  unsigned branch = old+1;
+  unsigned branch = old + 1;
   while (branch < Buffer.size()) {
     unsigned long long branch_src = Buffer[branch].src;
     unsigned long long branch_tgt = Buffer[branch].tgt;
 
     for (unsigned long long InstAddrs = prev; InstAddrs <= branch_src; InstAddrs += 4) {
-        // Stop if next instruction begins a trace
-        if (TheManager.isRegionEntry(InstAddrs)) {
+        // Stop if next instruction begins a trace or is a syscall
+        if (TheManager.isRegionEntry(InstAddrs) || M.getInstAt(InstAddrs).asI_ == 0x90000001) 
           break;
-        }
         insertInstruction(InstAddrs, M.getInstAt(InstAddrs).asI_);
     }
 
@@ -36,8 +35,8 @@ void LEI::formTrace(uint32_t start, int old, Machine& M) {
   finishRegionFormation();
 }
 
-bool LEI::isFollowedByExit(int old) {
-  return true || old;
+bool LEI::isFollowedByExit(int Old) {
+  return TheManager.inCodeCache(Buffer[Old].src) || !TheManager.inCodeCache(Buffer[Old].tgt);
 }
 
 void LEI::onBranch(Machine& M) {
@@ -55,7 +54,7 @@ void LEI::onBranch(Machine& M) {
     BufferHash[tgt] = Buffer.size()-1;
 
     // if tgt ≤ src or old follows exit from code cache
-    bool is_a_cache_exit = false;//is_followed_by_exit(old);
+    bool is_a_cache_exit = isFollowedByExit(old);
     if (tgt <= src || is_a_cache_exit) {
       // increment counter c associated with tgt
       ++ExecFreq[tgt];
@@ -65,9 +64,9 @@ void LEI::onBranch(Machine& M) {
         formTrace(tgt, old, M);
 
         // remove all elements of Buf after old
-        for (unsigned I = old+1; I < Buffer.size(); I++) 
+        for (unsigned I = old; I < Buffer.size(); I++) 
           BufferHash.erase(Buffer[I].tgt);
-        Buffer.erase(Buffer.begin()+old+1, Buffer.end());
+        Buffer.erase(Buffer.begin()+old, Buffer.end());
 
         // recycle counter associated with tgt
         ExecFreq[tgt] = 0;

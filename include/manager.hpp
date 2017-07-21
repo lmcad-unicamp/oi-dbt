@@ -27,8 +27,7 @@ namespace dbt {
       spp::sparse_hash_map<uint32_t, OIInstList> OIRegions;
       std::unordered_map<uint32_t, OIInstList> CompiledOIRegions;
       spp::sparse_hash_map<uint32_t, llvm::Module*> IRRegions;
-      intptr_t NativeRegions[100000];
-      //spp::sparse_hash_map<uint32_t, intptr_t> NativeRegions;
+      volatile intptr_t NativeRegions[100000];
 
       mutable std::shared_mutex OIRegionsMtx, IRRegionsMtx, NativeRegionsMtx, CompiledOIRegionsMtx;
 
@@ -42,6 +41,7 @@ namespace dbt {
       llvm::orc::IRLazyJIT* IRJIT;
 
       std::atomic<bool> isRunning;
+      std::atomic<bool> isFinished;
       std::thread Thr;
 
       unsigned CompiledRegions = 0;
@@ -53,17 +53,25 @@ namespace dbt {
 
     public:
       Manager(unsigned T, OptPolitic O, uint32_t DMO) : NumOfThreads(T), OptMode(O), DataMemOffset(DMO), isRunning(true), 
-                                          Thr(&Manager::runPipeline, this) {}
+                                          isFinished(false), Thr(&Manager::runPipeline, this) {
+        for (int I = 0; I < 100000; I++)                                    
+          NativeRegions[I] = 0;
+      }
 
       ~Manager() {
+        // Alert threads to stop
         isRunning = false;
+        
+        // Waits the thread finish
+        while (!isFinished) {}
+
         if (Thr.joinable())
           Thr.join();
 
-        std::cout << "Compiled Regions: " << std::dec << CompiledRegions << "\n";
-        std::cout << "Avg Code Size Reduction: " << AvgOptCodeSize/CompiledRegions << "\n";
-        std::cout << "Compiled OI: " << OICompiled << "\n";
-        std::cout << "Compiled LLVM: " << LLVMCompiled << "\n";
+        std::cerr << "Compiled Regions: " << std::dec << CompiledRegions << "\n";
+        std::cerr << "Avg Code Size Reduction: " << AvgOptCodeSize/CompiledRegions << "\n";
+        std::cerr << "Compiled OI: " << OICompiled << "\n";
+        std::cerr << "Compiled LLVM: " << LLVMCompiled << "\n";
       }
 
       void addOIRegion(uint32_t, OIInstList);
@@ -73,25 +81,30 @@ namespace dbt {
       bool isRegionEntry(uint32_t EntryAddress) {
         std::shared_lock<std::shared_mutex> lockOI(OIRegionsMtx);
         std::shared_lock<std::shared_mutex> lockNative(NativeRegionsMtx);
-        return OIRegions.count(EntryAddress) != 0 || NativeRegions[EntryAddress] != 0;//NativeRegions.count(EntryAddress) != 0;
+        return OIRegions.count(EntryAddress) != 0 || NativeRegions[EntryAddress] != 0;
       }
 
       bool isNativeRegionEntry(uint32_t EntryAddress) {
-        //std::shared_lock<std::shared_mutex> lock(NativeRegionsMtx);
-        return NativeRegions[EntryAddress] != 0; //NativeRegions.count(EntryAddress) != 0;
+        return (NativeRegions[EntryAddress] != 0); 
       }
 
       size_t getNumOfOIRegions() {
-        //std::shared_lock<std::shared_mutex> lock(OIRegionsMtx);
         return OIRegions.size();
       }
 
       float getAvgRegionsSize() {
-        //std::shared_lock<std::shared_mutex> lock(OIRegionsMtx);
         uint64_t total;
         for (auto Region : OIRegions) 
           total += Region.second.size();
         return (float)total / getNumOfOIRegions(); 
+      }
+
+      bool inCodeCache(uint32_t Addrs) {
+        for (auto Region : OIRegions) 
+          for (auto InstAddr : Region.second) 
+            if (InstAddr[0] == Addrs)
+              return true;
+        return false;
       }
 
       std::vector<uint32_t> getDirectTransitions(uint32_t EntryAddrs) {
@@ -99,7 +112,6 @@ namespace dbt {
       }
 
       OIInstList getCompiledOIRegion(uint32_t EntryAddrs) {
-        //std::shared_lock<std::shared_mutex> lock(CompiledOIRegionsMtx);
         return CompiledOIRegions[EntryAddrs];
       }
 

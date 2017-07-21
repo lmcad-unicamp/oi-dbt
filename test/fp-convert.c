@@ -1,3 +1,6 @@
+#include <stdio.h>
+#include <stdlib.h>
+
 double loop(float *x, float *y, long length) {
   long i;
   double accumulator = 0.0;
@@ -7,11 +10,7 @@ double loop(float *x, float *y, long length) {
   return accumulator;
 }
 
-//#ifdef SMALL_PROBLEM_SIZE
-#define COUNT 1000
-//#else
-//#define COUNT 500000
-//#endif
+#define COUNT 1
 
 int main(int argc, char *argv[]) {
   int i, j;
@@ -36,5 +35,7 @@ int main(int argc, char *argv[]) {
     total += loop(x, y, 2048);
   }
   
-  return total;
+  printf("Total is %d\n", (int)(10*total));
+    
+  return 0;
 }

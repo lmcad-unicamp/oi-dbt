@@ -18,8 +18,12 @@
 #define OIInstList std::vector<std::array<uint32_t,2>>
 
 namespace dbt {
-	class IREmitter {
-	private:
+  class IREmitter {
+  private:
+    enum RegType {
+      Int, Float, Double
+    };
+
 		llvm::LLVMContext TheContext;
 		std::unordered_map<std::string, llvm::Value*> NamedValues;
 		std::unique_ptr<llvm::IRBuilder<>> Builder;
@@ -46,13 +50,15 @@ namespace dbt {
     llvm::Value* genDataByteVecPtr(llvm::Value*, llvm::Function*);
     llvm::Value* genDataHalfVecPtr(llvm::Value*, llvm::Function*);
     llvm::Value* genDataWordVecPtr(llvm::Value*, llvm::Function*);
-    llvm::Value* genRegisterVecPtr(uint8_t, llvm::Function*);
-    llvm::Value* genRegisterVecPtr(llvm::Value*, llvm::Function*);
-    llvm::Value* genLoadRegister(uint8_t, llvm::Function*);
-    llvm::Value* genLoadRegister(llvm::Value*, llvm::Function*);
-    llvm::Value* genStoreRegister(uint8_t, llvm::Value*, llvm::Function*);
-    llvm::Value* genStoreRegister(llvm::Value*, llvm::Value*, llvm::Function*);
+    llvm::Value* genRegisterVecPtr(uint16_t, llvm::Function*, RegType);
+    llvm::Value* genRegisterVecPtr(llvm::Value*, llvm::Function*, RegType);
+
     llvm::Value* genImm(uint32_t);
+
+    llvm::Value* genLoadRegister(uint16_t, llvm::Function*, RegType Type = RegType::Int);
+    llvm::Value* genLoadRegister(llvm::Value*, llvm::Function*, RegType Type = RegType::Int);
+    llvm::Value* genStoreRegister(uint16_t, llvm::Value*, llvm::Function*, RegType Type = RegType::Int);
+    llvm::Value* genStoreRegister(llvm::Value*, llvm::Value*, llvm::Function*, RegType Type = RegType::Int);
 
     llvm::Value* genLogicalOr(llvm::Value*, llvm::Value*, llvm::Function*);
     llvm::Value* genLogicalAnd(llvm::Value*, llvm::Value*, llvm::Function*);

@@ -4,53 +4,56 @@ oiclang=~/dev/mestrado/openisa/oi-toolchain/bin/clang
 
 
 compile() {
-  $oiclang -O0 $1 -w -o a0.out 
-  $oiclang -O1 $1 -w -o a1.out 
-  $oiclang -O2 $1 -w -o a2.out 
-  clang -O1 $1 -w -o native
+  $oiclang -O2 $1 -w -o a1.out -lm
+  $oiclang -O3 $1 -w -o a2.out -lm
+  clang -O2 $1 -w -o native -lm
 }
 
 executeDBT() {
+  rm -f .tmp
+  rm -f .tmpN
+
   to_test=$1
   echo "executing native:"
-  ./native > /dev/null
+  ./native > .tmpN
   n=$?
 
-  echo "executing oi in o0 with $to_test:"
-  oi-dbt -bin a0.out -rft $to_test > /dev/null;
-  aux=$?
-  if [[ "$n" -ne "$aux" ]]; then return 1; fi;
-
   echo "executing oi in o1 with dbt $to_test:"
-  oi-dbt -bin a1.out -rft $to_test > /dev/null;
+  oi-dbt -bin a1.out -rft $to_test > .tmp;
   aux=$?
   if [[ "$n" -ne "$aux" ]]; then return 1; fi;
+  DIFF=$(diff .tmpN .tmp)
+  if [[ "$DIFF" != "" ]]; then return 1; fi;
 
   echo "executing oi in o2 with dbt $to_test:"
-  oi-dbt -bin a2.out -rft $to_test > /dev/null;
+  oi-dbt -bin a2.out -rft $to_test > .tmp;
   aux=$?
   if [[ "$n" -ne "$aux" ]]; then return 1; fi;
+  DIFF=$(diff .tmpN .tmp)
+  if [[ "$DIFF" != "" ]]; then return 1; fi;
 }
 
 executeInterpret() {
+  rm -f .tmp
+  rm -f .tmpN
+
   echo "executing native:"
-  ./native > /dev/null
+  ./native > .tmpN
   n=$?
 
-  echo "executing oi in o0 with interpreter:"
-  oi-dbt -bin a0.out -interpret > /dev/null
-  aux=$?
-  if [[ "$n" -ne "$aux" ]]; then return 1; fi;
-
-  echo "executing oi in o1 with interpreter:"
-  oi-dbt -bin a1.out -interpret > /dev/null
-  aux=$?
-  if [[ "$n" -ne "$aux" ]]; then return 1; fi;
-
   echo "executing oi in o2 with interpreter:"
-  oi-dbt -bin a2.out -interpret > /dev/null
+  oi-dbt -bin a1.out -interpret 2> /dev/null > .tmp
   aux=$?
   if [[ "$n" -ne "$aux" ]]; then return 1; fi;
+  DIFF=$(diff .tmpN .tmp)
+  if [[ "$DIFF" != "" ]]; then return 1; fi;
+
+  echo "executing oi in o3 with interpreter:"
+  oi-dbt -bin a2.out -interpret 2> /dev/null > .tmp
+  aux=$?
+  if [[ "$n" -ne "$aux" ]]; then return 1; fi;
+  DIFF=$(diff .tmpN .tmp)
+  if [[ "$DIFF" != "" ]]; then return 1; fi;
 }
 
 clean() {
@@ -79,16 +82,16 @@ run_all_tests() {
       let oks=$oks+1
     fi
 
-#    for rft in "net" "mret2"; do # "mret2" "netplus" "lei" "lef"; do #"lef" ; do # "lei" "netplus"; do
-#      let total=$total+1
-#      if ! executeDBT $rft; then
-#        echo -e "\e[31mFailed during DBT ($rft)\e[0m"
-#      else
-#        echo -e ">> \e[34m[OK] $test ($rft)\e[0m"
-#        let oks=$oks+1
-#      fi
-#      done;
-    clean;
+   for rft in "net"; do # "mret2" "netplus" "lei" "lef"; do #"lef" ; do # "lei" "netplus"; do
+     let total=$total+1
+     if ! executeDBT $rft; then
+       echo -e "\e[31mFailed during DBT ($rft)\e[0m"
+     else
+       echo -e ">> \e[34m[OK] $test ($rft)\e[0m"
+       let oks=$oks+1
+     fi
+   done;
+   clean;
   done;
   echo -e "\e[1m>>> Passed $oks/$total tests\e[0m"
 }

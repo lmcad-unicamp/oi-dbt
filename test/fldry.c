@@ -87,12 +87,7 @@
 
 /*#define MYSTRFNS*/
 
-/* Accuracy of timings and human fatigue controlled by next two lines */
-//#ifdef SMALL_PROBLEM_SIZE
-#define LOOPS	2000000
-//#else
-//#define LOOPS	100000000
-//#endif
+#define LOOPS	1000000
 
 /* Compiler dependent options */
 #undef	NOENUM			/* Define if compiler has no enum's */
@@ -173,8 +168,6 @@ extern boolean		Func2();
 #include <stdio.h>
 #include <stdlib.h>
 
-double Proc0();
-
 int main( argc, argv)
 int argc;
 char **argv;
@@ -182,7 +175,8 @@ char **argv;
   printf("calculate floating dhrystones using doubles size %d\n",
          sizeof(extended));
 	//fflush( stdout);
-	return (int) Proc0();
+	Proc0();
+        return 0;
 }
 
 /*
@@ -197,7 +191,7 @@ Array2Dim	Array2Glob;
 RecordPtr	PtrGlb;
 RecordPtr	PtrGlbNext;
 
-double Proc0()
+Proc0()
 {
 	OneToFifty		IntLoc1;
 	REG OneToFifty		IntLoc2;
@@ -322,7 +316,6 @@ double Proc0()
 		((long) LOOPS) * HZ / benchtime);
 #endif
 #endif
-  return IntLoc1;
 }
 
 Proc1(PtrParIn)

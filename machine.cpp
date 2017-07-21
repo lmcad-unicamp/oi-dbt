@@ -86,18 +86,13 @@ uint16_t Machine::getMemHalfAt(uint32_t Addr) {
 Word Machine::getMemValueAt(uint32_t Addr) {
   uint32_t CorrectAddr = Addr - DataMemOffset;
   Word Bytes;
-  Bytes.asI_ = *((uint32_t*)(DataMemory.get() + CorrectAddr)); //{DataMemory[CorrectAddr], DataMemory[CorrectAddr+1], DataMemory[CorrectAddr+2], DataMemory[CorrectAddr+3]};
-
+  Bytes.asI_ = *((uint32_t*)(DataMemory.get() + CorrectAddr)); 
   return Bytes;
 }
 
 void Machine::setMemValueAt(uint32_t Addr, uint32_t Value) {
   uint32_t CorrectAddr = Addr - DataMemOffset;
   *((uint32_t*)(DataMemory.get() + CorrectAddr)) = Value;
-  //DataMemory[CorrectAddr+3] = (Value >> 24) & 0xFF;
-  //DataMemory[CorrectAddr+2] = (Value >> 16) & 0xFF;
-  //DataMemory[CorrectAddr+1] = (Value >> 8 ) & 0xFF;
-  //DataMemory[CorrectAddr]   = (Value      ) & 0xFF;
 }
 
 uint32_t Machine::getNumInst() {
@@ -121,7 +116,7 @@ int32_t Machine::getRegister(uint16_t R) {
 }
 
 float Machine::getFloatRegister(uint16_t R) {
-  return ((float*)Register)[R + 66];
+  return ((float*) Register)[R + 66];
 }
 
 double Machine::getDoubleRegister(uint16_t R) {

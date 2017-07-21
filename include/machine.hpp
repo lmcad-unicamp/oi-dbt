@@ -23,6 +23,7 @@
 
 #define uptr std::unique_ptr
 
+
 namespace dbt {
   union Word {
     char asC_[4];

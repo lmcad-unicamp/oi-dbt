@@ -79,7 +79,7 @@ int main(int argc, char** argv) {
   int loadStatus = M.loadELF(BinaryFlag.get_value());
 
   if (!loadStatus) {
-    std::cout << "Can't find or process ELF file " << argv[1] << std::endl;
+    std::cerr << "Can't find or process ELF file " << argv[1] << std::endl;
     return 2;
   }
 
@@ -117,21 +117,21 @@ int main(int argc, char** argv) {
   SyscallM = std::make_unique<dbt::LinuxSyscallManager>();
 
   if (PreheatFlag.was_set()) {
-    std::cout << "Preheating...";
+    std::cerr << "Preheating...";
     dbt::ITDInterpreter I(*SyscallM.get(), *RftChosen.get());
     I.executeAll(M);
-    std::cout << "done\n";
+    std::cerr << "done\n";
 
-    std::cout << "Cleaning VM...";
+    std::cerr << "Cleaning VM...";
     M.reset();
-    std::cout << "done\n";
+    std::cerr << "done\n";
 
     RftChosen = std::make_unique<dbt::PreheatRFT>(TheManager);
   }
 
   GlobalTimer.startClock();
   dbt::ITDInterpreter I(*SyscallM.get(), *RftChosen.get());
-  std::cout << "Starting execution:\n";
+  std::cerr << "Starting execution:\n";
   I.executeAll(M);
   GlobalTimer.stopClock();
 
