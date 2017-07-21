@@ -4,7 +4,7 @@ OI-DBT implements a fast OpenISA interpreter with support to several techniques 
 
 ## Bulding it
 
-To build OI-DBT, you are going to need g++6 or later with C++14 support, CMake 2.8 or later, PAPI and LLVM 5.0. After installing all dependencies, it is a simple cmake/make usage:
+To build OI-DBT, you are going to need g++7.1 or later with C++17 support, CMake 2.8 or later, PAPI and LLVM 5.0. After installing all dependencies, it is a simple cmake/make usage:
 
 ```
 cd dbt-openisa
@@ -32,6 +32,6 @@ ARGUMENTS:
 
 ### LICENSE
 
-This project is being developed at the Institute of Computing - Unicamp as @vandersonmr master's thesis. You are free to contact him and use this code under the MIT LICENSE.
+This project is being developed at the Institute of Computing - Unicamp as part of @vandersonmr doctoral thesis. You are free to contact him and use this code under the MIT LICENSE.
 
 The OI-DBT is part of The OpenISA Project: an infrastructure for a new, open source and fast emulated architecture.
