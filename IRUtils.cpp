@@ -59,10 +59,13 @@ Value *dbt::IREmitter::genRegisterVecPtr(Value *RegNum, Function *Func, RegType 
   Argument *ArgIntRegPtr = &*Func->arg_begin();
 
   Value* CastedPtr = ArgIntRegPtr;
-  if (Type == RegType::Float) 
+  if (Type == RegType::Float) { 
     CastedPtr = Builder->CreatePointerCast(ArgIntRegPtr, Type::getFloatPtrTy(TheContext));
-  else if (Type == RegType::Double)
+    setIfNotTheFirstInstGen(CastedPtr);
+  } else if (Type == RegType::Double) {
     CastedPtr = Builder->CreatePointerCast(ArgIntRegPtr, Type::getDoublePtrTy(TheContext));
+    setIfNotTheFirstInstGen(CastedPtr);
+  }
 
   Value *GEP = Builder->CreateGEP(CastedPtr, RegNum);
   setIfNotTheFirstInstGen(GEP);

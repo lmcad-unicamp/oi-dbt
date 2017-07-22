@@ -50,7 +50,8 @@ dbt::Machine M;
 void  sigHandler(int sig) {
   std::cerr << "Segfault (" << sig << ") while emulating at PC: " << std::hex << M.getPC() << "\n";
 
-  RftChosen->printRegions();
+  if (VerboseFlag.was_set())
+    RftChosen->printRegions();
 
   //TODO: Implement a M.dump();
   exit(1);

@@ -34,6 +34,7 @@ void Manager::runPipeline() {
     CompiledOIRegionsMtx.lock();
     CompiledOIRegions[EntryAddress] = OIRegion; 
     CompiledOIRegionsMtx.unlock();
+    llvm::errs() << "Trying to compile: " <<  EntryAddress << "...";
 
     OICompiled += OIRegion.size();
     auto Module = IRE->generateRegionIR(EntryAddress, OIRegion, DataMemOffset); 
@@ -50,13 +51,12 @@ void Manager::runPipeline() {
       for (auto& BB : F)
         OSize += BB.size(); 
 
-    /*if (EntryAddress == 0x9b8)
-      for (auto& F : *Module) 
-        F.print(llvm::errs());*/
+/*    for (auto& F : *Module) 
+      F.print(llvm::errs());*/
 
     IRJIT->addModule(std::unique_ptr<llvm::Module>(Module));
 
-    llvm::errs() << "We've compiled: " <<  EntryAddress << " " << (float) OSize/Size << "\n";
+    llvm::errs() << ".. we've compiled (" << (float) OSize/Size << ")\n";
     CompiledRegions += 1;
     LLVMCompiled += OSize;
     AvgOptCodeSize += (float) OSize/Size;

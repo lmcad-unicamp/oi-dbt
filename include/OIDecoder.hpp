@@ -531,6 +531,7 @@ namespace dbt {
         case dbt::OIDecoder::Jne: 
         case dbt::OIDecoder::Jeqz: 
         case dbt::OIDecoder::Jlez:
+        case dbt::OIDecoder::Jgez:
         case dbt::OIDecoder::Jltz:
         case dbt::OIDecoder::Jnez:
         case dbt::OIDecoder::Jgtz:
