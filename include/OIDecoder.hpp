@@ -555,6 +555,17 @@ namespace dbt {
       return true;
     }
 
+    static bool isIndirectBranch(OIInst Inst) {
+      switch (Inst.Type) {
+        case dbt::OIDecoder::Callr:
+        case dbt::OIDecoder::Ijmp:
+        case dbt::OIDecoder::Jumpr:
+          return true;
+        default: 
+          return false;
+      }
+    }
+
   }
 }
 

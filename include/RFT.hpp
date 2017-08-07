@@ -20,6 +20,7 @@ namespace dbt {
   protected:
     const unsigned HotnessThreshold = 50;
     spp::sparse_hash_map<uint32_t, uint8_t> ExecFreq;
+    spp::sparse_hash_map<uint32_t, uint32_t> BranchesTargets;
     OIInstList OIRegion;
 
     bool Recording = false;
@@ -34,6 +35,7 @@ namespace dbt {
     void startRegionFormation(uint32_t); 
     void finishRegionFormation(); 
     void insertInstruction(uint32_t, uint32_t);
+    void setBranchTarget(uint32_t, uint32_t);
     void insertInstruction(std::array<uint32_t, 2>&);
     bool hasRecordedAddrs(uint32_t);
   public:

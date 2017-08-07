@@ -24,6 +24,7 @@ namespace dbt {
     private:
       llvm::LLVMContext TheContext;
 
+      spp::sparse_hash_map<uint32_t, spp::sparse_hash_map<uint32_t, uint32_t>> OIBrTargets;
       spp::sparse_hash_map<uint32_t, OIInstList> OIRegions;
       std::unordered_map<uint32_t, OIInstList> CompiledOIRegions;
       spp::sparse_hash_map<uint32_t, llvm::Module*> IRRegions;
@@ -74,7 +75,7 @@ namespace dbt {
         std::cerr << "Compiled LLVM: " << LLVMCompiled << "\n";
       }
 
-      void addOIRegion(uint32_t, OIInstList);
+      void addOIRegion(uint32_t, OIInstList, spp::sparse_hash_map<uint32_t, uint32_t>);
 
       int32_t jumpToRegion(uint32_t, dbt::Machine&);
 

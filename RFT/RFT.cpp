@@ -15,6 +15,10 @@ void dbt::RFT::insertInstruction(uint32_t Addrs, uint32_t Opcode) {
     OIRegion.push_back({Addrs, Opcode});
 }
 
+void dbt::RFT::setBranchTarget(uint32_t BranchAddrs, uint32_t Target) {
+  BranchesTargets[BranchAddrs] = Target;
+}
+
 void dbt::RFT::insertInstruction(std::array<uint32_t, 2>& Inst) {
   insertInstruction(Inst[0], Inst[1]);
 }
@@ -23,6 +27,7 @@ void dbt::RFT::startRegionFormation(uint32_t PC) {
   Recording = true; 
   RecordingEntry = PC;
   OIRegion.clear();
+  BranchesTargets.clear();
   ExecFreq[PC] = 0;
 }
 
@@ -35,7 +40,7 @@ bool dbt::RFT::hasRecordedAddrs(uint32_t Addrs) {
 
 void dbt::RFT::finishRegionFormation() {
   if (OIRegion.size() > 0 && hasRecordedAddrs(RecordingEntry)) { 
-    TheManager.addOIRegion(RecordingEntry, OIRegion);
+    TheManager.addOIRegion(RecordingEntry, OIRegion, BranchesTargets);
     Total += OIRegion.size();
   }
   OIRegion.clear();

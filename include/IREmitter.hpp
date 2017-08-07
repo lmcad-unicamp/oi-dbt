@@ -10,6 +10,7 @@
 #include "llvm/IR/DerivedTypes.h"
 #include "llvm/IR/Type.h"
 
+#include <sparsepp/spp.h>
 #include <vector>
 #include <array>
 #include <unordered_map>
@@ -35,13 +36,16 @@ namespace dbt {
     void addFirstInstToMap(uint32_t);
     void setIfNotTheFirstInstGen(llvm::Value*);
 
+    spp::sparse_hash_map<uint32_t, uint32_t> BrTargets;
     std::unordered_map<uint32_t, llvm::Value*> IRMemoryMap;
     std::unordered_map<uint32_t, llvm::BranchInst*> IRBranchMap;
+    std::unordered_map<uint32_t, llvm::ReturnInst*> IRIBranchMap;
 
     std::unordered_map<uint32_t, std::vector<uint32_t>> DirectTransitions; // FIXME: THIS SHOULDN'T BE IN THIS CLASS!
 
     void cleanCFG();
     void updateBranchTarget(uint32_t, std::array<uint32_t, 2>);
+    void improveIndirectBranch(uint32_t);
     void processBranchesTargets(const OIInstList&);
     void generateInstIR(const uint32_t, const OIDecoder::OIInst);
 
@@ -73,7 +77,7 @@ namespace dbt {
       return DirectTransitions[Addrs];
     }
 
-    llvm::Module* generateRegionIR(uint32_t, const OIInstList&, uint32_t);
+    llvm::Module* generateRegionIR(uint32_t, const OIInstList&, uint32_t, spp::sparse_hash_map<uint32_t, uint32_t>&);
   };
 }
 

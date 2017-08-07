@@ -63,6 +63,9 @@ namespace dbt {
     uint32_t LastPC;
     uint32_t PC;
 
+    bool OnNativeExecution = false;
+    uint32_t RegionBeingExecuted; 
+
     std::string BinPath;
   public:
     Machine() { Register[0] = 0; };
@@ -104,6 +107,11 @@ namespace dbt {
     void setRegister(uint16_t, int32_t);
     void setFloatRegister(uint16_t, float);
     void setDoubleRegister(uint16_t, double);
+
+    uint32_t getRegionBeingExecuted(); 
+    bool isOnNativeExecution(); 
+    void setOffNativeExecution(); 
+    void setOnNativeExecution(uint32_t); 
 
     int loadELF(const std::string);
   };

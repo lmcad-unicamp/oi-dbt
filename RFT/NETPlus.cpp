@@ -109,8 +109,14 @@ void NETPlus::expandAndFinish(Machine& M) {
 
 void NETPlus::onBranch(Machine& M) {
   if (Recording) {
+    if (OIDecoder::isIndirectBranch(OIDecoder::decode(M.getInstAt(M.getLastPC()).asI_)))
+      setBranchTarget(M.getLastPC(), M.getPC());
+
     for (uint32_t I = LastTarget; I <= M.getLastPC(); I += 4) {
-      if (TheManager.isRegionEntry(I) || M.getInstAt(I).asI_ == 0x90000001) {
+      if (TheManager.isRegionEntry(I) ||
+          OIDecoder::decode(M.getInstAt(I).asI_).Type == OIDecoder::OIInstType::Sqrts ||
+          OIDecoder::decode(M.getInstAt(I).asI_).Type == OIDecoder::OIInstType::Sqrtd) {
+
         expandAndFinish(M);
         break;
       }

@@ -48,10 +48,18 @@ std::unique_ptr<dbt::RFT> RftChosen;
 dbt::Machine M;
 
 void  sigHandler(int sig) {
-  std::cerr << "Segfault (" << sig << ") while emulating at PC: " << std::hex << M.getPC() << "\n";
-
   if (VerboseFlag.was_set())
     RftChosen->printRegions();
+
+  if (M.isOnNativeExecution()) {
+    std::cerr << "Error while executing region " << std::hex << M.getRegionBeingExecuted() << "\n"; 
+  } else {
+    std::cerr << "Error while executing the interpreter.\n";
+    if (M.getRegionBeingExecuted() != 0)
+      std::cerr << "The last executed region was " << std::hex << M.getRegionBeingExecuted() << "\n";
+  }
+
+  std::cerr << "Segfault (" << sig << ") while emulating at PC: " << std::hex << M.getPC() << std::dec << "\n";
 
   //TODO: Implement a M.dump();
   exit(1);

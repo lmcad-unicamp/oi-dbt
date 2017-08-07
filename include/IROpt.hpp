@@ -2,9 +2,11 @@
 #define IROpt_HPP
 
 #include "llvm/IR/Module.h"
+#include "llvm/IR/LegacyPassManager.h"
 
 namespace dbt {
 	class IROpt {
+    std::unique_ptr<llvm::legacy::FunctionPassManager> BasicPM;
   public:
     IROpt() {}; 
 

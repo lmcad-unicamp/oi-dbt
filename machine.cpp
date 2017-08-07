@@ -147,6 +147,23 @@ uint32_t* Machine::getMemoryPtr() {
   return (uint32_t*) DataMemory.get();
 }
 
+bool Machine::isOnNativeExecution() {
+  return OnNativeExecution;
+}
+
+uint32_t Machine::getRegionBeingExecuted() {
+  return RegionBeingExecuted;
+}
+
+void Machine::setOnNativeExecution(uint32_t EntryRegionAddrs) {
+  OnNativeExecution   = true;
+  RegionBeingExecuted = EntryRegionAddrs; 
+}
+
+void Machine::setOffNativeExecution() {
+  OnNativeExecution   = false;
+}
+
 using namespace ELFIO;
 
 #define STACK_SIZE 100 * 1024 * 1024 /*100mb*/

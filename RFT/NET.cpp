@@ -8,23 +8,25 @@ unsigned TotalInst = 0;
 void NET::onBranch(Machine &M) {
 
   if (Recording) { 
+    if (OIDecoder::isIndirectBranch(OIDecoder::decode(M.getInstAt(M.getLastPC()).asI_)))
+      setBranchTarget(M.getLastPC(), M.getPC());
+
     for (uint32_t I = LastTarget; I <= M.getLastPC(); I += 4) {
-      if (TheManager.isRegionEntry(I) || M.getInstAt(I).asI_ == 0x90000001 || 
-          OIDecoder::decode(M.getInstAt(I).asI_).Type == OIDecoder::OIInstType::Jumpr ||
+      if (TheManager.isRegionEntry(I) || 
           OIDecoder::decode(M.getInstAt(I).asI_).Type == OIDecoder::OIInstType::Sqrts ||
           OIDecoder::decode(M.getInstAt(I).asI_).Type == OIDecoder::OIInstType::Sqrtd) {
         finishRegionFormation(); 
         break;
       }
-      if (TotalInst < RegionLimitSize) {
-      if (hasRecordedAddrs(I)) {
-        finishRegionFormation(); 
-        break;
-      }
+//      if (TotalInst < RegionLimitSize) {
+        if (hasRecordedAddrs(I)) {
+          finishRegionFormation(); 
+          break;
+        }
 
-      insertInstruction(I, M.getInstAt(I).asI_);
-      TotalInst++;
-      }
+        insertInstruction(I, M.getInstAt(I).asI_);
+//        TotalInst++;
+//      }
     }
     /*if (M.getPC() < M.getLastPC()) {
       finishRegionFormation(); 
