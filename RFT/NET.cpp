@@ -18,15 +18,15 @@ void NET::onBranch(Machine &M) {
         finishRegionFormation(); 
         break;
       }
-//      if (TotalInst < RegionLimitSize) {
+      if (TotalInst < RegionLimitSize) {
         if (hasRecordedAddrs(I)) {
           finishRegionFormation(); 
           break;
         }
 
         insertInstruction(I, M.getInstAt(I).asI_);
-//        TotalInst++;
-//      }
+        TotalInst++;
+      }
     }
     /*if (M.getPC() < M.getLastPC()) {
       finishRegionFormation(); 
@@ -37,7 +37,7 @@ void NET::onBranch(Machine &M) {
       startRegionFormation(M.getPC());
   }
 
-  if (TheManager.isRegionEntry(M.getPC())) {
+  if (TheManager.isNativeRegionEntry(M.getPC())) {
     if (Recording) 
       finishRegionFormation(); 
 

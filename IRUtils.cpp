@@ -36,7 +36,7 @@ void dbt::IREmitter::setIfNotTheFirstInstGen(Value *Inst) {
 Value *dbt::IREmitter::genDataVecPtr(Value *RawAddrs, Function *Func, Type *IType, unsigned ByteSize) {
   Value *AddrsOff = Builder->CreateSub(RawAddrs, genImm(DataMemOffset));
   Value *Addrs = Builder->CreateExactSDiv(AddrsOff, genImm(ByteSize));
-  Argument *ArgDataMemPtr = &*(++Func->arg_begin());
+  Argument *ArgDataMemPtr = &*(Func->arg_begin()+1);
   Value *CastedPtr = Builder->CreatePointerCast(ArgDataMemPtr, Type::getIntNPtrTy(TheContext, ByteSize * 8));
   setIfNotTheFirstInstGen(AddrsOff);
   return Builder->CreateGEP(IType, CastedPtr, Addrs);

@@ -65,7 +65,14 @@ void Manager::runPipeline() {
     AvgOptCodeSize += (float) OSize/Size;
 
     NativeRegionsMtx.lock();
-    NativeRegions[EntryAddress] = (intptr_t) IRJIT->findSymbol("r"+std::to_string(EntryAddress)).getAddress();
+    
+    auto Addr = IRJIT->findSymbol("r"+std::to_string(EntryAddress)).getAddress();
+
+    if (Addr)
+      NativeRegions[EntryAddress] = static_cast<intptr_t>(*Addr);
+    else 
+      std::cerr << EntryAddress << " was not successfully compiled!\n";
+
     NativeRegionsMtx.unlock();
 
     OIRegionsMtx.lock();

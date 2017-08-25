@@ -406,7 +406,7 @@ namespace dbt {
             Out << " $" << (uint32_t) I.RT << ", " << I.Imm;
           break;
         case EncodingType::PL26c:
-          Out << " " << I.Addrs;
+          Out << " " << std::hex << I.Addrs << std::dec;
           break;
         case EncodingType::PL6:
           Out << " $" << (uint32_t) I.RT;

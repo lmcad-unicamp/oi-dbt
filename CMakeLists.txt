@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.5)
 project(openisa-dbt)
 
-set(CMAKE_CXX_FLAGS "-O3 -Werror -Wall -Wextra -Wno-unused-function -std=c++17 -fno-rtti -flto -DNDEBUG")
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -O3 -flto")
+#TODO: FIXME: /home/vanderson??
+set(CMAKE_CXX_FLAGS "-O3 -Werror -Wall -Wextra -Wno-unused-function -std=c++17 -fno-rtti -flto -DNDEBUG -L/home/vanderson/dev/mestrado/llvm/build/lib/ -I/usr/local/include -fPIC -fvisibility-inlines-hidden -ffunction-sections -fdata-sections -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -O3 -flto -fno-rtti -L/home/vanderson/dev/mestrado/llvm/build/lib/")
 
 include_directories(include)
 
@@ -15,7 +16,7 @@ add_executable(oi-dbt main.cpp)
 
 install(TARGETS oi-dbt RUNTIME DESTINATION bin)
 
-target_link_libraries(oi-dbt 
+target_link_libraries(oi-dbt
   papi 
   RFT 
   dbt 
@@ -25,59 +26,12 @@ target_link_libraries(oi-dbt
   dl
   curses
 
-  LLVMPasses
-  LLVMObjCARCOpts
-  LLVMSymbolize
-  LLVMDebugInfoPDB
-  LLVMDebugInfoDWARF
-  LLVMCoverage
-  LLVMTableGen
-  LLVMLineEditor
-  LLVMOrcJIT
-  LLVMMIRParser
-  LLVMObjectYAML
-  LLVMLibDriver
-  LLVMOption
-  LLVMX86Disassembler
-  LLVMX86AsmParser
-  LLVMX86CodeGen
-  LLVMGlobalISel
-  LLVMSelectionDAG
-  LLVMAsmPrinter
-  LLVMDebugInfoCodeView
-  LLVMDebugInfoMSF
-  LLVMX86Desc
-  LLVMMCDisassembler
-  LLVMX86Info
-  LLVMX86AsmPrinter
-  LLVMX86Utils
-  LLVMMCJIT
-  LLVMMCJIT
-  LLVMInterpreter
-  LLVMExecutionEngine
-  LLVMRuntimeDyld
-  LLVMCodeGen
-  LLVMTarget
-  LLVMCoroutines
-  LLVMipo
-  LLVMInstrumentation
-  LLVMVectorize
-  LLVMScalarOpts
-  LLVMLinker
-  LLVMIRReader
-  LLVMAsmParser
-  LLVMInstCombine
-  LLVMTransformUtils
-  LLVMBitWriter
-  LLVMTransformUtils
-  LLVMAnalysis
-  LLVMTarget
-  LLVMObject
-  LLVMMCParser
-  LLVMBitReader
-  LLVMMC
-
-  LLVMCore
-  LLVMSupport
-  LLVMDemangle
+  LLVMLTO LLVMPasses LLVMObjCARCOpts LLVMSymbolize LLVMDebugInfoPDB LLVMDebugInfoDWARF LLVMFuzzMutate LLVMTableGen 
+  LLVMDlltoolDriver LLVMLineEditor LLVMOrcJIT LLVMCoverage LLVMMIRParser LLVMObjectYAML LLVMLibDriver LLVMOption 
+  LLVMWindowsManifest LLVMX86Disassembler LLVMX86AsmParser LLVMX86CodeGen LLVMGlobalISel LLVMSelectionDAG 
+  LLVMAsmPrinter LLVMDebugInfoCodeView LLVMDebugInfoMSF LLVMX86Desc LLVMMCDisassembler LLVMX86Info 
+  LLVMX86AsmPrinter LLVMX86Utils LLVMMCJIT LLVMInterpreter LLVMExecutionEngine LLVMRuntimeDyld LLVMCodeGen 
+  LLVMTarget LLVMCoroutines LLVMipo LLVMInstrumentation LLVMVectorize LLVMScalarOpts LLVMLinker LLVMIRReader 
+  LLVMAsmParser LLVMInstCombine LLVMTransformUtils LLVMBitWriter LLVMAnalysis LLVMProfileData LLVMObject LLVMMCParser 
+  LLVMMC LLVMBitReader LLVMCore LLVMBinaryFormat LLVMSupport LLVMDemangle
 )
