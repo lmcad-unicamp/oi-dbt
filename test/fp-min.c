@@ -1,10 +1,5 @@
-
-float v[2];
-
+#include <math.h>
 int main() {
-  double a = 1.2;
-  float  b = 3.4;
-  v[0] = a;
-  v[1] = b;
-  return (int) v[1] + v[0];
+  printf("%d\n", (int)(100*cosf((float)20)));
+  return 0;
 }
