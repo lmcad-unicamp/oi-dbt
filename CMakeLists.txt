@@ -1,9 +1,8 @@
 cmake_minimum_required(VERSION 3.5)
 project(openisa-dbt)
 
-#TODO: FIXME: /home/vanderson??
-set(CMAKE_CXX_FLAGS "-O3 -Werror -Wall -Wextra -Wno-unused-function -std=c++17 -fno-rtti -flto -DNDEBUG -L/home/vanderson/dev/mestrado/llvm/build/lib/ -I/usr/local/include -fPIC -fvisibility-inlines-hidden -ffunction-sections -fdata-sections -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS")
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -O3 -flto -fno-rtti -L/home/vanderson/dev/mestrado/llvm/build/lib/")
+set(CMAKE_CXX_FLAGS "-O3 -Werror -Wall -Wextra -Wno-unused-function -std=c++17 -fno-rtti -flto -DNDEBUG -L/usr/local/lib/ -I/usr/local/include -fPIC -fvisibility-inlines-hidden -ffunction-sections -fdata-sections -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -O3 -flto -fno-rtti")
 
 include_directories(include)
 
