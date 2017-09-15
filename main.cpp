@@ -14,7 +14,7 @@ clarg::argString BinaryFlag("-bin",  "path to the binary which will should be em
 clarg::argBool   PreheatFlag("-p",  "Run one time to compile all regions and then reexecute measuring the time.");
 clarg::argBool   VerboseFlag("-v",  "display the compiled regions");
 clarg::argBool   HelpFlag("-h",  "display the help message");
-clarg::argInt    RegionLimitSize("-l", "region size limit", 400);
+clarg::argInt    RegionLimitSize("-l", "region size limit", 0);
 
 void usage(char* PrgName) {
   cout << "Version: 0.0.1 (03-01-2017)\n\n";
@@ -61,7 +61,6 @@ void  sigHandler(int sig) {
 
   std::cerr << "Segfault (" << sig << ") while emulating at PC: " << std::hex << M.getPC() << std::dec << "\n";
 
-  //TODO: Implement a M.dump();
   exit(1);
 }
 
@@ -83,7 +82,6 @@ int main(int argc, char** argv) {
 
   if (validateArguments())
     return 1;
-
 
   int loadStatus = M.loadELF(BinaryFlag.get_value());
 

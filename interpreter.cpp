@@ -422,7 +422,7 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
     );
 
   IMPLEMENT(ijmphi, 
-        M.setRegister(IJMP_REG, 0 | I.Addrs << 12); 
+      M.setRegister(IJMP_REG, 0 | I.Addrs << 12); 
     );
   
   /**********************  Float Inst  **************************/

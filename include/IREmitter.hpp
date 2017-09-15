@@ -9,6 +9,7 @@
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/DerivedTypes.h"
 #include "llvm/IR/Type.h"
+#include "llvm/Target/TargetMachine.h"
 
 #include <sparsepp/spp.h>
 #include <vector>
@@ -77,7 +78,8 @@ namespace dbt {
       return DirectTransitions[Addrs];
     }
 
-    llvm::Module* generateRegionIR(uint32_t, const OIInstList&, uint32_t, spp::sparse_hash_map<uint32_t, uint32_t>&);
+    llvm::Module* generateRegionIR(uint32_t, const OIInstList&, uint32_t, spp::sparse_hash_map<uint32_t, uint32_t>&,
+        llvm::TargetMachine&);
   };
 }
 

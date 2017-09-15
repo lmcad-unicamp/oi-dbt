@@ -1014,8 +1014,11 @@ void dbt::IREmitter::processBranchesTargets(const OIInstList& OIRegion) {
 }
 
 Module* dbt::IREmitter::generateRegionIR(uint32_t EntryAddress, const OIInstList& OIRegion, uint32_t MemOffset, 
-    spp::sparse_hash_map<uint32_t, uint32_t>& BT) {
+    spp::sparse_hash_map<uint32_t, uint32_t>& BT, TargetMachine& TM) {
   Module* TheModule = new Module("", TheContext);
+  TheModule->setDataLayout(TM.createDataLayout());
+  TheModule->setTargetTriple(TM.getTargetTriple().str());
+
   IRMemoryMap.clear();
   IRBranchMap.clear();
 

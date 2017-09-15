@@ -39,12 +39,16 @@ void Manager::runPipeline() {
     std::cerr << "Trying to compile: " << std::hex <<  EntryAddress << std::dec << "...";
 
     OICompiled += OIRegion.size();
-    auto Module = IRE->generateRegionIR(EntryAddress, OIRegion, DataMemOffset, BrTargets); 
+    auto Module = IRE->generateRegionIR(EntryAddress, OIRegion, DataMemOffset, BrTargets, IRJIT->getTargetMachine()); 
 
     unsigned Size = 0;
     for (auto& F : *Module) 
       for (auto& BB : F)
         Size += BB.size(); 
+
+    if (EntryAddress == 0x38ec)
+      for (auto& F : *Module) 
+        F.print(llvm::errs());
 
     IRO->optimizeIRFunction(Module, IROpt::OptLevel::Basic); 
 
@@ -53,9 +57,8 @@ void Manager::runPipeline() {
       for (auto& BB : F)
         OSize += BB.size(); 
 
-      /*for (auto& F : *Module) 
-        F.print(llvm::errs());*/
-
+      //for (auto& F : *Module) 
+      //  F.print(llvm::errs());
 
     IRJIT->addModule(std::unique_ptr<llvm::Module>(Module));
 
