@@ -188,14 +188,14 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
     case dbt::OIDecoder::Ldh: {
         Value* RawAddrs = Builder->CreateAdd(genLoadRegister(Inst.RS, Func), genImm(Inst.Imm));
         Value* Res = Builder->CreateLoad(genDataHalfVecPtr(RawAddrs, Func));
-        genStoreRegister(Inst.RT, Builder->CreateIntCast(Res, Type::getInt16Ty(TheContext), true), Func);
+        genStoreRegister(Inst.RT, Builder->CreateIntCast(Res, Type::getInt32Ty(TheContext), true), Func);
         break;
     }
 
     case dbt::OIDecoder::Ldhu: {
         Value* RawAddrs = Builder->CreateAdd(genLoadRegister(Inst.RS, Func), genImm(Inst.Imm));
         Value* Res = Builder->CreateLoad(genDataHalfVecPtr(RawAddrs, Func));
-        genStoreRegister(Inst.RT, Builder->CreateIntCast(Res, Type::getInt16Ty(TheContext), false), Func);
+        genStoreRegister(Inst.RT, Builder->CreateIntCast(Res, Type::getInt32Ty(TheContext), false), Func);
         break;
     }
 
@@ -389,7 +389,7 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         Value* A = genLoadRegister(Inst.RS, Func, RegType::Double);
         Value* B = genLoadRegister(Inst.RT, Func, RegType::Double);
         Value* Res = Builder->CreateFCmpUEQ(A, B); 
-        genStoreRegister(CC_REG, Res, Func, RegType::Int);
+        genStoreRegister(CC_REG, Builder->CreateZExt(Res, Type::getInt32Ty(TheContext)), Func, RegType::Int);
         break;
       }
 
@@ -397,7 +397,7 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         Value* A = genLoadRegister(Inst.RS, Func, RegType::Float);
         Value* B = genLoadRegister(Inst.RT, Func, RegType::Float);
         Value* Res = Builder->CreateFCmpUEQ(A, B);
-        genStoreRegister(CC_REG, Res, Func, RegType::Int);
+        genStoreRegister(CC_REG, Builder->CreateZExt(Res, Type::getInt32Ty(TheContext)), Func, RegType::Int);
         break;
       }
    
@@ -405,7 +405,7 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         Value* A = genLoadRegister(Inst.RS, Func, RegType::Float);
         Value* B = genLoadRegister(Inst.RT, Func, RegType::Float);
         Value* Res = Builder->CreateFCmpULT(A, B);
-        genStoreRegister(CC_REG, Res, Func, RegType::Int);
+        genStoreRegister(CC_REG, Builder->CreateZExt(Res, Type::getInt32Ty(TheContext)), Func, RegType::Int);
         break;
       }
 
@@ -413,7 +413,7 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         Value* A = genLoadRegister(Inst.RS, Func, RegType::Double);
         Value* B = genLoadRegister(Inst.RT, Func, RegType::Double);
         Value* Res = Builder->CreateFCmpULT(A, B);
-        genStoreRegister(CC_REG, Res, Func, RegType::Int);
+        genStoreRegister(CC_REG, Builder->CreateZExt(Res, Type::getInt32Ty(TheContext)), Func, RegType::Int);
         break;
       }
 
@@ -421,7 +421,7 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         Value* A = genLoadRegister(Inst.RS, Func, RegType::Double);
         Value* B = genLoadRegister(Inst.RT, Func, RegType::Double);
         Value* Res = Builder->CreateFCmpULE(A, B);
-        genStoreRegister(CC_REG, Res, Func, RegType::Int);
+        genStoreRegister(CC_REG, Builder->CreateZExt(Res, Type::getInt32Ty(TheContext)), Func, RegType::Int);
         break;
       }
 
@@ -429,7 +429,7 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         Value* A = genLoadRegister(Inst.RS, Func, RegType::Float);
         Value* B = genLoadRegister(Inst.RT, Func, RegType::Float);
         Value* Res = Builder->CreateFCmpULE(A, B);
-        genStoreRegister(CC_REG, Res, Func, RegType::Int);
+        genStoreRegister(CC_REG, Builder->CreateZExt(Res, Type::getInt32Ty(TheContext)), Func, RegType::Int);
         break;
       }
 
@@ -437,7 +437,7 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         Value* A = genLoadRegister(Inst.RS, Func, RegType::Double);
         Value* B = genLoadRegister(Inst.RT, Func, RegType::Double);
         Value* Res = Builder->CreateFCmpUNO(A, B); //FIXME: Isn't a ||?
-        genStoreRegister(CC_REG, Res, Func, RegType::Int);
+        genStoreRegister(CC_REG, Builder->CreateZExt(Res, Type::getInt32Ty(TheContext)), Func, RegType::Int);
         break;
       }
 
@@ -445,7 +445,7 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         Value* A = genLoadRegister(Inst.RS, Func, RegType::Double);
         Value* B = genLoadRegister(Inst.RT, Func, RegType::Double);
         Value* Res = Builder->CreateFCmpOLE(A, B);
-        genStoreRegister(CC_REG, Res, Func, RegType::Int);
+        genStoreRegister(CC_REG, Builder->CreateZExt(Res, Type::getInt32Ty(TheContext)), Func, RegType::Int);
         break;
       }
 
@@ -453,7 +453,7 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         Value* A = genLoadRegister(Inst.RS, Func, RegType::Float);
         Value* B = genLoadRegister(Inst.RT, Func, RegType::Float);
         Value* Res = Builder->CreateFCmpOLE(A, B);
-        genStoreRegister(CC_REG, Res, Func, RegType::Int);
+        genStoreRegister(CC_REG, Builder->CreateZExt(Res, Type::getInt32Ty(TheContext)), Func, RegType::Int);
         break;
       }
 
@@ -461,7 +461,7 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         Value* A = genLoadRegister(Inst.RS, Func, RegType::Double);
         Value* B = genLoadRegister(Inst.RT, Func, RegType::Double);
         Value* Res = Builder->CreateFCmpOLT(A, B);
-        genStoreRegister(CC_REG, Res, Func, RegType::Int);
+        genStoreRegister(CC_REG, Builder->CreateZExt(Res, Type::getInt32Ty(TheContext)), Func, RegType::Int);
         break;
       }
 
@@ -469,7 +469,7 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         Value* A = genLoadRegister(Inst.RS, Func, RegType::Float);
         Value* B = genLoadRegister(Inst.RT, Func, RegType::Float);
         Value* Res = Builder->CreateFCmpOLT(A, B);
-        genStoreRegister(CC_REG, Res, Func, RegType::Int);
+        genStoreRegister(CC_REG, Builder->CreateZExt(Res, Type::getInt32Ty(TheContext)), Func, RegType::Int);
         break;
       }
 
@@ -842,7 +842,8 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
     case dbt::OIDecoder::Jgez: {
         BasicBlock* BB = BasicBlock::Create(TheContext, "", Func);
         Value* Res1 = Builder->CreateAnd(genLoadRegister(Inst.RT, Func), 0x80000000);
-        Value* Res  = Builder->CreateNot(Res1); 
+        Value* Res2 = Builder->CreateNot(Res1); 
+        Value* Res  = Builder->CreateICmpNE(Res2, genImm(0));
         BranchInst* Br = Builder->CreateCondBr(Res, BB, BB);
         Builder->SetInsertPoint(BB);
         IRBranchMap[GuestAddr] = Br;
@@ -851,7 +852,8 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
 
     case dbt::OIDecoder::Jltz: {
         BasicBlock* BB = BasicBlock::Create(TheContext, "", Func);
-        Value* Res = Builder->CreateAnd(genLoadRegister(Inst.RT, Func), 0x80000000);
+        Value* Res1 = Builder->CreateAnd(genLoadRegister(Inst.RT, Func), 0x80000000);
+        Value* Res  = Builder->CreateICmpNE(Res1, genImm(0));
         BranchInst* Br = Builder->CreateCondBr(Res, BB, BB);
         Builder->SetInsertPoint(BB);
         IRBranchMap[GuestAddr] = Br;
@@ -947,6 +949,8 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
 
 void dbt::IREmitter::updateBranchTarget(uint32_t GuestAddr, std::array<uint32_t, 2> Tgts) {
   Function* F = Builder->GetInsertBlock()->getParent();
+
+
   for (int i = 0; i < 2; i++) {
     uint32_t AddrTarget = Tgts[i];
 
@@ -960,7 +964,7 @@ void dbt::IREmitter::updateBranchTarget(uint32_t GuestAddr, std::array<uint32_t,
 
       if (Current->getFirstNonPHI() == TargetInst) 
         BBTarget = Current;
-      else
+      else 
         BBTarget = Current->splitBasicBlock(TargetInst);
     } else {
       BBTarget = BasicBlock::Create(TheContext, "", F);
@@ -994,8 +998,9 @@ void dbt::IREmitter::improveIndirectBranch(uint32_t GuestAddr) {
     BasicBlock* BBTarget;
     if (TargetBB->getFirstNonPHI() == TargetInst) 
       BBTarget = TargetBB;
-    else
+    else {
       BBTarget = TargetBB->splitBasicBlock(TargetInst);
+    }
     Builder->CreateBr(BBTarget); 
   }
 }
@@ -1047,17 +1052,9 @@ Module* dbt::IREmitter::generateRegionIR(uint32_t EntryAddress, const OIInstList
     OIDecoder::OIInst Inst = OIDecoder::decode(Pair[1]);
     generateInstIR(Pair[0], Inst);
   }
-
+  insertDirectExit(OIRegion.back()[0]+4);
+  
   processBranchesTargets(OIRegion);
-
-  for (auto& BB : *F) {
-    if (BB.getTerminator() == nullptr) {
-      Builder->SetInsertPoint(&BB);
-      insertDirectExit(OIRegion.back()[0]+4);
-    }
-  }
-
-  cleanCFG();
 
   return TheModule;
 }

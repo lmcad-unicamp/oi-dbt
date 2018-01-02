@@ -178,15 +178,3 @@ Value *dbt::IREmitter::genLogicalAnd(Value *Lhs, Value *Rhs, Function *Func) {
   setIfNotTheFirstInstGen(Res1);
   return Node;
 }
-
-void dbt::IREmitter::cleanCFG() {
-  Function *F = Builder->GetInsertBlock()->getParent();
-  std::vector<BasicBlock *> TrashBlocks;
-  for (auto &BB : *F)
-    if (BB.size() == 0 || (pred_empty(&BB) && BB.getName() != "entry"))
-      TrashBlocks.push_back(&BB);
-
-  for (auto &BB : TrashBlocks)
-    BB->eraseFromParent();
-}
-
