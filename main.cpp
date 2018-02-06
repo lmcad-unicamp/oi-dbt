@@ -59,13 +59,16 @@ void  sigHandler(int sig) {
       std::cerr << "The last executed region was " << std::hex << M.getRegionBeingExecuted() << "\n";
   }
 
-  std::cerr << "Segfault (" << sig << ") while emulating at PC: " << std::hex << M.getPC() << std::dec << "\n";
-
+  if(sig == SIGABRT)
+    std::cerr << "SIGABRT (" << sig << ") while emulating at PC: " << std::hex << M.getPC() << std::dec << "\n";
+  else
+    std::cerr << "SIGSEGV (" << sig << ") while emulating at PC: " << std::hex << M.getPC() << std::dec << "\n";
   exit(1);
 }
 
 int main(int argc, char** argv) {
   signal(SIGSEGV, sigHandler);
+  signal(SIGABRT, sigHandler);
 
   dbt::Timer GlobalTimer; 
 

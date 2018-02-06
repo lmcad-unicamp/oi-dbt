@@ -10,8 +10,9 @@
 namespace dbt {
   class Timer {
     private:
-      #define CounterSize 5
-      int events[CounterSize] = {PAPI_L2_TCM, PAPI_TOT_INS, PAPI_TOT_CYC, PAPI_BR_CN, PAPI_BR_MSP}, ret;
+      #define CounterSize 4
+    //PAPI_L2_TCM
+      int events[CounterSize] = {PAPI_TOT_INS, PAPI_TOT_CYC, PAPI_BR_CN, PAPI_BR_MSP}, ret;
       struct timespec start, end;
       long_long acc[CounterSize];
       long_long values[CounterSize];

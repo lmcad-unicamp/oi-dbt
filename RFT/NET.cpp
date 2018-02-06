@@ -28,6 +28,8 @@ void NET::onBranch(Machine &M) {
         TotalInst++;
       }
     }
+
+    
     /*if (M.getPC() < M.getLastPC()) {
       finishRegionFormation(); 
     }*/

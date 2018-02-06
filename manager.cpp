@@ -41,18 +41,18 @@ void Manager::runPipeline() {
     OICompiled += OIRegion.size();
     auto Module = IRE->generateRegionIR(EntryAddress, OIRegion, DataMemOffset, BrTargets, IRJIT->getTargetMachine()); 
 
-    /*if (EntryAddress == 0x85c)
-      for (auto& F : *Module) 
-        F.print(llvm::errs());*/
+    //if (EntryAddress == 0x85c)
+    for (auto& F : *Module) 
+      F.print(llvm::errs());
 
     unsigned Size = 0;
     for (auto& F : *Module) 
       for (auto& BB : F)
         Size += BB.size(); 
 
-    if (EntryAddress == 0x38ec)
-      for (auto& F : *Module) 
-        F.print(llvm::errs());
+    //if (EntryAddress == 0x38ec)
+    //  for (auto& F : *Module) 
+    //    F.print(llvm::errs());
 
     IRO->optimizeIRFunction(Module, IROpt::OptLevel::Basic); 
 

@@ -18,7 +18,7 @@ namespace dbt {
 
   class RFT {
   protected:
-    const unsigned HotnessThreshold = 50;
+    const unsigned HotnessThreshold = 1000;
     spp::sparse_hash_map<uint32_t, uint8_t> ExecFreq;
     spp::sparse_hash_map<uint32_t, uint32_t> BranchesTargets;
     OIInstList OIRegion;

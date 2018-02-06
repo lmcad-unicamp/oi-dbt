@@ -33,7 +33,7 @@ namespace dbt {
     uint32_t DataMemOffset;
     uint32_t CurrentEntryAddrs;
 
-    llvm::Value* FirstInstGen;
+    llvm::Value* FirstInstGen = nullptr;
     void addFirstInstToMap(uint32_t);
     void setIfNotTheFirstInstGen(llvm::Value*);
 

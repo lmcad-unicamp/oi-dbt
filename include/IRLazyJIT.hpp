@@ -29,10 +29,13 @@
 #include "llvm/Support/DynamicLibrary.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Target/TargetMachine.h"
+#include "llvm/Support/Debug.h"
 #include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
+
+#define DEBUG_TYPE "JIT"
 
 namespace llvm {
 namespace orc {
@@ -63,6 +66,12 @@ public:
           return JITSymbol(nullptr);
         },
         [](const std::string&) { return nullptr; });
+
+    DEBUG({
+        llvm::dbgs() << "Submit LLVM module:\n\n";
+        llvm::dbgs() << M.get() << "\n\n";
+    });
+
     auto H = cantFail(CompileLayer.addModule(std::move(M),
                                              std::move(Resolver)));
 

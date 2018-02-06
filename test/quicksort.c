@@ -30,8 +30,8 @@
 #define d 		     8
 
     /* Bubble, Quick */
-#define sortelements 500000
-#define srtelements  500
+#define sortelements 5000000
+#define srtelements  5000
 
     /* fft */
 #define fftsize 	 256 
@@ -117,7 +117,7 @@ void Initrand () {
 }
 
 int Rand () {
-    seed = (seed * 1309L + 13849L) & 65535L;  /* constants to long WR*/
+    //seed = (seed * 1309L + 13849L) & 65535L;  /* constants to long WR*/
     return( (int)seed );     /* typecast back to int WR*/
 }
 
@@ -129,9 +129,9 @@ void Initarr() {
 	Initrand();
 	biggest = 0; littlest = 0;
 	for ( i = 1; i <= sortelements; i++ ) {
-	    temp = Rand();
+	    temp = sortelements-i;
 	    /* converted constants to long in next stmt, typecast back to int WR*/
-	    sortlist[i] = (int)(temp - (temp/100000L)*100000L - 50000L);
+	    sortlist[i] = (int) temp;
 	    if ( sortlist[i] > biggest ) biggest = sortlist[i];
 	    else if ( sortlist[i] < littlest ) littlest = sortlist[i];
 	}
@@ -162,13 +162,18 @@ void Quick (int run) {
     Initarr();
     Quicksort(sortlist,1,sortelements);
     if ( (sortlist[1] != littlest) || (sortlist[sortelements] != biggest) )	printf ( " Error in Quick.\n");
-	  printf("%d\n", sortlist[run + 1]);
+	  printf("QUICK: %d (sorted elements: %d)\n", sortlist[run + 1], sortelements);
+      
+    
 }
 
 int main()
 {
 	int i;
 	for (i = 0; i < 1; i++) Quick(i);
+    printf("Finalized\n");
+    getchar();
+    
 	return 0;
 }
 

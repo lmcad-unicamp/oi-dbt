@@ -1,0 +1,30 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "(gdb) Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/oi-dbt",
+            
+            "args": ["-bin", "${workspaceFolder}/test/bin/quicksort"],
+            "stopAtEntry": true,
+            "cwd": "${workspaceFolder}",
+            "externalConsole": false,
+            "environment": [],
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "text": "-enable-pretty-printing", 
+                    "ignoreFailures": true,
+                    "externalConsole": false,
+                    "description": "Enable pretty-printing for gdb",
+                }
+                   
+            ]
+        }
+    ]
+}
