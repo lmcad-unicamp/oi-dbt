@@ -21,6 +21,13 @@ int LinuxSyscallManager::processSyscall(Machine& M) {
     int r = fstat(M.getRegister(5), (struct stat*) (M.getByteMemoryPtr() + (M.getRegister(6) - M.getDataMemOffset())));
 		M.setRegister(2, r);
     return 0; 
+  }
+  //GET/PUT right registers and memory locations
+  case SyscallType::Read:{
+    //fflush(stdin);
+    ssize_t r = read(M.getRegister(5), (M.getByteMemoryPtr() + (M.getRegister(6) - M.getDataMemOffset())), M.getRegister(7));
+    M.setRegister(2, r);
+    return 0;
   } 
   case SyscallType::Write: {
     ssize_t r = write(M.getRegister(5), (M.getByteMemoryPtr() + (M.getRegister(6) - M.getDataMemOffset())), M.getRegister(7));

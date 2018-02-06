@@ -149,6 +149,10 @@ int main(int argc, char** argv) {
     RftChosen->printRegions();
 
   GlobalTimer.printReport("Global");
+
+  std::cout << "Press any key to continue..." << endl;
+  getchar();
+
   return SyscallM->getExitStatus();
 }
 

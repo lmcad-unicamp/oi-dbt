@@ -10,17 +10,17 @@
             "request": "launch",
             "program": "${workspaceFolder}/build/oi-dbt",
             
-            "args": ["-bin", "${workspaceFolder}/test/bin/quicksort"],
+            "args": ["-bin", "${workspaceFolder}/test/bin/quicksort", "-rft", "net", "-v"],
             "stopAtEntry": true,
             "cwd": "${workspaceFolder}",
-            "externalConsole": false,
+            "externalConsole": true,
             "environment": [],
             "MIMode": "gdb",
             "setupCommands": [
                 {
                     "text": "-enable-pretty-printing", 
                     "ignoreFailures": true,
-                    "externalConsole": false,
+                    "externalConsole": true,
                     "description": "Enable pretty-printing for gdb",
                 }
                    

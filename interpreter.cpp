@@ -6,11 +6,11 @@
 using namespace dbt;
 using namespace dbt::OIDecoder;
 
-#define PRINTINST
+//#define PRINTINST
 
 #ifdef PRINTINST
 #include <OIPrinter.hpp>
-#define DEBUG_PRINT(Addr, Inst) //std::cout << std::hex << Addr << "\t" << OIPrinter::getString(Inst) << std::dec << "\n";
+#define DEBUG_PRINT(Addr, Inst) std::cout << std::hex << Addr << "\t" << OIPrinter::getString(Inst) << std::dec << "\n";
 #else
 #define DEBUG_PRINT(Addr, Inst) 
 #endif

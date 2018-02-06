@@ -67,11 +67,6 @@ public:
         },
         [](const std::string&) { return nullptr; });
 
-    DEBUG({
-        llvm::dbgs() << "Submit LLVM module:\n\n";
-        llvm::dbgs() << M.get() << "\n\n";
-    });
-
     auto H = cantFail(CompileLayer.addModule(std::move(M),
                                              std::move(Resolver)));
 

@@ -642,7 +642,6 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
                 Type::getInt64Ty(TheContext)), 32));
         Value* Res2  = Builder->CreateBitCast(Res, Type::getDoubleTy(TheContext));
         genStoreRegister(Inst.RT, Res2, Func, RegType::Double);
-        FirstInstGen = RT;
         break;
       } 
 
@@ -651,7 +650,6 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         Value* Int   = Builder->CreateFPToSI(RT, Type::getInt32Ty(TheContext));
         Value* Float = Builder->CreateSIToFP(Int, Type::getFloatTy(TheContext));
         genStoreRegister(Inst.RS, Float, Func, RegType::Float);
-        FirstInstGen = RT;
         break;
       }
 
@@ -660,7 +658,6 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         Value* Int   = Builder->CreateFPToSI(RT, Type::getInt32Ty(TheContext));
         Value* Float = Builder->CreateSIToFP(Int, Type::getFloatTy(TheContext));
         genStoreRegister(Inst.RS, Float, Func, RegType::Float);
-        FirstInstGen = RT;
         break;
       }
 
@@ -678,7 +675,6 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         Value* Res2   = Builder->CreateLoad(genDataWordVecPtr(Addrs2, Func));
         Value* Reg2   = Builder->CreateAdd(Reg, genImm(1));
         genStoreRegister(Reg2, Res2, Func, RegType::Int);
-        FirstInstGen = Reg;
         break;
       } 
 
@@ -689,7 +685,6 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         Value* Res   = Builder->CreateLoad(genDataWordVecPtr(Addrs, Func));
         Value* ResCasted = Builder->CreateBitCast(Res, Type::getFloatTy(TheContext));
         genStoreRegister(Inst.RT, ResCasted, Func, RegType::Float);
-        FirstInstGen = RS;
         break;
       } 
 
@@ -701,7 +696,6 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         Value* Res   = Builder->CreateLoad(genDataWordVecPtr(Addrs, Func));
         Value* ResCasted = Builder->CreateBitCast(Res, Type::getFloatTy(TheContext));
         genStoreRegister(Inst.RD, ResCasted, Func, RegType::Float);
-        FirstInstGen = RS;
         break;
       } 
 
@@ -720,7 +714,6 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         Value* Res2   = Builder->CreateLoad(genDataWordVecPtr(Addrs2, Func));
         Value* Reg2   = Builder->CreateAdd(Reg, genImm(1));
         genStoreRegister(Reg2, Res2, Func, RegType::Int);
-        FirstInstGen = T1;
         break;
       } 
 
@@ -733,7 +726,6 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         Value* Res  = genLoadRegister(Reg, Func, RegType::Int);
 
         Builder->CreateStore(Res, genDataWordVecPtr(Addrs, Func));
-        FirstInstGen = RS;
         break;
       } 
 
@@ -746,7 +738,6 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         Value* Res  = genLoadRegister(Reg, Func, RegType::Int);
 
         Builder->CreateStore(Res, genDataWordVecPtr(Addrs, Func));
-        FirstInstGen = RS;
         break;
       } 
 
@@ -766,7 +757,6 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         //M.setMemValueAt(M.getRegister(I.RS) + I.Imm, M.getRegister(130 + I.RT*2));
         Value* Res2 = genLoadRegister(Reg, Func, RegType::Int);
         Builder->CreateStore(Res2, genDataWordVecPtr(Addrs, Func));
-        FirstInstGen = RS;
         break;
       } 
 
@@ -786,7 +776,6 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         //M.setMemValueAt(M.getRegister(I.RS) + I.Imm, M.getRegister(130 + I.RT*2));
         Value* Res2 = genLoadRegister(Reg, Func, RegType::Int);
         Builder->CreateStore(Res2, genDataWordVecPtr(Addrs, Func));
-        FirstInstGen = RS;
         break;
       } 
 
@@ -799,7 +788,6 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         BranchInst* Br = Builder->CreateCondBr(Res, BB, BB);
         Builder->SetInsertPoint(BB);
         IRBranchMap[GuestAddr] = Br;
-        FirstInstGen = Res;
         break;
       }
 
@@ -809,7 +797,6 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         BranchInst* Br = Builder->CreateCondBr(Res, BB, BB);
         Builder->SetInsertPoint(BB);
         IRBranchMap[GuestAddr] = Br;
-        FirstInstGen = Res;
         break;
       }
 
@@ -819,7 +806,6 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         BranchInst* Br = Builder->CreateCondBr(Res, BB, BB);
         Builder->SetInsertPoint(BB);
         IRBranchMap[GuestAddr] = Br;
-        FirstInstGen = Res;
         break;
       }
 
@@ -829,7 +815,6 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         BranchInst* Br = Builder->CreateCondBr(Res, BB, BB);
         Builder->SetInsertPoint(BB);
         IRBranchMap[GuestAddr] = Br;
-        FirstInstGen = Res;
         break;
       }
 
@@ -839,7 +824,6 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         BranchInst* Br = Builder->CreateCondBr(Res, BB, BB);
         Builder->SetInsertPoint(BB);
         IRBranchMap[GuestAddr] = Br;
-        FirstInstGen = Res;
         break;
       }
 
@@ -851,7 +835,6 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         BranchInst* Br = Builder->CreateCondBr(Res, BB, BB);
         Builder->SetInsertPoint(BB);
         IRBranchMap[GuestAddr] = Br;
-        FirstInstGen = Res1;
         break;
       }
 
@@ -863,7 +846,6 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         BranchInst* Br = Builder->CreateCondBr(Res, BB, BB);
         Builder->SetInsertPoint(BB);
         IRBranchMap[GuestAddr] = Br;
-        FirstInstGen = Res1;
         break;
       }
 
@@ -874,7 +856,6 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         BranchInst* Br = Builder->CreateCondBr(Res, BB, BB);
         Builder->SetInsertPoint(BB);
         IRBranchMap[GuestAddr] = Br;
-        FirstInstGen = Res1;
         break;
       }
 
@@ -886,7 +867,6 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         BranchInst* Br = Builder->CreateCondBr(Res, BB, BB);
         Builder->SetInsertPoint(BB);
         IRBranchMap[GuestAddr] = Br;
-        FirstInstGen = Res1;
         break;
       }
 
@@ -896,7 +876,6 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         BranchInst* Br = Builder->CreateCondBr(Res, BB, BB);
         Builder->SetInsertPoint(BB);
         IRBranchMap[GuestAddr] = Br;
-        FirstInstGen = Res;
         break;
       }
 
@@ -945,7 +924,6 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         BasicBlock* BB = BasicBlock::Create(TheContext, "", Func);
         Builder->SetInsertPoint(BB);
         setIfNotTheFirstInstGen(IjmpReg);
-        FirstInstGen = IjmpReg;
         break;
       }
 
@@ -954,7 +932,6 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         BasicBlock* BB = BasicBlock::Create(TheContext, "", Func);
         Builder->SetInsertPoint(BB);
         setIfNotTheFirstInstGen(Res);
-        FirstInstGen = Res;
         break;
       }
 
@@ -981,8 +958,7 @@ void dbt::IREmitter::updateBranchTarget(uint32_t GuestAddr, std::array<uint32_t,
 
     BasicBlock *BBTarget;
     if (IRMemoryMap.count(AddrTarget) != 0) {
-      auto x = IRMemoryMap[AddrTarget];
-      auto TargetInst = cast<Instruction>(x);
+      auto TargetInst = cast<Instruction>(IRMemoryMap[AddrTarget]);
       BasicBlock *Current = TargetInst->getParent();
 
       if (Current->getFirstNonPHI() == TargetInst) 

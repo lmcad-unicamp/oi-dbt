@@ -34,8 +34,8 @@
 #define srtelements  5000
 
     /* fft */
-#define fftsize 	 256 
-#define fftsize2 	 129  
+#define fftsize 	 256
+#define fftsize2 	 129
 /*
 type */
     /* Perm */
@@ -163,17 +163,18 @@ void Quick (int run) {
     Quicksort(sortlist,1,sortelements);
     if ( (sortlist[1] != littlest) || (sortlist[sortelements] != biggest) )	printf ( " Error in Quick.\n");
 	  printf("QUICK: %d (sorted elements: %d)\n", sortlist[run + 1], sortelements);
-      
-    
+
+
 }
 
 int main()
 {
 	int i;
 	for (i = 0; i < 1; i++) Quick(i);
-    printf("Finalized\n");
-    getchar();
-    
+
+	printf("Finalized\n");
+  char ch = getchar();
+	printf("%c\n", ch);
+
 	return 0;
 }
-
