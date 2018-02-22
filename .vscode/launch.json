@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/build/oi-dbt",
             
-            "args": ["-bin", "/home/napoli/Documents/mibench-master/automotive/basicmath/basicmath_small", "-rft", "netplus", "-v", "-hot", "50"],
+            "args": ["-bin", "/home/napoli/Documents/OpenISA/oi-dbt/oi-dbt/test/mibench-master/automotive/bitcount/bitcnts", "-rft", "netplus", "-v", "-hot", "50"],
             "stopAtEntry": true,
             "cwd": "${workspaceFolder}",
             "externalConsole": false,

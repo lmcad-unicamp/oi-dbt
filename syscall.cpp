@@ -34,6 +34,13 @@ int LinuxSyscallManager::processSyscall(Machine& M) {
     M.setRegister(2, r);
     return 0;
   }
+
+  case SyscallType::Close: {
+    ssize_t r = close(M.getRegister(5));
+    M.setRegister(2, r);
+    return 0;
+  }
+
   default:
     std::cerr << "Syscall (" << SysTy << ") not implemented!\n";
     exit(2);
