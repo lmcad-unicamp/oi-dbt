@@ -7,16 +7,33 @@
 #include "llvm/IR/Constants.h"
 #include "llvm/IR/DerivedTypes.h"
 #include "llvm/IR/Type.h"
+#include "llvm/IR/InstIterator.h"
 #include "llvm/ExecutionEngine/MCJIT.h"
 #include "llvm/IR/CFG.h"
 #include "llvm/Support/raw_ostream.h"
+#include "llvm-c/Core.h"
+#include "llvm-c/Disassembler.h"
 
 #include <cstdlib>
+#include <stddef.h>
+#include <fstream>
+#include <sstream>
+#include <iomanip>
 
 using namespace llvm;
 
 void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecoder::OIInst Inst) {
   Function* Func = Builder->GetInsertBlock()->getParent();
+  LLVMContext& C = Func->getContext();
+  int instructions = 10;
+  auto lastFuncInst = inst_end(Func);
+
+  // if(!Func->isDeclaration())
+  // {
+  //   MDNode* N = MDNode::get(C, MDString::get(C, std::to_string(instructions)+"OLA"));
+  //   //auto BB = Func->getBasicBlockList().end();
+  //   Func->setMetadata("stats.insts.md", N);
+  // }
 
   switch (Inst.Type) {
     case dbt::OIDecoder::Nop: {
@@ -58,6 +75,13 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         break;
       }
 
+    //TODO
+    case dbt::OIDecoder::Modu: {
+        Value* Res = Builder->CreateURem(genLoadRegister(Inst.RS, Func), genLoadRegister(Inst.RT, Func));
+        genStoreRegister(Inst.RV, Res, Func);
+        break;
+      }
+
     case dbt::OIDecoder::Shl: {
         Value* Res = Builder->CreateShl(genLoadRegister(Inst.RT, Func), genImm(Inst.RS));
         genStoreRegister(Inst.RD, Res, Func);
@@ -94,6 +118,22 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
     case dbt::OIDecoder::Div: {
         Value* Res = Builder->CreateExactSDiv(genLoadRegister(Inst.RS, Func), genLoadRegister(Inst.RT, Func));
         genStoreRegister(Inst.RD, Res, Func);
+        break;
+      }
+
+    case dbt::OIDecoder::Divu: {
+        Value *RS = Builder->CreateIntCast(genLoadRegister(Inst.RS, Func), Type::getInt64Ty(TheContext), true);
+        Value *RT = Builder->CreateIntCast(genLoadRegister(Inst.RT, Func), Type::getInt64Ty(TheContext), true);
+        Value* Res = Builder->CreateExactUDiv(genLoadRegister(Inst.RS, Func), genLoadRegister(Inst.RT, Func));
+
+        //RD 0 raises exception 
+        genStoreRegister(Inst.RD, Res, Func);
+
+        // if (Inst.RV != 0) {
+        //     Value* ResMod = Builder->CreateSRem(genLoadRegister(Inst.RS, Func), genLoadRegister(Inst.RT, Func));
+        //     genStoreRegister(Inst.RV, ResMod, Func);
+        // }
+        
         break;
       }
 
@@ -517,6 +557,7 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         genStoreRegister(Inst.RD, Res, Func, RegType::Float);
         break;
       } 
+
 
     case dbt::OIDecoder::Adds: {  
         //M.setFloatRegister(I.RD, M.getFloatRegister(I.RS) + M.getFloatRegister(I.RT));
@@ -942,6 +983,13 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         exit(1);
       }
   }
+  static int inst_i = 0;
+
+  for (auto I = inst_begin(Func), E = inst_end(Func); I != E; ++I) 
+  {
+    MDNode* N = MDNode::get(TheContext, MDString::get(TheContext, ""));
+    //(*I).setMetadata(OIPrinter::getString(Inst)+"_"+std::to_string(inst_i++)+"\n", N);
+  }
 
   addFirstInstToMap(GuestAddr);
 }
@@ -1017,9 +1065,11 @@ void dbt::IREmitter::processBranchesTargets(const OIInstList& OIRegion) {
   }
 }
 
-Module* dbt::IREmitter::generateRegionIR(uint32_t EntryAddress, const OIInstList& OIRegion, uint32_t MemOffset, 
-    spp::sparse_hash_map<uint32_t, uint32_t>& BT, TargetMachine& TM) {
-  Module* TheModule = new Module("", TheContext);
+
+
+Module* dbt::IREmitter::generateRegionIR(uint32_t EntryAddress, const OIInstList& OIRegion, uint32_t MemOffset, spp::sparse_hash_map<uint32_t, uint32_t>& BT, TargetMachine& TM) {
+  static unsigned int id = 0;
+  Module* TheModule = new Module(std::to_string(id), TheContext);
   TheModule->setDataLayout(TM.createDataLayout());
   TheModule->setTargetTriple(TM.getTargetTriple().str());
 
@@ -1029,16 +1079,17 @@ Module* dbt::IREmitter::generateRegionIR(uint32_t EntryAddress, const OIInstList
   BrTargets = BT;
   DataMemOffset     = MemOffset;
   CurrentEntryAddrs = EntryAddress;
-
-  //int32_t execRegion(int32_t* IntRegisters, int32_t* DataMemory);
   std::array<Type*, 2> ArgsType = {Type::getInt32PtrTy(TheContext), Type::getInt32PtrTy(TheContext)};
   FunctionType *FT = FunctionType::get(Type::getInt32Ty(TheContext), ArgsType, false);
   Function *F = Function::Create(FT, Function::ExternalLinkage, "r" + std::to_string(EntryAddress), TheModule);
+  
+  F->setCallingConv(CallingConv::Fast);
   F->addAttribute(1, Attribute::NoAlias);
-  F->addAttribute(2, Attribute::NoAlias);
   F->addAttribute(1, Attribute::NoCapture);
+  F->addAttribute(2, Attribute::NoAlias);
   F->addAttribute(2, Attribute::NoCapture);
-
+  //F->setName("Module_" + std::to_string(id) + "_entry_" + std::to_string((unsigned int) EntryAddress));
+  
   // Entry block to function must not have predecessors!
   BasicBlock *Entry = BasicBlock::Create(TheContext, "entry", F);
   BasicBlock *BB    = BasicBlock::Create(TheContext, "", F);
@@ -1055,5 +1106,92 @@ Module* dbt::IREmitter::generateRegionIR(uint32_t EntryAddress, const OIInstList
   
   processBranchesTargets(OIRegion);
 
+  id++;
+  return TheModule;
+}
+
+Module* dbt::IREmitter::generateMergedRegions(std::vector<OIInstList>& OIRegions, uint32_t MemOffset, spp::sparse_hash_map<uint32_t, uint32_t>& BT, TargetMachine& TM)
+{
+  static unsigned int id = 0;
+  Module* TheModule = new Module(std::to_string(id), TheContext);
+  TheModule->setDataLayout(TM.createDataLayout());
+  TheModule->setTargetTriple(TM.getTargetTriple().str());
+
+  IRMemoryMap.clear();
+  IRBranchMap.clear();
+
+  BrTargets = BT;
+  DataMemOffset     = MemOffset;
+  // //CurrentEntryAddrs = EntryAddress;
+  const auto initial = OIRegions.front().front();
+  std::array<Type*, 2> ArgsType = {Type::getInt32PtrTy(TheContext), Type::getInt32PtrTy(TheContext)};
+  FunctionType *FT = FunctionType::get(Type::getInt32Ty(TheContext), ArgsType, false);
+  Function *F = Function::Create(FT, Function::ExternalLinkage, "r" + std::to_string(initial[0]), TheModule);
+  
+  F->setCallingConv(CallingConv::X86_FastCall);
+  F->addAttribute(1, Attribute::NoAlias);
+  F->addAttribute(1, Attribute::NoCapture);
+  F->addAttribute(2, Attribute::NoAlias);
+  F->addAttribute(2, Attribute::NoCapture);
+  //F->setName("Module_" + std::to_string(id) + "_entry_" + std::to_string((unsigned int) EntryAddress));
+  
+  // // Entry block to function must not have predecessors!
+  BasicBlock *Entry = BasicBlock::Create(TheContext, "entry" + std::to_string(initial[0]), F);
+  Builder->SetInsertPoint(Entry);
+  
+  //Entry addr, Block
+  std::map<uint32_t, BasicBlock*> usedAddresses;
+  BasicBlock* LastBB = nullptr;
+  Value* LastRes = nullptr;
+  
+  BasicBlock *FBB = BasicBlock::Create(TheContext, "End", F);
+  
+  for (int i = 0; i<OIRegions.size(); ++i)
+  {
+    auto region = OIRegions[i];
+    BasicBlock *BB = BasicBlock::Create(TheContext, "", F);
+    
+    if(LastRes)
+    {
+        if(usedAddresses[region.front()[0]])
+        {
+            Builder->CreateCondBr(LastRes, BB, FBB);
+            //PC next PC
+            LastRes = Builder->CreateICmpEQ(genImm(OIRegions[i-1].back()[0]+4), genImm(region.front()[0]));
+            LastBB = BB;
+            continue;
+        }
+        else
+            Builder->CreateCondBr(LastRes, BB, FBB);
+    }
+    else
+        Builder->CreateBr(BB);
+
+    
+    Builder->SetInsertPoint(BB);
+    usedAddresses[region.front()[0]] = BB;
+    LastBB = BB;
+    
+    for (auto Pair : region) {
+      OIDecoder::OIInst Inst = OIDecoder::decode(Pair[1]);
+      generateInstIR(Pair[0], Inst);
+    }
+    
+    //Insert Compare if yes then:
+    if(i>0)
+      LastRes = Builder->CreateICmpEQ(genImm(OIRegions[i-1].back()[0]+4), genImm(region.front()[0]));
+    else
+      LastRes = Builder->CreateICmpEQ(genImm(OIRegions[i+1].front()[0]+4), genImm(region.back()[0]));
+
+    //insertDirectExit();
+  }
+
+  Builder->CreateBr(FBB);
+  Builder->SetInsertPoint(FBB);
+  
+  insertDirectExit(OIRegions.back().back()[0]+4);
+  
+  processBranchesTargets(OIRegions.back());
+  id++;
   return TheModule;
 }

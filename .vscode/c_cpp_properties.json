@@ -5,7 +5,11 @@
             "includePath": [],
             "defines": [],
             "browse": {
-                "path": [],
+                "path": [
+                    "/usr/include",
+                    "/usr/local/include",
+                    "${workspaceRoot}"
+                ],
                 "limitSymbolsToIncludedHeaders": true,
                 "databaseFilename": ""
             },

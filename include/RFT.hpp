@@ -18,7 +18,7 @@ namespace dbt {
 
   class RFT {
   protected:
-    const unsigned HotnessThreshold = 1000;
+    unsigned HotnessThreshold = 50;
     spp::sparse_hash_map<uint32_t, uint8_t> ExecFreq;
     spp::sparse_hash_map<uint32_t, uint32_t> BranchesTargets;
     OIInstList OIRegion;
@@ -44,6 +44,10 @@ namespace dbt {
     ~RFT() {}
 
     void printRegions();
+
+    void setHotnessThreshold (unsigned int threshold) { 
+      HotnessThreshold = threshold;
+    };
 
     void setRegionLimitSize(unsigned Limit) {
       RegionLimitSize = Limit;
@@ -108,6 +112,8 @@ namespace dbt {
 		struct branch_t {
 			uint32_t src;
 			uint32_t tgt;
+
+    
 		};
 
 		std::vector<branch_t> Buffer;

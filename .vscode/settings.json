@@ -58,6 +58,14 @@
         "typeinfo": "cpp",
         "utility": "cpp",
         "valarray": "cpp",
-        "cuchar": "cpp"
+        "cuchar": "cpp",
+        "string": "cpp",
+        "vector": "cpp",
+        "unordered_map": "cpp",
+        "strstream": "cpp",
+        "any": "cpp",
+        "filesystem": "cpp",
+        "memory_resource": "cpp",
+        "variant": "cpp"
     }
 }

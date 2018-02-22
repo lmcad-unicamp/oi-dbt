@@ -1,0 +1,28 @@
+Scanning dependencies of target dbt
+[  5%] Building CXX object CMakeFiles/dbt.dir/IREmitter.cpp.o
+[ 10%] Building CXX object CMakeFiles/dbt.dir/IRUtils.cpp.o
+[ 15%] Building CXX object CMakeFiles/dbt.dir/IROpt.cpp.o
+[ 20%] Building CXX object CMakeFiles/dbt.dir/interpreter.cpp.o
+[ 25%] Building CXX object CMakeFiles/dbt.dir/machine.cpp.o
+[ 30%] Building CXX object CMakeFiles/dbt.dir/manager.cpp.o
+[ 35%] Building CXX object CMakeFiles/dbt.dir/syscall.cpp.o
+[ 40%] Linking CXX static library libdbt.a
+[ 40%] Built target dbt
+Scanning dependencies of target arglib
+[ 45%] Building CXX object arglib/CMakeFiles/arglib.dir/arglib.cpp.o
+[ 50%] Linking CXX static library libarglib.a
+[ 50%] Built target arglib
+Scanning dependencies of target RFT
+[ 55%] Building CXX object RFT/CMakeFiles/RFT.dir/NET.cpp.o
+[ 60%] Building CXX object RFT/CMakeFiles/RFT.dir/MRET2.cpp.o
+[ 65%] Building CXX object RFT/CMakeFiles/RFT.dir/NETPlus.cpp.o
+[ 70%] Building CXX object RFT/CMakeFiles/RFT.dir/LEI.cpp.o
+[ 75%] Building CXX object RFT/CMakeFiles/RFT.dir/LEF.cpp.o
+[ 80%] Building CXX object RFT/CMakeFiles/RFT.dir/Preheat.cpp.o
+[ 85%] Building CXX object RFT/CMakeFiles/RFT.dir/RFT.cpp.o
+[ 90%] Linking CXX static library libRFT.a
+[ 90%] Built target RFT
+Scanning dependencies of target oi-dbt
+[ 95%] Building CXX object CMakeFiles/oi-dbt.dir/main.cpp.o
+[100%] Linking CXX executable oi-dbt
+[100%] Built target oi-dbt

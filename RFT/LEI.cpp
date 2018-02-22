@@ -38,7 +38,9 @@ void LEI::formTrace(uint32_t start, int old, Machine& M) {
 }
 
 bool LEI::isFollowedByExit(int Old) {
-  return TheManager.inCodeCache(Buffer[Old].src) || !TheManager.inCodeCache(Buffer[Old].tgt);
+  uint32_t a = Buffer[Old].src;
+  uint32_t b = Buffer[Old].tgt;
+  return TheManager.inCodeCache(a) || !TheManager.inCodeCache(b);
 }
 
 void LEI::onBranch(Machine& M) {

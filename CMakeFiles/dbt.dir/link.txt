@@ -1,0 +1,2 @@
+gcc-ar-7 qcs libdbt.a  CMakeFiles/dbt.dir/IREmitter.cpp.o CMakeFiles/dbt.dir/IRUtils.cpp.o CMakeFiles/dbt.dir/IROpt.cpp.o CMakeFiles/dbt.dir/interpreter.cpp.o CMakeFiles/dbt.dir/machine.cpp.o CMakeFiles/dbt.dir/manager.cpp.o CMakeFiles/dbt.dir/syscall.cpp.o
+true

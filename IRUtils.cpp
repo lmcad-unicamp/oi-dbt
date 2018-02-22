@@ -142,7 +142,7 @@ Value *dbt::IREmitter::genLogicalOr(Value *Lhs, Value *Rhs, Function *Func) {
   BasicBlock *FBB = BasicBlock::Create(TheContext, "Lor.RHS", Func);
   BasicBlock *LastBB = Builder->GetInsertBlock();
 
-  Value *Res1 = Builder->CreateICmpNE(Lhs, genImm(0));
+  Value *Res1 = Builder->CreateICmpNE(Lhs, Builder->getInt1(false));
   Builder->CreateCondBr(Res1, TBB, FBB);
 
   Builder->SetInsertPoint(FBB);
@@ -167,7 +167,7 @@ Value *dbt::IREmitter::genLogicalAnd(Value *Lhs, Value *Rhs, Function *Func) {
   Builder->CreateCondBr(Res1, TBB, FBB);
 
   Builder->SetInsertPoint(TBB);
-  Value *Res2 = Builder->CreateICmpNE(Rhs, genImm(0));
+  Value *Res2 = Builder->CreateICmpNE(Rhs, Builder->getInt1(false));
   Builder->CreateBr(FBB);
 
   Builder->SetInsertPoint(FBB);

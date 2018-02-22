@@ -107,6 +107,8 @@ void NETPlus::expandAndFinish(Machine& M) {
   finishRegionFormation(); 
 }
 
+static unsigned int regionFrequency= 0;
+
 void NETPlus::onBranch(Machine& M) {
   if (Recording) {
     if (OIDecoder::isIndirectBranch(OIDecoder::decode(M.getInstAt(M.getLastPC()).asI_)))
@@ -137,12 +139,23 @@ void NETPlus::onBranch(Machine& M) {
     if (Recording) 
       expandAndFinish(M);
 
+  
+    ++regionFrequency;
+    #define REGION_THRESHOLD 100
+    if(regionFrequency > REGION_THRESHOLD)
+    {
+      TheManager.setRegionRecorging(true);
+      regionFrequency=0;
+    }
+
     auto Next = TheManager.jumpToRegion(M.getPC(), M); 
     M.setPC(Next);
 
     ++ExecFreq[Next];
     if (ExecFreq[M.getPC()] > HotnessThreshold)
       startRegionFormation(Next);
+
+    TheManager.setRegionRecorging(false);
   }  
 
   LastTarget = M.getPC();

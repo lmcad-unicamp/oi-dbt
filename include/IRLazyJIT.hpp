@@ -136,6 +136,40 @@ private:
   ObjLayerT ObjectLayer;
   CompileLayerT CompileLayer;
   std::vector<ModuleHandleT> ModuleHandles;
+
+  uint32_t saveObjectLayer(std::ostream &buffer)
+  {
+    std::error_code e;
+
+    //for(auto Module : ModuleHandles)
+    //{
+    //  Module.getBinary();
+    //}
+
+   // buffer.write(ObjectLayer.getBinary()->getMemBufferRef().getBufferStart,
+      //    ObjectLayer.getBinary()->getMemoryBufferRef().getBufferSize());
+
+    return 0;
+  }
+
+  uint32_t loadObjectLayer(const std::string& name)
+  {
+    // ErrorOr<std::unique_ptr<MemoryBuffer>> buffer = MemoryBuffer::getFile(name.c_str());
+    // if(!buffer)
+    //   return -1;
+
+    // Expected<std::unique_ptr<ObjectFile>> object = ObjectFile::createObjectFile(buffer.get()->getMemBufferRef());
+    // if(!object)
+    //   return -1;
+
+    // ObjectLayer.set
+    // std::unique_ptr<ObjectFile> objFile(std::move(object.get()));
+    // auto ownObject = OwningBinary<ObjectFile>(std::move(objFile), std::move(buffer.get()));
+    
+    // ObjectLayer.addObject(ownObject, nullptr);
+  }
+
+
 };
 
 } // end namespace orc

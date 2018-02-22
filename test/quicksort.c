@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define  nil		0
 #define	 false		0
@@ -31,7 +32,7 @@
 
     /* Bubble, Quick */
 #define sortelements 5000000
-#define srtelements  5000
+#define srtelements  500
 
     /* fft */
 #define fftsize 	 256
@@ -117,7 +118,7 @@ void Initrand () {
 }
 
 int Rand () {
-    //seed = (seed * 1309L + 13849L) & 65535L;  /* constants to long WR*/
+    seed = (seed * 1309L + 13849L) & 65535L;  /* constants to long WR*/
     return( (int)seed );     /* typecast back to int WR*/
 }
 
@@ -162,7 +163,7 @@ void Quick (int run) {
     Initarr();
     Quicksort(sortlist,1,sortelements);
     if ( (sortlist[1] != littlest) || (sortlist[sortelements] != biggest) )	printf ( " Error in Quick.\n");
-	  printf("QUICK: %d (sorted elements: %d)\n", sortlist[run + 1], sortelements);
+	  //printf("QUICK: %d (sorted elements: %d)\n", sortlist[run + 1], sortelements);
 
 
 }
@@ -173,8 +174,5 @@ int main()
 	for (i = 0; i < 1; i++) Quick(i);
 
 	printf("Finalized\n");
-  char ch = getchar();
-	printf("%c\n", ch);
-
 	return 0;
 }

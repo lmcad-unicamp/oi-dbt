@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/napoli/Documents/OpenISA/oi-dbt/oi-dbt/arglib/arglib.cpp
+arglib/arglib.hpp
+-
+map
+-
+
+include/arglib/arglib.hpp
+string
+-
+sstream
+-
+iostream
+-
+vector
+-
+

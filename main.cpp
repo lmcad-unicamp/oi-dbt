@@ -9,22 +9,24 @@
 #include <memory>
 
 clarg::argString RFTFlag("-rft", "Region Formation Technique (net)", "net");
+clarg::argInt    HotnessFlag("-hot", "Hotness threshold for the RFTs", 50);
+clarg::argString ReportFileFlag("-report", "Write down report to a file", "");
 clarg::argBool   InterpreterFlag("-interpret",  "Only interpret.");
-clarg::argString BinaryFlag("-bin",  "path to the binary which will should be emulated.", "");
+clarg::argString BinaryFlag("-bin",  "Path to the binary which will should be emulated.", "");
 clarg::argBool   PreheatFlag("-p",  "Run one time to compile all regions and then reexecute measuring the time.");
 clarg::argBool   VerboseFlag("-v",  "display the compiled regions");
 clarg::argBool   HelpFlag("-h",  "display the help message");
 clarg::argInt    RegionLimitSize("-l", "region size limit", 0);
 
 void usage(char* PrgName) {
-  cout << "Version: 0.0.1 (03-01-2017)\n\n";
+  cout << "Version: 0.0.1 (07-02-2018)\n\n";
 
   cout << "Usage: " << PrgName << 
-    " [-rft net] [-interpreter] -bin PathToBinary\n\n";
+    " [-rft {net, mret2, lef, lei, netplus}] [-interpreter] -bin PathToBinary\n\n";
 
   cout << "DESCRIPTION:\n";
   cout << "This program implements the OpenISA DBT (Dynamic Binary Translator)\n" <<
-    "Institute of Computing, 2017.\n\n";
+    "Institute of Computing, 2018.\n\n";
 
   cout << "ARGUMENTS:\n";
   clarg::arguments_descriptions(cout, "  ", "\n");
@@ -120,6 +122,12 @@ int main(int argc, char** argv) {
     }
   }
 
+  if(HotnessFlag.was_set())
+  {
+    std::cerr << "The Hotness Threshold is set to " << HotnessFlag.get_value() << std::endl;
+    RftChosen->setHotnessThreshold(HotnessFlag.get_value());
+  }
+
   if (RegionLimitSize.was_set()) 
     RftChosen->setRegionLimitSize(RegionLimitSize.get_value());
 
@@ -127,12 +135,12 @@ int main(int argc, char** argv) {
   SyscallM = std::make_unique<dbt::LinuxSyscallManager>();
 
   if (PreheatFlag.was_set()) {
-    std::cerr << "Preheating...";
+    std::cerr << "Preheating... ";
     dbt::ITDInterpreter I(*SyscallM.get(), *RftChosen.get());
     I.executeAll(M);
     std::cerr << "done\n";
 
-    std::cerr << "Cleaning VM...";
+    std::cerr << "Cleaning VM... ";
     M.reset();
     std::cerr << "done\n";
 
@@ -150,8 +158,38 @@ int main(int argc, char** argv) {
 
   GlobalTimer.printReport("Global");
 
-  std::cout << "Press any key to continue..." << endl;
-  getchar();
+  if(ReportFileFlag.was_set())
+  {
+    ofstream report;
+    report.open(ReportFileFlag.get_value());
+
+    if(report.is_open()) 
+    {
+      report << "No. Compiled Regions | " 
+             << "Avg Code Size Reduction | "
+             << "No. OI Instructions Compiled | " 
+             << "No. LLVM compiled | "
+             << "No. of Native Instructions Executed | "
+             << "Total Cycles | "
+             << "Conditional Branch Instructions Executed | "
+             << "Conditional Branch Instructions Misses | "
+             << "Total L1 I-Cache misses | "
+             << "Time (s)"
+             << "\n";
+      report << std::dec << TheManager.getCompiledRegions() << std::endl;
+      report << TheManager.getAvgOptCodeSize()/TheManager.getCompiledRegions() << std::endl;
+      report << TheManager.getOICompiled() << std::endl;
+      report << TheManager.getLLVMCompiled() << std::endl;
+      GlobalTimer.printReport("", report);
+    }
+
+    else
+      std::cerr << "Report Error: Unable to open file: \'" << ReportFileFlag.get_value() << "\' for writting.\n";
+  }
+
+
+  //std::cout << "Press any key to continue..." << endl;
+  //getchar();
 
   return SyscallM->getExitStatus();
 }

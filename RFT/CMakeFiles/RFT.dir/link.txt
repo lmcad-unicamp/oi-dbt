@@ -1,0 +1,2 @@
+gcc-ar-7 qcs libRFT.a  CMakeFiles/RFT.dir/NET.cpp.o CMakeFiles/RFT.dir/MRET2.cpp.o CMakeFiles/RFT.dir/NETPlus.cpp.o CMakeFiles/RFT.dir/LEI.cpp.o CMakeFiles/RFT.dir/LEF.cpp.o CMakeFiles/RFT.dir/Preheat.cpp.o CMakeFiles/RFT.dir/RFT.cpp.o
+true

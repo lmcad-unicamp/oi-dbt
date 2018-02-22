@@ -1,0 +1,1304 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="100">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <logicalFolder name="Documents"
+                   displayName="Documents"
+                   projectFiles="true"
+                   root="..">
+      <logicalFolder name="OpenISA" displayName="OpenISA" projectFiles="true">
+        <logicalFolder name="oitools" displayName="oitools" projectFiles="true">
+          <logicalFolder name="oi-toolchain"
+                         displayName="oi-toolchain"
+                         projectFiles="true">
+            <logicalFolder name="lib" displayName="lib" projectFiles="true">
+              <logicalFolder name="clang" displayName="clang" projectFiles="true">
+                <logicalFolder name="3.7.0" displayName="3.7.0" projectFiles="true">
+                  <logicalFolder name="include" displayName="include" projectFiles="true">
+                    <itemPath>../../oitools/oi-toolchain/lib/clang/3.7.0/include/stdarg.h</itemPath>
+                    <itemPath>../../oitools/oi-toolchain/lib/clang/3.7.0/include/stddef.h</itemPath>
+                  </logicalFolder>
+                </logicalFolder>
+              </logicalFolder>
+            </logicalFolder>
+            <logicalFolder name="oi-elf" displayName="oi-elf" projectFiles="true">
+              <logicalFolder name="include" displayName="include" projectFiles="true">
+                <logicalFolder name="machine" displayName="machine" projectFiles="true">
+                  <itemPath>../../oitools/oi-toolchain/oi-elf/include/machine/_default_types.h</itemPath>
+                </logicalFolder>
+                <logicalFolder name="sys" displayName="sys" projectFiles="true">
+                  <itemPath>../../oitools/oi-toolchain/oi-elf/include/sys/time.h</itemPath>
+                  <itemPath>../../oitools/oi-toolchain/oi-elf/include/sys/types.h</itemPath>
+                </logicalFolder>
+                <itemPath>../../oitools/oi-toolchain/oi-elf/include/stdint.h</itemPath>
+              </logicalFolder>
+            </logicalFolder>
+          </logicalFolder>
+          <logicalFolder name="openisa" displayName="openisa" projectFiles="true">
+            <logicalFolder name="newlib" displayName="newlib" projectFiles="true">
+              <logicalFolder name="newlib-2.1.0"
+                             displayName="newlib-2.1.0"
+                             projectFiles="true">
+                <logicalFolder name="libgloss" displayName="libgloss" projectFiles="true">
+                  <logicalFolder name="libnosys" displayName="libnosys" projectFiles="true">
+                    <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/libgloss/libnosys/_exit.c</itemPath>
+                    <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/libgloss/libnosys/close.c</itemPath>
+                    <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/libgloss/libnosys/fstat.c</itemPath>
+                    <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/libgloss/libnosys/getpid.c</itemPath>
+                    <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/libgloss/libnosys/gettod.c</itemPath>
+                    <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/libgloss/libnosys/isatty.c</itemPath>
+                    <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/libgloss/libnosys/kill.c</itemPath>
+                    <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/libgloss/libnosys/lseek.c</itemPath>
+                    <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/libgloss/libnosys/read.c</itemPath>
+                    <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/libgloss/libnosys/sbrk.c</itemPath>
+                    <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/libgloss/libnosys/times.c</itemPath>
+                    <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/libgloss/libnosys/warning.h</itemPath>
+                    <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/libgloss/libnosys/write.c</itemPath>
+                  </logicalFolder>
+                </logicalFolder>
+                <logicalFolder name="newlib" displayName="newlib" projectFiles="true">
+                  <logicalFolder name="libc" displayName="libc" projectFiles="true">
+                    <logicalFolder name="ctype" displayName="ctype" projectFiles="true">
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/ctype/local.h</itemPath>
+                    </logicalFolder>
+                    <logicalFolder name="include" displayName="include" projectFiles="true">
+                      <logicalFolder name="machine" displayName="machine" projectFiles="true">
+                        <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/machine/_default_types.h</itemPath>
+                      </logicalFolder>
+                      <logicalFolder name="sys" displayName="sys" projectFiles="true">
+                        <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys/_types.h</itemPath>
+                        <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys/lock.h</itemPath>
+                        <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys/reent.h</itemPath>
+                        <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys/signal.h</itemPath>
+                        <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys/stat.h</itemPath>
+                        <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys/time.h</itemPath>
+                        <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys/times.h</itemPath>
+                        <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys/types.h</itemPath>
+                      </logicalFolder>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/locale.h</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/stdint.h</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/stdio.h</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/wchar.h</itemPath>
+                    </logicalFolder>
+                    <logicalFolder name="locale" displayName="locale" projectFiles="true">
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/locale/lctype.h</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/locale/lmessages.h</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/locale/lmonetary.h</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/locale/lnumeric.h</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/locale/locale.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/locale/timelocal.h</itemPath>
+                    </logicalFolder>
+                    <logicalFolder name="machine" displayName="machine" projectFiles="true">
+                      <logicalFolder name="oi" displayName="oi" projectFiles="true">
+                        <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/machine/oi/strlen.c</itemPath>
+                      </logicalFolder>
+                    </logicalFolder>
+                    <logicalFolder name="reent" displayName="reent" projectFiles="true">
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/reent/closer.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/reent/fstatr.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/reent/gettimeofdayr.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/reent/impure.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/reent/isattyr.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/reent/lseekr.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/reent/readr.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/reent/reent.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/reent/sbrkr.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/reent/signalr.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/reent/timesr.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/reent/writer.c</itemPath>
+                    </logicalFolder>
+                    <logicalFolder name="signal" displayName="signal" projectFiles="true">
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/signal/signal.c</itemPath>
+                    </logicalFolder>
+                    <logicalFolder name="stdio" displayName="stdio" projectFiles="true">
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio/fclose.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio/fflush.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio/findfp.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio/fiprintf.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio/fputc.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio/fputs.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio/fputwc.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio/fvwrite.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio/fvwrite.h</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio/fwalk.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio/local.h</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio/makebuf.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio/perror.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio/printf.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio/putc.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio/puts.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio/stdio.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio/vfieeefp.h</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio/vfprintf.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio/wbuf.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio/wsetup.c</itemPath>
+                    </logicalFolder>
+                    <logicalFolder name="stdlib" displayName="stdlib" projectFiles="true">
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib/__call_atexit.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib/abort.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib/assert.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib/atexit.h</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib/calloc.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib/dtoa.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib/exit.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib/local.h</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib/malloc.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib/mallocr.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib/mbctype.h</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib/mlock.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib/mprec.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib/mprec.h</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib/rand.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib/wcrtomb.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib/wctomb_r.c</itemPath>
+                    </logicalFolder>
+                    <logicalFolder name="string" displayName="string" projectFiles="true">
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/string/local.h</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/string/memchr.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/string/memcpy.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/string/memmove.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/string/memset.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/string/strcmp.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/string/strerror.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/string/u_strerr.c</itemPath>
+                    </logicalFolder>
+                    <logicalFolder name="time" displayName="time" projectFiles="true">
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/time/clock.c</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/time/time.c</itemPath>
+                    </logicalFolder>
+                  </logicalFolder>
+                  <logicalFolder name="libm" displayName="libm" projectFiles="true">
+                    <logicalFolder name="common" displayName="common" projectFiles="true">
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libm/common/fdlibm.h</itemPath>
+                      <itemPath>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libm/common/s_fpclassify.c</itemPath>
+                    </logicalFolder>
+                  </logicalFolder>
+                </logicalFolder>
+              </logicalFolder>
+            </logicalFolder>
+          </logicalFolder>
+        </logicalFolder>
+      </logicalFolder>
+      <logicalFolder name="RSA DBT" displayName="RSA DBT" projectFiles="true">
+        <logicalFolder name="BigDigits" displayName="BigDigits" projectFiles="true">
+          <itemPath>../../../RSA DBT/BigDigits/bigd.c</itemPath>
+          <itemPath>../../../RSA DBT/BigDigits/bigd.h</itemPath>
+          <itemPath>../../../RSA DBT/BigDigits/bigdRand.c</itemPath>
+          <itemPath>../../../RSA DBT/BigDigits/bigdRand.h</itemPath>
+          <itemPath>../../../RSA DBT/BigDigits/bigdigits.c</itemPath>
+          <itemPath>../../../RSA DBT/BigDigits/bigdigits.h</itemPath>
+          <itemPath>../../../RSA DBT/BigDigits/bigdigitsRand.c</itemPath>
+          <itemPath>../../../RSA DBT/BigDigits/bigdigitsRand.h</itemPath>
+          <itemPath>../../../RSA DBT/BigDigits/bigdtypes.h</itemPath>
+          <itemPath>../../../RSA DBT/BigDigits/t_bdRSA.c</itemPath>
+        </logicalFolder>
+      </logicalFolder>
+    </logicalFolder>
+    <df root="." name="0">
+      <df name="arglib">
+        <in>arglib.cpp</in>
+      </df>
+      <df name="RFT">
+        <in>LEF.cpp</in>
+        <in>LEI.cpp</in>
+        <in>MRET2.cpp</in>
+        <in>NET.cpp</in>
+        <in>NETPlus.cpp</in>
+        <in>Preheat.cpp</in>
+        <in>RFT.cpp</in>
+      </df>
+      <in>IREmitter.cpp</in>
+      <in>IROpt.cpp</in>
+      <in>IRUtils.cpp</in>
+      <in>interpreter.cpp</in>
+      <in>machine.cpp</in>
+      <in>main.cpp</in>
+      <in>manager.cpp</in>
+      <in>syscall.cpp</in>
+    </df>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>CMakeLists.txt</itemPath>
+      <itemPath>Makefile</itemPath>
+      <itemPath>nbproject/private/launcher.properties</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <sourceFolderFilter>^(nbproject)$</sourceFolderFilter>
+  <sourceRootList>
+    <Elem>.</Elem>
+  </sourceRootList>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Default" type="0">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>false</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <flagsDictionary>
+        <element flagsID="0" commonFlags="-std=c++17 -fno-rtti -fPIC"/>
+        <element flagsID="1" commonFlags="-std=c99"/>
+      </flagsDictionary>
+      <codeAssistance>
+      </codeAssistance>
+      <makefileType>
+        <makeTool>
+          <buildCommandWorkingDir>.</buildCommandWorkingDir>
+          <buildCommand>${MAKE} -f Makefile -j 8</buildCommand>
+          <cleanCommand>${MAKE} -f Makefile clean</cleanCommand>
+          <executablePath>oi-dbt</executablePath>
+          <ccTool>
+            <incDir>
+              <pElem>include</pElem>
+              <pElem>/usr/include/llvm-c-6.0</pElem>
+              <pElem>/usr/local/include</pElem>
+              <pElem>/usr/include/llvm-6.0</pElem>
+            </incDir>
+            <preprocessorList>
+              <Elem>_GNU_SOURCE</Elem>
+              <Elem>__STDC_CONSTANT_MACROS</Elem>
+              <Elem>__STDC_FORMAT_MACROS</Elem>
+              <Elem>__STDC_LIMIT_MACROS</Elem>
+            </preprocessorList>
+          </ccTool>
+        </makeTool>
+        <preBuild>
+          <preBuildCommandWorkingDir>.</preBuildCommandWorkingDir>
+          <preBuildCommand>${CMAKE} -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=${IDE_CC} -DCMAKE_CXX_COMPILER=${IDE_CXX} -DCMAKE_C_FLAGS_DEBUG="-g3 -gdwarf-2" -DCMAKE_CXX_FLAGS_DEBUG="-g3 -gdwarf-2" -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .</preBuildCommand>
+        </preBuild>
+      </makefileType>
+      <item path="../../../RSA DBT/BigDigits/bigd.c" ex="false" tool="0" flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/oi-toolchain/oi-elf/include/machine</pElem>
+            <pElem>../../oitools/oi-toolchain/oi-elf/include</pElem>
+            <pElem>../../../RSA DBT/BigDigits</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../../RSA DBT/BigDigits/bigdRand.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/oi-toolchain/oi-elf/include/machine</pElem>
+            <pElem>../../oitools/oi-toolchain/oi-elf/include</pElem>
+            <pElem>../../../RSA DBT/BigDigits</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../../RSA DBT/BigDigits/bigdigits.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/oi-toolchain/oi-elf/include/machine</pElem>
+            <pElem>../../oitools/oi-toolchain/oi-elf/include</pElem>
+            <pElem>../../../RSA DBT/BigDigits</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../../RSA DBT/BigDigits/bigdigitsRand.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/oi-toolchain/oi-elf/include/machine</pElem>
+            <pElem>../../oitools/oi-toolchain/oi-elf/include</pElem>
+            <pElem>../../../RSA DBT/BigDigits</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/oi-toolchain/oi-elf/include/sys</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../../RSA DBT/BigDigits/t_bdRSA.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/oi-toolchain/oi-elf/include/machine</pElem>
+            <pElem>../../oitools/oi-toolchain/oi-elf/include</pElem>
+            <pElem>../../../RSA DBT/BigDigits</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/oi-toolchain/oi-elf/include/sys</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/libgloss/libnosys/_exit.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/libgloss/libnosys</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/libgloss/libnosys/close.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/libgloss/libnosys</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/libgloss/libnosys/fstat.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/libgloss/libnosys</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/libgloss/libnosys/getpid.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/libgloss/libnosys</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/libgloss/libnosys/gettod.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/libgloss/libnosys</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/libgloss/libnosys/isatty.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/libgloss/libnosys</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/libgloss/libnosys/kill.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/libgloss/libnosys</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/libgloss/libnosys/lseek.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/libgloss/libnosys</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/libgloss/libnosys/read.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/libgloss/libnosys</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/libgloss/libnosys/sbrk.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/libgloss/libnosys</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/libgloss/libnosys/times.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/libgloss/libnosys</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/libgloss/libnosys/write.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/libgloss/libnosys</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/locale/locale.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/machine/oi/strlen.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/reent/closer.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/reent</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/reent</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/reent/fstatr.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/reent</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/reent</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/reent/gettimeofdayr.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/reent</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/reent</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/reent/impure.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/reent</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/reent</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/reent/isattyr.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/reent</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/reent</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/reent/lseekr.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/reent</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/reent</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/reent/readr.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/reent</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/reent</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/reent/reent.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/reent</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/reent</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/reent/sbrkr.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/reent</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/reent</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/reent/signalr.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/reent</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/reent</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/reent/timesr.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/reent</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/reent</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/reent/writer.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/reent</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/reent</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/signal/signal.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio/fclose.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/stdio</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio/fflush.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/stdio</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio/findfp.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/stdio</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio/fiprintf.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/stdio</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio/fputc.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/stdio</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio/fputs.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/stdio</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio/fputwc.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/stdio</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio/fvwrite.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/stdio</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio/fwalk.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/stdio</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio/makebuf.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/stdio</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio/perror.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/stdio</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio/printf.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/stdio</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio/putc.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/stdio</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio/puts.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/stdio</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio/stdio.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/stdio</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio/vfprintf.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/machine</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/stdio</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio/wbuf.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/stdio</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio/wsetup.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdio</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/stdio</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib/__call_atexit.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/stdlib</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib/abort.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/stdlib</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib/assert.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/stdlib</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib/calloc.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/stdlib</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib/dtoa.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/machine</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/stdlib</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib/exit.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/stdlib</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib/malloc.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/stdlib</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib/mallocr.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/stdlib</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib/mlock.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/stdlib</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib/mprec.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/machine</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/stdlib</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib/rand.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/stdlib</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib/wcrtomb.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/stdlib</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib/wctomb_r.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/stdlib</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/stdlib</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/string/memchr.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/string</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/string/memcpy.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/string</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/string/memmove.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/string</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/string/memset.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/string</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/string/strcmp.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/string</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/string/strerror.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/string</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/string/u_strerr.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/string</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/time/clock.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/time</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/time</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/time/time.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/time</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/time</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../oitools/openisa/newlib/newlib-2.1.0/newlib/libm/common/s_fpclassify.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="IREmitter.cpp" ex="false" tool="1" flavor2="11">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="IROpt.cpp" ex="false" tool="1" flavor2="11">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="IRUtils.cpp" ex="false" tool="1" flavor2="11">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="RFT/LEF.cpp" ex="false" tool="1" flavor2="11">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="RFT/LEI.cpp" ex="false" tool="1" flavor2="11">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="RFT/MRET2.cpp" ex="false" tool="1" flavor2="11">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="RFT/NET.cpp" ex="false" tool="1" flavor2="11">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="RFT/NETPlus.cpp" ex="false" tool="1" flavor2="11">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="RFT/Preheat.cpp" ex="false" tool="1" flavor2="11">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="RFT/RFT.cpp" ex="false" tool="1" flavor2="11">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="arglib/arglib.cpp" ex="false" tool="1" flavor2="11">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <folder path="Documents/OpenISA/oitools/openisa/newlib/newlib-2.1.0/libgloss">
+        <cTool>
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/libgloss/libnosys</pElem>
+          </incDir>
+        </cTool>
+      </folder>
+      <folder path="Documents/OpenISA/oitools/openisa/newlib/newlib-2.1.0/newlib/libc/locale">
+        <cTool>
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/locale</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/locale</pElem>
+          </incDir>
+        </cTool>
+      </folder>
+      <folder path="Documents/OpenISA/oitools/openisa/newlib/newlib-2.1.0/newlib/libc/machine">
+        <cTool>
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/machine/oi</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/machine/oi</pElem>
+          </incDir>
+        </cTool>
+      </folder>
+      <folder path="Documents/OpenISA/oitools/openisa/newlib/newlib-2.1.0/newlib/libc/signal">
+        <cTool>
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/sys</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/signal</pElem>
+            <pElem>../../oitools/oi-toolchain/lib/clang/3.7.0/include</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libc/signal</pElem>
+          </incDir>
+        </cTool>
+      </folder>
+      <folder path="Documents/OpenISA/oitools/openisa/newlib/newlib-2.1.0/newlib/libc/string">
+        <cTool>
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/string</pElem>
+          </incDir>
+        </cTool>
+      </folder>
+      <folder path="Documents/OpenISA/oitools/openisa/newlib/newlib-2.1.0/newlib/libm">
+        <cTool>
+          <incDir>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libm/common</pElem>
+            <pElem>../../oitools/openisa/newlib/newlib-2.1.0/newlib/libc/include/machine</pElem>
+            <pElem>../../oitools/openisa/newlib/build/oi-elf/newlib/libm/common</pElem>
+          </incDir>
+        </cTool>
+      </folder>
+      <item path="interpreter.cpp" ex="false" tool="1" flavor2="11">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="machine.cpp" ex="false" tool="1" flavor2="11">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="main.cpp" ex="false" tool="1" flavor2="11">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="manager.cpp" ex="false" tool="1" flavor2="11">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="syscall.cpp" ex="false" tool="1" flavor2="11">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>

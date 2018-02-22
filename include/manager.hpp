@@ -28,6 +28,7 @@ namespace dbt {
       spp::sparse_hash_map<uint32_t, OIInstList> OIRegions;
       std::unordered_map<uint32_t, OIInstList> CompiledOIRegions;
       spp::sparse_hash_map<uint32_t, llvm::Module*> IRRegions;
+      std::vector<uint32_t> RegionAddresses;
       volatile intptr_t NativeRegions[1000000];
 
       mutable std::shared_mutex OIRegionsMtx, IRRegionsMtx, NativeRegionsMtx, CompiledOIRegionsMtx;
@@ -41,10 +42,12 @@ namespace dbt {
       std::unique_ptr<IROpt> IRO;
       llvm::orc::IRLazyJIT* IRJIT;
 
+      std::atomic<bool> isRegionRecorging;
       std::atomic<bool> isRunning;
       std::atomic<bool> isFinished;
       std::thread Thr;
 
+      unsigned regionFrequency = 0;
       unsigned CompiledRegions = 0;
       unsigned OICompiled = 0;
       unsigned LLVMCompiled = 0;
@@ -53,6 +56,31 @@ namespace dbt {
       void runPipeline();
 
     public:
+      unsigned getCompiledRegions (void){
+        return CompiledRegions;
+      }
+
+      unsigned getOICompiled (void) {
+        return OICompiled;
+      }
+
+      bool getRegionRecording (void) {
+        return static_cast<bool>(isRegionRecorging);
+      }
+
+      void setRegionRecorging (bool value) {
+        isRegionRecorging = value;
+      }
+
+      unsigned getLLVMCompiled (void) {
+        return LLVMCompiled;
+      }
+
+      float getAvgOptCodeSize (void) {
+        return AvgOptCodeSize;
+      }
+
+
       Manager(unsigned T, OptPolitic O, uint32_t DMO) : NumOfThreads(T), OptMode(O), DataMemOffset(DMO), isRunning(true), 
                                           isFinished(false), Thr(&Manager::runPipeline, this) {
         for (int I = 0; I < 100000; I++)                                    
@@ -70,7 +98,9 @@ namespace dbt {
           Thr.join();
 
         std::cerr << "Compiled Regions: " << std::dec << CompiledRegions << "\n";
-        std::cerr << "Avg Code Size Reduction: " << AvgOptCodeSize/CompiledRegions << "\n";
+        std::cerr << "Avg Code Size Reduction: ";
+        std::cerr << CompiledRegions? AvgOptCodeSize/CompiledRegions : 0;
+        std::cerr << std::endl;
         std::cerr << "Compiled OI: " << OICompiled << "\n";
         std::cerr << "Compiled LLVM: " << LLVMCompiled << "\n";
       }
@@ -101,10 +131,18 @@ namespace dbt {
       }
 
       bool inCodeCache(uint32_t Addrs) {
-        for (auto Region : OIRegions) 
-          for (auto InstAddr : Region.second) 
+        int i = 0;
+        for (auto Region : OIRegions)
+        {
+          for (auto InstAddr : Region.second)
             if (InstAddr[0] == Addrs)
               return true;
+
+            if(i > OIRegions.size())
+              break;
+
+            ++i;
+        }
         return false;
       }
 

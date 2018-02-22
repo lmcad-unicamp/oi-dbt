@@ -5,6 +5,12 @@
 
 using namespace dbt;
 
+#ifdef DEBUG
+  #define CORRECT_ASSERT() assert(Addr>=DataMemOffset && "Error on correcting address. Data memory offset Value < 0!")
+#else
+  #define CORRECT_ASSERT()
+#endif //DEBUG
+
 union HalfUn {
 	char asC_[2];
 	uint16_t asH_;
@@ -69,16 +75,19 @@ Word Machine::getNextInst() {
 
 void Machine::setMemByteAt(uint32_t Addr, uint8_t Value) {
   uint32_t CorrectAddr = Addr - DataMemOffset;
+  CORRECT_ASSERT();
   DataMemory[CorrectAddr] = Value;
 }
 
 uint8_t Machine::getMemByteAt(uint32_t Addr) {
   uint32_t CorrectAddr = Addr - DataMemOffset;
+  CORRECT_ASSERT();
   return DataMemory[CorrectAddr];
 }
 
 uint16_t Machine::getMemHalfAt(uint32_t Addr) {
   uint32_t CorrectAddr = Addr - DataMemOffset;
+  CORRECT_ASSERT();
   HalfUn Half = {DataMemory[CorrectAddr], DataMemory[CorrectAddr+1]};
   return Half.asH_;
 }
@@ -86,12 +95,14 @@ uint16_t Machine::getMemHalfAt(uint32_t Addr) {
 Word Machine::getMemValueAt(uint32_t Addr) {
   uint32_t CorrectAddr = Addr - DataMemOffset;
   Word Bytes;
+  CORRECT_ASSERT();
   Bytes.asI_ = *((uint32_t*)(DataMemory.get() + CorrectAddr)); 
   return Bytes;
 }
 
 void Machine::setMemValueAt(uint32_t Addr, uint32_t Value) {
   uint32_t CorrectAddr = Addr - DataMemOffset;
+  CORRECT_ASSERT();
   *((uint32_t*)(DataMemory.get() + CorrectAddr)) = Value;
 }
 

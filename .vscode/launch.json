@@ -10,17 +10,18 @@
             "request": "launch",
             "program": "${workspaceFolder}/build/oi-dbt",
             
-            "args": ["-bin", "${workspaceFolder}/test/bin/quicksort", "-rft", "net", "-v"],
+            "args": ["-bin", "/home/napoli/Documents/mibench-master/automotive/basicmath/basicmath_small", "-rft", "netplus", "-v", "-hot", "50"],
             "stopAtEntry": true,
             "cwd": "${workspaceFolder}",
-            "externalConsole": true,
+            "externalConsole": false,
+            "internalConsoleOptions": "openOnSessionStart",
             "environment": [],
             "MIMode": "gdb",
             "setupCommands": [
                 {
                     "text": "-enable-pretty-printing", 
                     "ignoreFailures": true,
-                    "externalConsole": true,
+                    "externalConsole": false,
                     "description": "Enable pretty-printing for gdb",
                 }
                    
