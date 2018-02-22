@@ -66,6 +66,7 @@
         "any": "cpp",
         "filesystem": "cpp",
         "memory_resource": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "cerrno": "cpp"
     }
 }

@@ -1,5 +1,5 @@
 susan: susan.c Makefile
-	gcc -static -O4 -o susan susan.c -lm 
+	/home/napoli/Documents/OpenISA/oitools/oi-toolchain/bin/clang -static -O3 -o susan susan.c -lm 
 
 clean:
 	rm -rf susan output*

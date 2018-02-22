@@ -50,26 +50,26 @@ int main(int argc, char *argv[])
   puts("Bit counter algorithm benchmark\n");
 
   for (i = 0; i < FUNCS; i++) {
-    start = clock();
+    //start = clock();
 
     for (j = n = 0, seed = rand(); j < iterations; j++, seed += 13)
 	 n += pBitCntFunc[i](seed);
 
-    stop = clock();
-    ct = (stop - start) / (double)CLOCKS_PER_SEC;
-    if (ct < cmin) {
-	 cmin = ct;
-	 cminix = i;
-    }
-    if (ct > cmax) {
-	 cmax = ct;
-	 cmaxix = i;
-    }
+    //stop = clock();
+    //ct = (stop - start) / (double)CLOCKS_PER_SEC;
+    //if (ct < cmin) {
+	  //cmin = ct;
+	  //cminix = i;
+    //}
+    //if (ct > cmax) {
+	  //cmax = ct;
+	  //cmaxix = i;
+    //}
 
-    printf("%-38s> Time: %7.3f sec.; Bits: %ld\n", text[i], ct, n);
+    //printf("%-38s> Time: %7.3f sec.; Bits: %ld\n", text[i], ct, n);
   }
-  printf("\nBest  > %s\n", text[cminix]);
-  printf("Worst > %s\n", text[cmaxix]);
+  //printf("\nBest  > %s\n", text[cminix]);
+  //printf("Worst > %s\n", text[cmaxix]);
   return 0;
 }
 

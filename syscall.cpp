@@ -1,11 +1,14 @@
 #include <syscall.hpp>
 
 #include <iostream>
+#include <errno.h>
 #include <signal.h>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <fcntl.h>
+#include <ostream>
 
 using namespace dbt;
 
@@ -32,6 +35,25 @@ int LinuxSyscallManager::processSyscall(Machine& M) {
   case SyscallType::Write: {
     ssize_t r = write(M.getRegister(5), (M.getByteMemoryPtr() + (M.getRegister(6) - M.getDataMemOffset())), M.getRegister(7));
     M.setRegister(2, r);
+    return 0;
+  }
+
+  case SyscallType::Open: {
+    char* filename = M.getByteMemoryPtr() + (M.getRegister(5) - M.getDataMemOffset());
+    char* flag = M.getByteMemoryPtr() + (M.getRegister(5) - M.getDataMemOffset()+strlen(filename)+1);
+    ssize_t r = -1;
+
+    if(strcmp(flag, "r") == 0)
+      r = open(filename, O_RDONLY);
+    else if(strcmp(flag, "w") == 0)
+      r = open(filename, O_WRONLY);
+    
+    std::ostringstream buffer;
+    IREmitter::regionDump(filename, buffer, 110);
+    std::cout << buffer.str().c_str();
+    std::cout << flag << std::endl;
+    M.setRegister(2, r);
+    assert(r >= 0 && "Error with file descriptor..");
     return 0;
   }
 

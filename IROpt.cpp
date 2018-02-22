@@ -32,6 +32,8 @@ void dbt::IROpt::optimizeIRFunction(llvm::Module *M, OptLevel Level) {
       BasicPM->add(llvm::createCFGSimplificationPass());
       BasicPM->add(llvm::createReassociatePass());
       BasicPM->add(llvm::createNewGVNPass());
+      BasicPM->add(llvm::createDeadInstEliminationPass());
+      BasicPM->add(llvm::createDeadCodeEliminationPass());
      // BasicPM->add(llvm::createPromoteMemoryToRegisterPass());
      // BasicPM->add(llvm::createInstructionCombiningPass());
      // BasicPM->add(llvm::createLICMPass());
@@ -42,8 +44,6 @@ void dbt::IROpt::optimizeIRFunction(llvm::Module *M, OptLevel Level) {
      // BasicPM->add(llvm::createLoopDeletionPass());         // Delete dead loops
      // BasicPM->add(llvm::createLoopPredicationPass());
      // BasicPM->add(llvm::createSimpleLoopUnrollPass());     // Unroll small loops
-    //  BasicPM->add(llvm::createDeadInstEliminationPass());
-    //  BasicPM->add(llvm::createDeadCodeEliminationPass());
     //  BasicPM->add(llvm::createCFGSimplificationPass());
     //  BasicPM->add(llvm::createInstructionCombiningPass());
 
