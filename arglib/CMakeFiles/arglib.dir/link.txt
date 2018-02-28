@@ -1,2 +1,0 @@
-gcc-ar-7 qcs libarglib.a  CMakeFiles/arglib.dir/arglib.cpp.o
-true
