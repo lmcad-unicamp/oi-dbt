@@ -48,10 +48,6 @@ int LinuxSyscallManager::processSyscall(Machine& M) {
     else if(strcmp(flag, "w") == 0)
       r = open(filename, O_WRONLY);
     
-    std::ostringstream buffer;
-    IREmitter::regionDump(filename, buffer, 110);
-    std::cout << buffer.str().c_str();
-    std::cout << flag << std::endl;
     M.setRegister(2, r);
     assert(r >= 0 && "Error with file descriptor..");
     return 0;

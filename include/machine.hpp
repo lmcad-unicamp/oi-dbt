@@ -67,6 +67,8 @@ namespace dbt {
     uint32_t RegionBeingExecuted; 
 
     std::string BinPath;
+
+    std::unordered_map<uint32_t, std::pair<std::string, uint32_t>> Symbols;
   public:
     Machine() { Register[0] = 0; };
 
@@ -112,6 +114,10 @@ namespace dbt {
     bool isOnNativeExecution(); 
     void setOffNativeExecution(); 
     void setOnNativeExecution(uint32_t); 
+
+    bool isMethodEntry(uint32_t); 
+    uint32_t getMethodEnd(uint32_t); 
+    std::string getMethodName(uint32_t); 
 
     int loadELF(const std::string);
   };

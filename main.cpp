@@ -95,7 +95,7 @@ int main(int argc, char** argv) {
     return 2;
   }
 
-  dbt::Manager TheManager(1, dbt::Manager::OptPolitic::Normal, M.getDataMemOffset());
+  dbt::Manager TheManager(1, dbt::Manager::OptPolitic::Normal, M.getDataMemOffset(), VerboseFlag.was_set());
 
   if (InterpreterFlag.was_set()) {
     RftChosen = std::make_unique<dbt::NullRFT>(TheManager);
@@ -113,9 +113,9 @@ int main(int argc, char** argv) {
     } else if (RFTName == "lei") {
       std::cerr << "LEI rft selected\n";
       RftChosen = std::make_unique<dbt::LEI>(TheManager);
-    } else if (RFTName == "lef") {
-      std::cerr << "LEF rft selected\n";
-      RftChosen = std::make_unique<dbt::LEF>(TheManager);
+    } else if (RFTName == "MB") {
+      std::cerr << "MethodBased rft selected\n";
+      RftChosen = std::make_unique<dbt::MethodBased>(TheManager);
     } else {
       std::cerr << "You should select a valid RFT!\n";
       return 1;
@@ -153,9 +153,6 @@ int main(int argc, char** argv) {
   I.executeAll(M);
   GlobalTimer.stopClock();
 
-  if (VerboseFlag.was_set())
-    RftChosen->printRegions();
-
   GlobalTimer.printReport("Global");
 
   if(ReportFileFlag.was_set())
@@ -186,10 +183,6 @@ int main(int argc, char** argv) {
     else
       std::cerr << "Report Error: Unable to open file: \'" << ReportFileFlag.get_value() << "\' for writting.\n";
   }
-
-
-  //std::cout << "Press any key to continue..." << endl;
-  //getchar();
 
   return SyscallM->getExitStatus();
 }

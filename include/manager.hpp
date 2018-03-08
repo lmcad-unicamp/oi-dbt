@@ -52,6 +52,8 @@ namespace dbt {
       unsigned OICompiled = 0;
       unsigned LLVMCompiled = 0;
       float AvgOptCodeSize = 0;
+
+      bool VerboseOutput = false;
       
       void runPipeline();
 
@@ -80,9 +82,8 @@ namespace dbt {
         return AvgOptCodeSize;
       }
 
-
-      Manager(unsigned T, OptPolitic O, uint32_t DMO) : NumOfThreads(T), OptMode(O), DataMemOffset(DMO), isRunning(true), 
-                                          isFinished(false), Thr(&Manager::runPipeline, this) {
+      Manager(unsigned T, OptPolitic O, uint32_t DMO, bool VO = false) : NumOfThreads(T), OptMode(O), 
+            DataMemOffset(DMO), isRunning(true), isFinished(false), Thr(&Manager::runPipeline, this), VerboseOutput(VO) {
         for (int I = 0; I < 100000; I++)                                    
           NativeRegions[I] = 0;
       }
@@ -132,8 +133,7 @@ namespace dbt {
 
       bool inCodeCache(uint32_t Addrs) {
         int i = 0;
-        for (auto Region : OIRegions)
-        {
+        for (auto Region : OIRegions) {
           for (auto InstAddr : Region.second)
             if (InstAddr[0] == Addrs)
               return true;

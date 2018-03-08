@@ -96,8 +96,7 @@ namespace dbt {
     llvm::Module* generateMergedRegions(std::vector<OIInstList>&, uint32_t, spp::sparse_hash_map<uint32_t, uint32_t>&, llvm::TargetMachine&);
 
 
-    static size_t disassemble(const void* func, std::ostream &buffer)
-    {
+    static size_t disassemble(const void* func, std::ostream &buffer) {
       char outline[1024];
       size_t Size = 0;
       uint64_t pc;
@@ -138,8 +137,7 @@ namespace dbt {
         //Print the instruction.
         buffer << outline << '\n';
 
-        if(static_cast<int>(bytes[pc]) == 0xc3)
-        {
+        if(static_cast<int>(bytes[pc]) == 0xc3) {
           buffer << "RETURN INSTRUCTION BREAK (0xc3)" << std::endl;
           break;
         }

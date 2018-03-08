@@ -1,6 +1,6 @@
 #!/bin/bash
 
-oiclang=~/dev/mestrado/openisa/oi-toolchain/bin/clang
+oiclang=~/dev/openisa/oi-toolchain/bin/clang
 
 
 compile() {

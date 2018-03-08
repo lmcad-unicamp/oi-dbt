@@ -34,18 +34,18 @@ void dbt::IROpt::optimizeIRFunction(llvm::Module *M, OptLevel Level) {
       BasicPM->add(llvm::createNewGVNPass());
       BasicPM->add(llvm::createDeadInstEliminationPass());
       BasicPM->add(llvm::createDeadCodeEliminationPass());
-     // BasicPM->add(llvm::createPromoteMemoryToRegisterPass());
-     // BasicPM->add(llvm::createInstructionCombiningPass());
-     // BasicPM->add(llvm::createLICMPass());
-     // BasicPM->add(llvm::createMemCpyOptPass());
-     // BasicPM->add(llvm::createLoopUnswitchPass());
-     // BasicPM->add(llvm::createInstructionCombiningPass());
-     // BasicPM->add(llvm::createIndVarSimplifyPass());       // Canonicalize indvars
+      BasicPM->add(llvm::createPromoteMemoryToRegisterPass());
+      BasicPM->add(llvm::createInstructionCombiningPass());
+      BasicPM->add(llvm::createLICMPass());
+      BasicPM->add(llvm::createMemCpyOptPass());
+    //  BasicPM->add(llvm::createLoopUnswitchPass());
+      BasicPM->add(llvm::createInstructionCombiningPass());
+      BasicPM->add(llvm::createIndVarSimplifyPass());       // Canonicalize indvars
      // BasicPM->add(llvm::createLoopDeletionPass());         // Delete dead loops
      // BasicPM->add(llvm::createLoopPredicationPass());
      // BasicPM->add(llvm::createSimpleLoopUnrollPass());     // Unroll small loops
-    //  BasicPM->add(llvm::createCFGSimplificationPass());
-    //  BasicPM->add(llvm::createInstructionCombiningPass());
+      BasicPM->add(llvm::createCFGSimplificationPass());
+      BasicPM->add(llvm::createInstructionCombiningPass());
 
       //Debug passes
       //BasicPM->add(llvm::createBitcodeWriterPass(llvm::outs()));

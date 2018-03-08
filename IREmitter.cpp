@@ -985,8 +985,7 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
   }
   static int inst_i = 0;
 
-  for (auto I = inst_begin(Func), E = inst_end(Func); I != E; ++I) 
-  {
+  for (auto I = inst_begin(Func), E = inst_end(Func); I != E; ++I) {
     MDNode* N = MDNode::get(TheContext, MDString::get(TheContext, ""));
     //(*I).setMetadata(OIPrinter::getString(Inst)+"_"+std::to_string(inst_i++)+"\n", N);
   }
@@ -996,7 +995,6 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
 
 void dbt::IREmitter::updateBranchTarget(uint32_t GuestAddr, std::array<uint32_t, 2> Tgts) {
   Function* F = Builder->GetInsertBlock()->getParent();
-
 
   for (int i = 0; i < 2; i++) {
     uint32_t AddrTarget = Tgts[i];
@@ -1064,8 +1062,6 @@ void dbt::IREmitter::processBranchesTargets(const OIInstList& OIRegion) {
       improveIndirectBranch(GuestAddr);
   }
 }
-
-
 
 Module* dbt::IREmitter::generateRegionIR(uint32_t EntryAddress, const OIInstList& OIRegion, uint32_t MemOffset, spp::sparse_hash_map<uint32_t, uint32_t>& BT, TargetMachine& TM) {
   static unsigned int id = 0;
@@ -1167,7 +1163,6 @@ Module* dbt::IREmitter::generateMergedRegions(std::vector<OIInstList>& OIRegions
     else
         Builder->CreateBr(BB);
 
-    
     Builder->SetInsertPoint(BB);
     usedAddresses[region.front()[0]] = BB;
     LastBB = BB;

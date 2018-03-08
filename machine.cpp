@@ -175,10 +175,22 @@ void Machine::setOffNativeExecution() {
   OnNativeExecution   = false;
 }
 
+bool Machine::isMethodEntry(uint32_t Addr) {
+  return Symbols.count(Addr) != 0;
+}
+
+uint32_t Machine::getMethodEnd(uint32_t Addr) {
+  return Symbols[Addr].second;
+}
+
+std::string Machine::getMethodName(uint32_t Addr) {
+  return Symbols[Addr].first;
+}
+
 using namespace ELFIO;
 
-#define STACK_SIZE 100 * 1024 * 1024 /*100mb*/
-#define HEAP_SIZE  100 * 1024 * 1024 /*100mb*/
+#define STACK_SIZE 512 * 1024 * 1024 /*512mb*/
+#define HEAP_SIZE  512 * 1024 * 1024 /*512mb*/
 
 void Machine::reset() {
   for (int I = 0; I < 258; I++) 
@@ -221,6 +233,9 @@ int Machine::loadELF(const std::string ElfPath) {
 
   allocDataMemory(AddressOffset, (TotalDataSize + STACK_SIZE + HEAP_SIZE) + (4 - (TotalDataSize + STACK_SIZE + HEAP_SIZE) % 4));
 
+  std::unordered_map<uint32_t, std::string> SymbolNames;
+  std::set<uint32_t> SymbolStartAddresses;
+
   Started = false;
   for (int i = 0; i < sec_num; ++i) {
     section* psec = reader.sections[i];
@@ -230,9 +245,31 @@ int Machine::loadELF(const std::string ElfPath) {
 
     if (psec->get_name() == ".text") { 
       setCodeMemory(psec->get_address(), psec->get_size(),  psec->get_data());
+      SymbolStartAddresses.insert(psec->get_address() + psec->get_size());
       Started = true;
     }
+
+    if (psec->get_name() == ".symtab") {
+      const symbol_section_accessor symbols(reader, psec);
+      std::string   name = "";
+      Elf64_Addr    value = 0;
+      Elf_Xword     size;
+      unsigned char bind;
+      unsigned char type = 0;
+      Elf_Half      section_index;
+      unsigned char other;
+      for ( unsigned int j = 0; j < symbols.get_symbols_num(); ++j ) {
+        symbols.get_symbol( j, name, value, size, bind, type, section_index, other );
+        if (type == 0 && name != "" && value != 0) { 
+          SymbolStartAddresses.insert(value);
+          SymbolNames[value] = name;
+        }
+      }
+    }
   }
+
+  for (auto I = SymbolStartAddresses.begin(); I != SymbolStartAddresses.end(); ++I) 
+    Symbols[*I] = {SymbolNames[*I], *SymbolStartAddresses.upper_bound(*I)};
 
   setRegister(29, DataMemLimit-STACK_SIZE/4); //StackPointer
   setRegister(30, DataMemLimit-STACK_SIZE/4); //StackPointer

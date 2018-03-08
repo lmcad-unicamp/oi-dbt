@@ -6,7 +6,7 @@
 using namespace dbt;
 using namespace dbt::OIDecoder;
 
-#define PRINTINST
+//#define PRINTINST
 
 #ifdef PRINTINST
 #include <OIPrinter.hpp>

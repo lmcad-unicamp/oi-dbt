@@ -6,7 +6,6 @@ using namespace dbt;
 
 unsigned TotalInst = 0;
 void NET::onBranch(Machine &M) {
-
   if (Recording) { 
     if (OIDecoder::isIndirectBranch(OIDecoder::decode(M.getInstAt(M.getLastPC()).asI_)))
       setBranchTarget(M.getLastPC(), M.getPC());
@@ -29,7 +28,6 @@ void NET::onBranch(Machine &M) {
       }
     }
 
-    
     /*if (M.getPC() < M.getLastPC()) {
       finishRegionFormation(); 
     }*/

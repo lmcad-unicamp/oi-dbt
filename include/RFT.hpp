@@ -63,6 +63,13 @@ namespace dbt {
     void onBranch(dbt::Machine&);
   };
 
+  class MethodBased : public RFT {
+  public:
+    MethodBased(Manager& M) : RFT(M) {};
+
+    void onBranch(dbt::Machine&);
+  };
+
   class MRET2 : public RFT {
   private:
     OIInstList RecordingBufferTmp1, RecordingBufferTmp2;
@@ -94,26 +101,12 @@ namespace dbt {
     void onBranch(dbt::Machine&);
   };
 
-  class LEF : public RFT {
-    spp::sparse_hash_map<uint32_t, bool> CamesFromCall;
-    bool hasRet;
-
-    void expand(uint32_t);
-    void endRecording();
-  public:
-    LEF(Manager& M) : RFT(M), hasRet(false) {};
-
-    void onBranch(dbt::Machine&);
-  };
-
 	class LEI : public RFT {
     #define MAX_SIZE_BUFFER 2000
 
 		struct branch_t {
 			uint32_t src;
 			uint32_t tgt;
-
-    
 		};
 
 		std::vector<branch_t> Buffer;
