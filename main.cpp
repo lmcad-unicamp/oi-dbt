@@ -17,6 +17,7 @@ clarg::argBool   PreheatFlag("-p",  "Run one time to compile all regions and the
 clarg::argBool   VerboseFlag("-v",  "display the compiled regions");
 clarg::argBool   HelpFlag("-h",  "display the help message");
 clarg::argInt    RegionLimitSize("-l", "region size limit", 0);
+clarg::argString ToCompileFlag("-tc", "Functions to compile", "");
 
 void usage(char* PrgName) {
   cout << "Version: 0.0.1 (07-02-2018)\n\n";
@@ -115,7 +116,10 @@ int main(int argc, char** argv) {
       RftChosen = std::make_unique<dbt::LEI>(TheManager);
     } else if (RFTName == "MB") {
       std::cerr << "MethodBased rft selected\n";
-      RftChosen = std::make_unique<dbt::MethodBased>(TheManager);
+      if (ToCompileFlag.was_set())
+        RftChosen = std::make_unique<dbt::MethodBased>(TheManager, ToCompileFlag.get_value());
+      else 
+        RftChosen = std::make_unique<dbt::MethodBased>(TheManager);
     } else {
       std::cerr << "You should select a valid RFT!\n";
       return 1;

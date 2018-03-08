@@ -9,6 +9,7 @@
 #include <vector>
 #include <array>
 #include <set>
+#include <fstream>
 
 #define OIInstList std::vector<std::array<uint32_t,2>>
 
@@ -64,8 +65,24 @@ namespace dbt {
   };
 
   class MethodBased : public RFT {
-  public:
-    MethodBased(Manager& M) : RFT(M) {};
+    std::set<std::string> ToCompile;
+    bool CompileOnlyHot = false;
+   public:
+    MethodBased(Manager& M, std::string PathToTCList = "") : RFT(M) {
+      if (PathToTCList != "") {
+        std::ifstream infile(PathToTCList);
+        double FuncCoverage;
+        std::string FuncName;
+        double TotalCoverage = 0;
+        while (infile >> FuncCoverage >> FuncName)  {
+          ToCompile.insert(FuncName);
+          CompileOnlyHot = true;
+          TotalCoverage += FuncCoverage;
+          if (TotalCoverage > 98) 
+            break;
+        } 
+      }
+    };
 
     void onBranch(dbt::Machine&);
   };
