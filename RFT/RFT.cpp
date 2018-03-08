@@ -38,13 +38,16 @@ bool dbt::RFT::hasRecordedAddrs(uint32_t Addrs) {
   return false;
 }
 
-void dbt::RFT::finishRegionFormation() {
+bool dbt::RFT::finishRegionFormation() {
+  bool Added = false; 
   if (OIRegion.size() > 0 && hasRecordedAddrs(RecordingEntry)) { 
-    TheManager.addOIRegion(RecordingEntry, OIRegion, BranchesTargets);
-    Total += OIRegion.size();
+    Added = TheManager.addOIRegion(RecordingEntry, OIRegion, BranchesTargets);
+    if (Added)
+      Total += OIRegion.size();
   }
   OIRegion.clear();
   Recording = false;
+  return Added;
 }
 
 void dbt::RFT::printRegions() {

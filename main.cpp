@@ -122,8 +122,7 @@ int main(int argc, char** argv) {
     }
   }
 
-  if(HotnessFlag.was_set())
-  {
+  if(HotnessFlag.was_set()) {
     std::cerr << "The Hotness Threshold is set to " << HotnessFlag.get_value() << std::endl;
     RftChosen->setHotnessThreshold(HotnessFlag.get_value());
   }
@@ -155,13 +154,11 @@ int main(int argc, char** argv) {
 
   GlobalTimer.printReport("Global");
 
-  if(ReportFileFlag.was_set())
-  {
+  if(ReportFileFlag.was_set()) {
     ofstream report;
     report.open(ReportFileFlag.get_value());
 
-    if(report.is_open()) 
-    {
+    if(report.is_open()) {
       report << "No. Compiled Regions | " 
              << "Avg Code Size Reduction | "
              << "No. OI Instructions Compiled | " 

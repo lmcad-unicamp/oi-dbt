@@ -106,7 +106,7 @@ namespace dbt {
         std::cerr << "Compiled LLVM: " << LLVMCompiled << "\n";
       }
 
-      void addOIRegion(uint32_t, OIInstList, spp::sparse_hash_map<uint32_t, uint32_t>);
+      bool addOIRegion(uint32_t, OIInstList, spp::sparse_hash_map<uint32_t, uint32_t>);
 
       int32_t jumpToRegion(uint32_t, dbt::Machine&);
 

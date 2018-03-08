@@ -9,13 +9,15 @@ void MethodBased::onBranch(Machine &M) {
     auto Next = TheManager.jumpToRegion(M.getPC(), M); 
     M.setPC(Next);
   } else if (M.isMethodEntry(M.getPC())) {
-    std::cout << "Compiling " << M.getMethodName(M.getPC()) << "\n";
     startRegionFormation(M.getPC());
     for (uint32_t Addr = M.getPC(); Addr < M.getMethodEnd(M.getPC()); Addr += 4) 
       insertInstruction(Addr, M.getInstAt(Addr).asI_); 
-    finishRegionFormation();
-
-    while (!TheManager.isNativeRegionEntry(M.getPC())) {
+    bool Inserted = finishRegionFormation();
+    if (Inserted) {
+      std::cout << "Compiling " << M.getMethodName(M.getPC()) << " " << M.getPC() << " -> " << M.getMethodEnd(M.getPC())<< " ("<< TheManager.getNumOfOIRegions() << ")\n";
+      std::cout << "Waiting for it....";
+      while (!TheManager.isNativeRegionEntry(M.getPC())) {}
+      std::cout << "Done.\n";
       auto Next = TheManager.jumpToRegion(M.getPC(), M); 
       M.setPC(Next);
     }

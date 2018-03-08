@@ -32,15 +32,14 @@ void Manager::runPipeline() {
       OIRegionsMtx.unlock_shared();
     } 
 
-    if (OIRegion.size() == 0) { 
+    if (OIRegion.size() == 0) 
       continue;
-    }
 
     CompiledOIRegionsMtx.lock();
     CompiledOIRegions[EntryAddress] = OIRegion; 
     CompiledOIRegionsMtx.unlock();
 
-    if (VerboseOutput)
+    if (VerboseOutput) 
       std::cerr << "Trying to compile: " << std::hex <<  EntryAddress << std::dec << "...";
 
     OICompiled += OIRegion.size();
@@ -84,6 +83,7 @@ void Manager::runPipeline() {
 
     auto Addr = IRJIT->findSymbol("r"+std::to_string(EntryAddress)).getAddress();
 
+
     if (Addr)
       NativeRegions[EntryAddress] = static_cast<intptr_t>(*Addr);
     else 
@@ -112,21 +112,22 @@ void Manager::runPipeline() {
   isFinished = true;
 }
 
-void Manager::addOIRegion(uint32_t EntryAddress, OIInstList OIRegion, spp::sparse_hash_map<uint32_t, uint32_t> BrTargets) {
+bool Manager::addOIRegion(uint32_t EntryAddress, OIInstList OIRegion, spp::sparse_hash_map<uint32_t, uint32_t> BrTargets) {
   if (!isRegionEntry(EntryAddress) && OIRegion.size() > 3) {
     OIRegionsMtx.lock();
     OIRegions[EntryAddress]   = OIRegion;
     OIBrTargets[EntryAddress] = BrTargets;
     OIRegionsMtx.unlock();
+    return true;
   }
+  return false;
 }
 
 int32_t Manager::jumpToRegion(uint32_t EntryAddress, dbt::Machine& M) {
   uint32_t JumpTo = EntryAddress;
 
-  if(isRegionRecorging) {
+  if(isRegionRecorging) 
     RegionAddresses.clear();
-  }
 
   while (isNativeRegionEntry(JumpTo)) {
     uint32_t LastTo = JumpTo;

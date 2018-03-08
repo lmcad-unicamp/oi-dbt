@@ -28,13 +28,6 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
   int instructions = 10;
   auto lastFuncInst = inst_end(Func);
 
-  // if(!Func->isDeclaration())
-  // {
-  //   MDNode* N = MDNode::get(C, MDString::get(C, std::to_string(instructions)+"OLA"));
-  //   //auto BB = Func->getBasicBlockList().end();
-  //   Func->setMetadata("stats.insts.md", N);
-  // }
-
   switch (Inst.Type) {
     case dbt::OIDecoder::Nop: {
         Value* Res = Builder->CreateOr(genImm(0), genImm(0)); 
@@ -1106,8 +1099,7 @@ Module* dbt::IREmitter::generateRegionIR(uint32_t EntryAddress, const OIInstList
   return TheModule;
 }
 
-Module* dbt::IREmitter::generateMergedRegions(std::vector<OIInstList>& OIRegions, uint32_t MemOffset, spp::sparse_hash_map<uint32_t, uint32_t>& BT, TargetMachine& TM)
-{
+Module* dbt::IREmitter::generateMergedRegions(std::vector<OIInstList>& OIRegions, uint32_t MemOffset, spp::sparse_hash_map<uint32_t, uint32_t>& BT, TargetMachine& TM) {
   static unsigned int id = 0;
   Module* TheModule = new Module(std::to_string(id), TheContext);
   TheModule->setDataLayout(TM.createDataLayout());
@@ -1142,26 +1134,24 @@ Module* dbt::IREmitter::generateMergedRegions(std::vector<OIInstList>& OIRegions
   
   BasicBlock *FBB = BasicBlock::Create(TheContext, "End", F);
   
-  for (int i = 0; i<OIRegions.size(); ++i)
-  {
+  for (int i = 0; i<OIRegions.size(); ++i) {
     auto region = OIRegions[i];
     BasicBlock *BB = BasicBlock::Create(TheContext, "", F);
     
-    if(LastRes)
-    {
-        if(usedAddresses[region.front()[0]])
-        {
+    if(LastRes) {
+        if(usedAddresses[region.front()[0]]) {
             Builder->CreateCondBr(LastRes, BB, FBB);
             //PC next PC
             LastRes = Builder->CreateICmpEQ(genImm(OIRegions[i-1].back()[0]+4), genImm(region.front()[0]));
             LastBB = BB;
             continue;
         }
-        else
+        else {
             Builder->CreateCondBr(LastRes, BB, FBB);
-    }
-    else
+        }
+    } else {
         Builder->CreateBr(BB);
+    }
 
     Builder->SetInsertPoint(BB);
     usedAddresses[region.front()[0]] = BB;
@@ -1173,12 +1163,11 @@ Module* dbt::IREmitter::generateMergedRegions(std::vector<OIInstList>& OIRegions
     }
     
     //Insert Compare if yes then:
-    if(i>0)
+    if (i > 0) {
       LastRes = Builder->CreateICmpEQ(genImm(OIRegions[i-1].back()[0]+4), genImm(region.front()[0]));
-    else
+    } else {
       LastRes = Builder->CreateICmpEQ(genImm(OIRegions[i+1].front()[0]+4), genImm(region.back()[0]));
-
-    //insertDirectExit();
+    }
   }
 
   Builder->CreateBr(FBB);

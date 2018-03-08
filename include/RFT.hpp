@@ -33,7 +33,7 @@ namespace dbt {
     Manager& TheManager;
 
     void startRegionFormation(uint32_t); 
-    void finishRegionFormation(); 
+    bool finishRegionFormation(); 
     void insertInstruction(uint32_t, uint32_t);
     void setBranchTarget(uint32_t, uint32_t);
     void insertInstruction(std::array<uint32_t, 2>&);
