@@ -187,18 +187,19 @@ std::string Machine::getMethodName(uint32_t Addr) {
   return Symbols[Addr].first;
 }
 
+std::vector<uint32_t> Machine::getVectorOfMethodEntries() {
+  std::vector<uint32_t> R;
+  for (auto KV : Symbols)
+    R.push_back(KV.first);
+  return R;
+}
+
 using namespace ELFIO;
 
 #define STACK_SIZE 512 * 1024 * 1024 /*512mb*/
 #define HEAP_SIZE  512 * 1024 * 1024 /*512mb*/
 
 void Machine::reset() {
-  for (int I = 0; I < 258; I++) 
-    Register[I] = 0;
-
-  for (unsigned I = DataMemOffset; I < DataMemLimit; I++) 
-    (DataMemory.get())[I] = 0;
-
   loadELF(BinPath);
 }
 

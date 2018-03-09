@@ -83,7 +83,6 @@ void Manager::runPipeline() {
 
     auto Addr = IRJIT->findSymbol("r"+std::to_string(EntryAddress)).getAddress();
 
-
     if (Addr)
       NativeRegions[EntryAddress] = static_cast<intptr_t>(*Addr);
     else 
@@ -136,8 +135,8 @@ int32_t Manager::jumpToRegion(uint32_t EntryAddress, dbt::Machine& M) {
       RegionAddresses.push_back(LastTo);
 
     M.setOnNativeExecution(JumpTo);
-    uint32_t (*FP)(int32_t*, uint32_t*) = (uint32_t (*)(int32_t*, uint32_t*)) NativeRegions[JumpTo];    
-    JumpTo = FP(M.getRegisterPtr(), M.getMemoryPtr());
+    uint32_t (*FP)(int32_t*, uint32_t*, volatile uint64_t*) = (uint32_t (*)(int32_t*, uint32_t*, volatile uint64_t*)) NativeRegions[JumpTo];    
+    JumpTo = FP(M.getRegisterPtr(), M.getMemoryPtr(), NativeRegions);
   }
 
   M.setOffNativeExecution();

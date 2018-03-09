@@ -138,7 +138,7 @@ int main(int argc, char** argv) {
   SyscallM = std::make_unique<dbt::LinuxSyscallManager>();
 
   if (PreheatFlag.was_set()) {
-    std::cerr << "Preheating... ";
+    std::cout << "Preheating...\n";
     dbt::ITDInterpreter I(*SyscallM.get(), *RftChosen.get());
     I.executeAll(M);
     std::cerr << "done\n";
@@ -164,16 +164,16 @@ int main(int argc, char** argv) {
 
     if(report.is_open()) {
       report << "No. Compiled Regions | " 
-             << "Avg Code Size Reduction | "
-             << "No. OI Instructions Compiled | " 
-             << "No. LLVM compiled | "
-             << "No. of Native Instructions Executed | "
-             << "Total Cycles | "
-             << "Conditional Branch Instructions Executed | "
-             << "Conditional Branch Instructions Misses | "
-             << "Total L1 I-Cache misses | "
-             << "Time (s)"
-             << "\n";
+        << "Avg Code Size Reduction | "
+        << "No. OI Instructions Compiled | " 
+        << "No. LLVM compiled | "
+        << "No. of Native Instructions Executed | "
+        << "Total Cycles | "
+        << "Conditional Branch Instructions Executed | "
+        << "Conditional Branch Instructions Misses | "
+        << "Total L1 I-Cache misses | "
+        << "Time (s)"
+        << "\n";
       report << std::dec << TheManager.getCompiledRegions() << std::endl;
       report << TheManager.getAvgOptCodeSize()/TheManager.getCompiledRegions() << std::endl;
       report << TheManager.getOICompiled() << std::endl;
@@ -196,4 +196,4 @@ int main(int argc, char** argv) {
  *  - Make improvements on the code (commit)
  *  - Make improvements on the performance (commit)
  *  ---------------------------------------------------- Until: 24 May
-*/
+ */

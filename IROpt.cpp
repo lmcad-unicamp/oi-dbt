@@ -38,12 +38,12 @@ void dbt::IROpt::optimizeIRFunction(llvm::Module *M, OptLevel Level) {
       BasicPM->add(llvm::createInstructionCombiningPass());
       BasicPM->add(llvm::createLICMPass());
       BasicPM->add(llvm::createMemCpyOptPass());
-    //  BasicPM->add(llvm::createLoopUnswitchPass());
+      BasicPM->add(llvm::createLoopUnswitchPass());
       BasicPM->add(llvm::createInstructionCombiningPass());
       BasicPM->add(llvm::createIndVarSimplifyPass());       // Canonicalize indvars
-     // BasicPM->add(llvm::createLoopDeletionPass());         // Delete dead loops
-     // BasicPM->add(llvm::createLoopPredicationPass());
-     // BasicPM->add(llvm::createSimpleLoopUnrollPass());     // Unroll small loops
+      BasicPM->add(llvm::createLoopDeletionPass());         // Delete dead loops
+      BasicPM->add(llvm::createLoopPredicationPass());
+      BasicPM->add(llvm::createSimpleLoopUnrollPass());     // Unroll small loops
       BasicPM->add(llvm::createCFGSimplificationPass());
       BasicPM->add(llvm::createInstructionCombiningPass());
 

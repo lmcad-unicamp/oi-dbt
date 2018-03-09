@@ -29,7 +29,7 @@ namespace dbt {
       std::unordered_map<uint32_t, OIInstList> CompiledOIRegions;
       spp::sparse_hash_map<uint32_t, llvm::Module*> IRRegions;
       std::vector<uint32_t> RegionAddresses;
-      volatile intptr_t NativeRegions[1000000];
+      volatile uint64_t NativeRegions[1000000];
 
       mutable std::shared_mutex OIRegionsMtx, IRRegionsMtx, NativeRegionsMtx, CompiledOIRegionsMtx;
 
