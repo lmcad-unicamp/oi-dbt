@@ -955,8 +955,17 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         std::array<Type*, 3> ArgsType = {Type::getInt32PtrTy(TheContext), Type::getInt32PtrTy(TheContext), Type::getInt64PtrTy(TheContext)};
         FunctionType *FT = FunctionType::get(Type::getInt32Ty(TheContext), ArgsType, false); 
         Value* V = Builder->CreateIntToPtr(HostTarget, PointerType::get(FT,0));
-        Builder->CreateCall(V, {CastedPtr1, CastedPtr2, CastedPtr3});
+
+        Value *Ret = Builder->CreateCall(V, {CastedPtr1, CastedPtr2, CastedPtr3});
+        Value *Cond2 = Builder->CreateICmpEQ(genImm(GuestAddr+4), Ret);
+        BasicBlock* T2 = BasicBlock::Create(TheContext, "RetRight", Func);
+        BasicBlock* F2 = BasicBlock::Create(TheContext, "RetWrong", Func);
+        Builder->CreateCondBr(Cond2, T2, F2);
+
+        Builder->SetInsertPoint(T2);
         Builder->CreateBr(BB);
+        Builder->SetInsertPoint(F2);
+        Builder->CreateRet(Ret);
 
         Builder->SetInsertPoint(T);
         BranchInst* Br = Builder->CreateBr(BB);

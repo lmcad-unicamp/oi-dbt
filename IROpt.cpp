@@ -45,9 +45,9 @@ void dbt::IROpt::optimizeIRFunction(llvm::Module *M, OptLevel Level) {
 
 /*      llvm::PassManagerBuilder Builder;
       Builder.OptLevel = 3;
-      Builder.SizeLevel = 0;*/
+      Builder.SizeLevel = 0;
 
-//      Builder.populateFunctionPassManager(*BasicPM.get());
+      Builder.populateFunctionPassManager(*BasicPM.get());*/
 
       BasicPM->doInitialization();
     }
