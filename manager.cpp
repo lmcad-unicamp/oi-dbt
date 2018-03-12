@@ -44,16 +44,19 @@ void Manager::runPipeline() {
 
     OICompiled += OIRegion.size();
 
-    auto Module = IRE->generateRegionIR(EntryAddress, OIRegion, DataMemOffset, BrTargets, IRJIT->getTargetMachine()); 
+    auto Module = IRE->generateRegionIR(EntryAddress, OIRegion, DataMemOffset, BrTargets, IRJIT->getTargetMachine(), NativeRegions); 
 
-    if (VerboseOutput) {
+    if (VerboseOutput)
+      Module->print(llvm::errs(), nullptr);
+
+/*    if (VerboseOutput) {
       std::cout << "---------------------- Printing OIRegion (OpenISA instr.) --------------------" << std::endl;
 
       for (auto Pair : OIRegion)
         std::cout << std::hex << Pair[0] << ":\t" << dbt::OIPrinter::getString(OIDecoder::decode(Pair[1])) << "\n";
 
       std::cout << "\n" << std::endl;
-    }
+    }*/
 
     unsigned Size = 1;
     for (auto& F : *Module) 
@@ -135,7 +138,7 @@ int32_t Manager::jumpToRegion(uint32_t EntryAddress, dbt::Machine& M) {
       RegionAddresses.push_back(LastTo);
 
     M.setOnNativeExecution(JumpTo);
-    uint32_t (*FP)(int32_t*, uint32_t*, volatile uint64_t*) = (uint32_t (*)(int32_t*, uint32_t*, volatile uint64_t*)) NativeRegions[JumpTo];    
+    uint32_t (*FP)(int32_t*, uint32_t*, volatile uint64_t*) = (uint32_t (*)(int32_t*, uint32_t*, volatile uint64_t*)) NativeRegions[JumpTo]; 
     JumpTo = FP(M.getRegisterPtr(), M.getMemoryPtr(), NativeRegions);
   }
 

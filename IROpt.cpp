@@ -15,15 +15,11 @@
 #include "llvm/Transforms/Utils/Cloning.h"
 #include "llvm/IR/Verifier.h"
 #include "llvm/Support/raw_ostream.h"
+#include "llvm/Transforms/IPO/PassManagerBuilder.h"
 #include "timer.hpp"
-
 
 void dbt::IROpt::optimizeIRFunction(llvm::Module *M, OptLevel Level) {
   // Lazy initialization
-  //
-  
-  //llvm::raw_ostream buffer;
-
   if (Level == OptLevel::Basic) {
     if (!BasicPM) {
       BasicPM = std::make_unique<llvm::legacy::FunctionPassManager>(M);
@@ -47,34 +43,16 @@ void dbt::IROpt::optimizeIRFunction(llvm::Module *M, OptLevel Level) {
       BasicPM->add(llvm::createCFGSimplificationPass());
       BasicPM->add(llvm::createInstructionCombiningPass());
 
-      //Debug passes
-      //BasicPM->add(llvm::createBitcodeWriterPass(llvm::outs()));
-      //TM->addPassesToEmitFile(BasicPM, buffer.get(), TargetMachine::CGFT_ObjectFile, false);
+/*      llvm::PassManagerBuilder Builder;
+      Builder.OptLevel = 3;
+      Builder.SizeLevel = 0;*/
+
+//      Builder.populateFunctionPassManager(*BasicPM.get());
 
       BasicPM->doInitialization();
     }
 
     for (auto &F : *M)
       BasicPM->run(F);
-
-    //llvm::legacy::PassManager pPM;
-    //auto PM = std::make_unique<llvm::legacy::PassManager>(M);
-
-    //PM.add(new TargetLibraryInfoWrapperPass(Triple(TargetMachine::getTargetTriple())));
-    // PM.add(llvm::createTargetTransformInfoWrapperPass(TargetMachine::getTargetIRAnalysis()));
-
-    // std::unique_ptr<raw_fd_ostream> unopt_bc_OS;
-    // std::unique_ptr<raw_fd_ostream> bc_OS;
-    // std::unique_ptr<raw_fd_ostream> obj_OS;
-
-    // int FD;
-    // std::error_code EC = sys::fs::openFileForWrite("/home/napoli/nop1", FD, sys::fs::F_None);
-    // unopt_bc_OS.reset(new raw_fd_ostream(FD, true));
-
-    // if(EC)
-    //   return -1;
-
   }
-
-  //llvm::outs() << buffer << "\n";
 }

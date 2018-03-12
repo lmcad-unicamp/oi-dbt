@@ -23,6 +23,7 @@
 using namespace llvm;
 
 void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecoder::OIInst Inst) {
+//  std::cout << OIPrinter::getString(Inst) << "\n";
   Function* Func = Builder->GetInsertBlock()->getParent();
   LLVMContext& C = Func->getContext();
   int instructions = 10;
@@ -930,20 +931,41 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
       }
 
     case dbt::OIDecoder::Call: {
-        std::array<Type*, 3> ArgsType = {Type::getInt32PtrTy(TheContext), Type::getInt32PtrTy(TheContext), Type::getInt64PtrTy(TheContext)};
-        FunctionType *FT = FunctionType::get(Type::getInt32Ty(TheContext), ArgsType, false); 
-
-        auto V = Builder->CreateIntToPtr(genImm(GuestAddr + 4), FT);
-        Builder->CreateCall(Builder->CreateLoad(V), {});
+        auto GuestTarget = ((GuestAddr & 0xF0000000) | (Inst.Addrs << 2));
 
         Value* Res = genStoreRegister(31, genImm(GuestAddr + 4), Func);
-        BasicBlock* BB = BasicBlock::Create(TheContext, "", Func);
+
+        Argument *ArgDataMemPtr1 = &*(Func->arg_begin());
+        Value *CastedPtr1 = Builder->CreatePointerCast(ArgDataMemPtr1, Type::getIntNPtrTy(TheContext, 32));
+        Argument *ArgDataMemPtr2 = &*(Func->arg_begin()+1);
+        Value *CastedPtr2 = Builder->CreatePointerCast(ArgDataMemPtr2, Type::getIntNPtrTy(TheContext, 32));
+        Argument *ArgDataMemPtr3 = &*(Func->arg_begin()+2);
+        Value *CastedPtr3 = Builder->CreatePointerCast(ArgDataMemPtr3, Type::getIntNPtrTy(TheContext, 64));
+
+        Value *GEP = Builder->CreateGEP(CastedPtr3, genImm(GuestTarget));
+        Value *HostTarget = Builder->CreateLoad(GEP);
+        Value *Cond = Builder->CreateICmpEQ(HostTarget, Builder->CreateZExt(genImm(0), Type::getInt64Ty(TheContext)));
+
+        BasicBlock* T = BasicBlock::Create(TheContext, "CallNonNative", Func);
+        BasicBlock* F = BasicBlock::Create(TheContext, "CallNative'", Func);
+        BasicBlock* BB = BasicBlock::Create(TheContext, "AfterCall", Func);
+        Builder->CreateCondBr(Cond, T, F);
+
+        Builder->SetInsertPoint(F);
+        std::array<Type*, 3> ArgsType = {Type::getInt32PtrTy(TheContext), Type::getInt32PtrTy(TheContext), Type::getInt64PtrTy(TheContext)};
+        FunctionType *FT = FunctionType::get(Type::getInt32Ty(TheContext), ArgsType, false); 
+        Value* V = Builder->CreateIntToPtr(HostTarget, PointerType::get(FT,0));
+        Builder->CreateCall(V, {CastedPtr1, CastedPtr2, CastedPtr3});
+        Builder->CreateBr(BB);
+
+        Builder->SetInsertPoint(T);
         BranchInst* Br = Builder->CreateBr(BB);
         Builder->SetInsertPoint(BB);
-        setIfNotTheFirstInstGen(Res);
         IRBranchMap[GuestAddr] = Br;
+
+        setIfNotTheFirstInstGen(Res);
         break;
-      }
+    }
 
     case dbt::OIDecoder::Callr: { // TODO: improve indirect Jump
         Value* Res = genStoreRegister(31, genImm(GuestAddr + 4), Func);
@@ -1062,7 +1084,8 @@ void dbt::IREmitter::processBranchesTargets(const OIInstList& OIRegion) {
   }
 }
 
-Module* dbt::IREmitter::generateRegionIR(uint32_t EntryAddress, const OIInstList& OIRegion, uint32_t MemOffset, spp::sparse_hash_map<uint32_t, uint32_t>& BT, TargetMachine& TM) {
+Module* dbt::IREmitter::generateRegionIR(uint32_t EntryAddress, const OIInstList& OIRegion, uint32_t MemOffset, spp::sparse_hash_map<uint32_t, uint32_t>& BT, TargetMachine& TM, volatile uint64_t* NativeRegions) {
+  CurrentNativeRegions = NativeRegions;
   static unsigned int id = 0;
   Module* TheModule = new Module(std::to_string(id), TheContext);
   TheModule->setDataLayout(TM.createDataLayout());
@@ -1074,7 +1097,7 @@ Module* dbt::IREmitter::generateRegionIR(uint32_t EntryAddress, const OIInstList
   BrTargets = BT;
   DataMemOffset     = MemOffset;
   CurrentEntryAddrs = EntryAddress;
-  std::array<Type*, 2> ArgsType = {Type::getInt32PtrTy(TheContext), Type::getInt32PtrTy(TheContext)};
+  std::array<Type*, 3> ArgsType = {Type::getInt32PtrTy(TheContext), Type::getInt32PtrTy(TheContext), Type::getInt64PtrTy(TheContext)};
   FunctionType *FT = FunctionType::get(Type::getInt32Ty(TheContext), ArgsType, false);
   Function *F = Function::Create(FT, Function::ExternalLinkage, "r" + std::to_string(EntryAddress), TheModule);
   
@@ -1140,7 +1163,7 @@ Module* dbt::IREmitter::generateMergedRegions(std::vector<OIInstList>& OIRegions
   
   BasicBlock *FBB = BasicBlock::Create(TheContext, "End", F);
   
-  for (int i = 0; i<OIRegions.size(); ++i) {
+  for (int i = 0; i < OIRegions.size(); ++i) {
     auto region = OIRegions[i];
     BasicBlock *BB = BasicBlock::Create(TheContext, "", F);
     

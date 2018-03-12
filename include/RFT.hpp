@@ -84,6 +84,7 @@ namespace dbt {
       }
     };
 
+    void addFunctionToCompile(uint32_t, Machine&);
     void onBranch(dbt::Machine&);
   };
 

@@ -41,6 +41,7 @@ namespace dbt {
 		llvm::LLVMContext TheContext;
 		std::unordered_map<std::string, llvm::Value*> NamedValues;
 		std::unique_ptr<llvm::IRBuilder<>> Builder;
+    volatile uint64_t* CurrentNativeRegions;
 
     uint32_t DataMemOffset;
     uint32_t CurrentEntryAddrs;
@@ -91,10 +92,9 @@ namespace dbt {
     }
 
     llvm::Module* generateRegionIR(uint32_t, const OIInstList&, uint32_t, spp::sparse_hash_map<uint32_t, uint32_t>&,
-        llvm::TargetMachine&);
+        llvm::TargetMachine&, volatile uint64_t* NativeRegions);
 
     llvm::Module* generateMergedRegions(std::vector<OIInstList>&, uint32_t, spp::sparse_hash_map<uint32_t, uint32_t>&, llvm::TargetMachine&);
-
 
     static size_t disassemble(const void* func, std::ostream &buffer) {
       char outline[1024];
@@ -155,18 +155,14 @@ namespace dbt {
       return pc;
     }
 
-
-    static size_t regionDump (const void* func, std::ostream &buffer, size_t size)
-    {
+    static size_t regionDump (const void* func, std::ostream &buffer, size_t size) {
       const uint8_t *bytes = (const uint8_t *) func;
 
-      for (int i=0; i<size; i++)
-      {
+      for (int i=0; i<size; i++) {
         if(i % 16 == 0)
           buffer << "\n" << std::setw(4) << std::hex << i << ":\t";
         else if(i%8 == 0)
           buffer << "| ";
-
 
         buffer << std::hex << std::setfill('0') << std::setw(2) << static_cast<unsigned int> (bytes[i]) << " ";
       }
@@ -175,9 +171,6 @@ namespace dbt {
       return 0;
     }
   };
-
-  
-
 }
 
 #endif

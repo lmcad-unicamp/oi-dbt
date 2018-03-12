@@ -164,8 +164,6 @@ void Quick (int run) {
     Quicksort(sortlist,1,sortelements);
     if ( (sortlist[1] != littlest) || (sortlist[sortelements] != biggest) )	printf ( " Error in Quick.\n");
 	  //printf("QUICK: %d (sorted elements: %d)\n", sortlist[run + 1], sortelements);
-
-
 }
 
 int main()
