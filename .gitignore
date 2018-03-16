@@ -33,3 +33,5 @@ test/experiments/
 test/notworking/
 build/
 docs/
+.vscode/
+test/mibench-master/

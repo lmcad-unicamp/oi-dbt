@@ -77,6 +77,8 @@ namespace dbt {
     void setCodeMemory(uint32_t, uint32_t, const char*);
     void addDataMemory(uint32_t, uint32_t, const char*);
 
+    void setArgumentsForBin(std::string);
+
     uint32_t getLastPC();
     uint32_t getPC();
     void setPC(uint32_t);

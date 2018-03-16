@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/build/oi-dbt",
             
-            "args": ["-bin", "/home/napoli/Documents/OpenISA/oi-dbt/oi-dbt/test/mibench-master/automotive/qsort/qsort_small", "-rft", "netplus", "-v", "-hot", "50"],
+            "args": ["-bin", "/home/napoli/Documents/OpenISA/oi-dbt/oi-dbt/test/bin/argv_param-oi", "-rft", "netplus", "-v", "-hot", "50", "--args", "argvposition"],
             "stopAtEntry": true,
             "cwd": "${workspaceFolder}",
             "externalConsole": false,

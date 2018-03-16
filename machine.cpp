@@ -43,6 +43,29 @@ void Machine::addDataMemory(uint32_t StartAddress, uint32_t Size, const char* Da
   copystr(DataMemory.get() + Offset, DataBuffer, Size);
 }
 
+void Machine::setArgumentsForBin(std::string parameters)
+{
+  char *p;
+  std::istringstream iss(parameters);
+  
+  std::vector<std::string> argv(std::istream_iterator<std::string>{iss}, std::istream_iterator<std::string>());
+  //dataMem = dataMem + (DataMemLimit/4); 
+  int offset = DataMemOffset;
+
+
+  DataMemory[offset] =  (char) argv.size()+1;
+
+  offset -= BinPath.length()-1;
+  strcpy(&(DataMemory[offset]), BinPath.c_str());
+
+
+  for (auto argument : argv)
+  {
+    offset -= argument.length()-1;
+    strcpy(&(DataMemory[offset]), argument.c_str());
+  }
+}
+
 uint32_t Machine::getPC() {
   return PC;
 }

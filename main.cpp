@@ -4,6 +4,7 @@
 #include <manager.hpp>
 #include <syscall.hpp>
 #include <timer.hpp>
+#include <algorithm>
 
 #include <iostream>
 #include <memory>
@@ -18,12 +19,13 @@ clarg::argBool   VerboseFlag("-v",  "display the compiled regions");
 clarg::argBool   HelpFlag("-h",  "display the help message");
 clarg::argInt    RegionLimitSize("-l", "region size limit", 0);
 clarg::argString ToCompileFlag("-tc", "Functions to compile", "");
+clarg::argString ArgumentsFlag("--args", "Pass Parameters to binary file (as string)", "");
 
 void usage(char* PrgName) {
   cout << "Version: 0.0.1 (07-02-2018)\n\n";
 
   cout << "Usage: " << PrgName << 
-    " [-rft {net, mret2, lef, lei, netplus}] [-interpreter] -bin PathToBinary\n\n";
+    " [-rft {net, mret2, lef, lei, netplus, mb}] [-interpret] -bin PathToBinary\n\n";
 
   cout << "DESCRIPTION:\n";
   cout << "This program implements the OpenISA DBT (Dynamic Binary Translator)\n" <<
@@ -102,6 +104,8 @@ int main(int argc, char** argv) {
     RftChosen = std::make_unique<dbt::NullRFT>(TheManager);
   } else {
     std::string RFTName = RFTFlag.get_value();
+    transform(RFTName.begin(), RFTName.end(), RFTName.begin(), ::tolower);
+
     if (RFTName == "net") {
       std::cerr << "NET RFT Selected\n";
       RftChosen = std::make_unique<dbt::NET>(TheManager);
@@ -114,7 +118,7 @@ int main(int argc, char** argv) {
     } else if (RFTName == "lei") {
       std::cerr << "LEI rft selected\n";
       RftChosen = std::make_unique<dbt::LEI>(TheManager);
-    } else if (RFTName == "MB") {
+    } else if (RFTName == "mb") {
       std::cerr << "MethodBased rft selected\n";
       if (ToCompileFlag.was_set())
         RftChosen = std::make_unique<dbt::MethodBased>(TheManager, ToCompileFlag.get_value());
@@ -149,6 +153,12 @@ int main(int argc, char** argv) {
 
     RftChosen = std::make_unique<dbt::PreheatRFT>(TheManager);
   }
+
+
+  if(ArgumentsFlag.was_set())
+    M.setArgumentsForBin(ArgumentsFlag.get_value());
+  
+  //Adjust to --args
 
   GlobalTimer.startClock();
   dbt::ITDInterpreter I(*SyscallM.get(), *RftChosen.get());
