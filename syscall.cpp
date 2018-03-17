@@ -33,7 +33,9 @@ int LinuxSyscallManager::processSyscall(Machine& M) {
     return 0;
   } 
   case SyscallType::Write: {
+    //M.setMemValueAt((M.getRegister(6) - M.getDataMemOffset(), 8);
     ssize_t r = write(M.getRegister(5), (M.getByteMemoryPtr() + (M.getRegister(6) - M.getDataMemOffset())), M.getRegister(7));
+    //uint32_t value = (M.getRegister(6) - M.getDataMemOffset());
     M.setRegister(2, r);
     return 0;
   }

@@ -35,3 +35,5 @@ build/
 docs/
 .vscode/
 test/mibench-master/
+.vscode/launch.json
+out
