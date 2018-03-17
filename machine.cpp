@@ -50,9 +50,9 @@ void Machine::setArgumentsForBin(std::string parameters)
   
   std::vector<std::string> argv(std::istream_iterator<std::string>{iss}, std::istream_iterator<std::string>());
   //dataMem = dataMem + (DataMemLimit/4); 
-  int offset = 8288;
+  int offset = 48;
 
-  *((uint32_t*)(DataMemory.get() + offset)) = 2;
+  *((uint32_t*)(DataMemory.get() + offset)) = vector.size()+1;
 
   offset += BinPath.length()-1;
   strcpy(&(DataMemory[offset]), BinPath.c_str());
