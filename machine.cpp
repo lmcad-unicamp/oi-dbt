@@ -53,7 +53,6 @@ int Machine::setCommandLineArguments(std::string parameters)
 
   std::istringstream iss(parameters);
   std::vector<std::string> argv(std::istream_iterator<std::string>{iss}, std::istream_iterator<std::string>());
-<<<<<<< HEAD
   argv.insert(argv.cbegin(), BinPath);
 
   for(auto argument : argv)
@@ -81,18 +80,6 @@ int Machine::setCommandLineArguments(std::string parameters)
   }
 
   return 0;
-=======
-  
-  setMemValueAt(getRegister(29), argv.size()+1);
-
-//  offset = DataMemLimit - BinPath.length() + parameters.size();
-  /*strcpy(&(DataMemory[DataMemLimit]), BinPath.c_str());
-
-  for (auto argument : argv) {
-    offset += argument.length()-1;
-    strcpy(&(DataMemory[offset]), argument.c_str());
-  }*/
->>>>>>> bdbae63e66d7ece29c65931d77477b5bcd11e52d
 }
 
 uint32_t Machine::getPC() {
@@ -325,14 +312,9 @@ int Machine::loadELF(const std::string ElfPath) {
   for (auto I = SymbolStartAddresses.begin(); I != SymbolStartAddresses.end(); ++I) 
     Symbols[*I] = {SymbolNames[*I], *SymbolStartAddresses.upper_bound(*I)};
 
-<<<<<<< HEAD
-  setRegister(29, (DataMemLimit-STACK_SIZE/4)-(((DataMemLimit-STACK_SIZE/4)%4))); //StackPointer
-  setRegister(30, (DataMemLimit-STACK_SIZE/4)-(((DataMemLimit-STACK_SIZE/4)%4))); //StackPointer
-=======
   uint32_t StackAddr = DataMemLimit-STACK_SIZE/4;
   setRegister(29, StackAddr - (StackAddr%4)); //StackPointer
   setRegister(30, StackAddr - (StackAddr%4)); //StackPointer
->>>>>>> bdbae63e66d7ece29c65931d77477b5bcd11e52d
   
   setPC(reader.get_entry());
 
