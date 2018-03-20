@@ -47,8 +47,7 @@ void Machine::addDataMemory(uint32_t StartAddress, uint32_t Size, const char* Da
   copystr(DataMemory.get() + Offset, DataBuffer, Size);
 }
 
-int Machine::setCommandLineArguments(std::string parameters)
-{
+int Machine::setCommandLineArguments(std::string parameters) {
   unsigned int totalSize = 0, offset, spDataLimit = getRegister(29);
 
   std::istringstream iss(parameters);
@@ -64,13 +63,12 @@ int Machine::setCommandLineArguments(std::string parameters)
     return -1;
   }
   
-  setMemValueAt(spDataLimit, (uint32_t) argv.size()+1);
+  setMemValueAt(spDataLimit, (uint32_t) argv.size());
   spDataLimit -= 4;
-  offset = DataMemOffset+STACK_SIZE/4;
+  offset = getRegister(29);
 
   //Reversed, then argc
-  for(auto argument : argv)
-  {
+  for(auto argument : argv) {
     unsigned argSize = argument.length()+1;
     copystr(DataMemory.get() + offset, argument.c_str(), argSize);
     setMemValueAt(spDataLimit, offset);
@@ -237,8 +235,6 @@ std::vector<uint32_t> Machine::getVectorOfMethodEntries() {
 
 using namespace ELFIO;
 
-
-
 void Machine::reset() {
   loadELF(BinPath);
 }
@@ -313,8 +309,8 @@ int Machine::loadELF(const std::string ElfPath) {
     Symbols[*I] = {SymbolNames[*I], *SymbolStartAddresses.upper_bound(*I)};
 
   uint32_t StackAddr = DataMemLimit-STACK_SIZE/4;
-  setRegister(29, StackAddr - (StackAddr%4)); //StackPointer
-  setRegister(30, StackAddr - (StackAddr%4)); //StackPointer
+  setRegister(29, StackAddr + (4 - StackAddr%4)); //StackPointer
+  setRegister(30, StackAddr + (4 - StackAddr%4)); //StackPointer
   
   setPC(reader.get_entry());
 
