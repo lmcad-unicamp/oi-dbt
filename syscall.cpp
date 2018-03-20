@@ -21,8 +21,9 @@ int LinuxSyscallManager::processSyscall(Machine& M) {
     std::cerr << "Exiting with status " << (uint32_t) ExitStatus << " (" << M.getRegister(2) << ")\n"; 
     return 1; 
   case SyscallType::Fstat: {
-    int r = fstat(M.getRegister(5), (struct stat*) (M.getByteMemoryPtr() + (M.getRegister(6) - M.getDataMemOffset())));
-		M.setRegister(2, r);
+//    int r = fstat(M.getRegister(5), (struct stat*) (M.getByteMemoryPtr() + (M.getRegister(6) - M.getDataMemOffset())));
+//		M.setRegister(2, r);
+		M.setRegister(2, -1);
     return 0; 
   }
   //GET/PUT right registers and memory locations
@@ -33,15 +34,7 @@ int LinuxSyscallManager::processSyscall(Machine& M) {
     return 0;
   } 
   case SyscallType::Write: {
-    //M.setMemValueAt((M.getRegister(6) - M.getDataMemOffset(), 8);
-    //M.setMemValueAt(M.getRegister(6)+6, 0x9);
-    //uint32_t value = 0, high = 0;
-    //for (; value < high; ++value)
-    //  M.setMemByteAt(value, 0x00);
-
-
     ssize_t r = write(M.getRegister(5), (M.getByteMemoryPtr() + (M.getRegister(6) - M.getDataMemOffset())), M.getRegister(7));
-    //uint32_t value = (M.getRegister(6) - M.getDataMemOffset());
     M.setRegister(2, r);
     return 0;
   }
