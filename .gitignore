@@ -35,5 +35,9 @@ build/
 docs/
 .vscode/
 test/mibench-master/
+
 .vscode/launch.json
 out
+test/bin/
+test/bin/argv_param-oi
+test/bin/argv_param-oi

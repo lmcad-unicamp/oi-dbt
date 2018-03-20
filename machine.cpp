@@ -11,8 +11,8 @@ using namespace dbt;
   #define CORRECT_ASSERT()
 #endif //DEBUG
 
-#define STACK_SIZE 512 * 1024 * 1024 /*512mb*/
-#define HEAP_SIZE  512 * 1024 * 1024 /*512mb*/
+#define STACK_SIZE 8 * 1024 * 1024 /*8mb*/
+#define HEAP_SIZE  8 * 1024 * 1024 /*8mb*/
 #define MAX_ARGUMENT_SIZE 1024 * 1024 /* 1mb */
 
 union HalfUn {
@@ -48,35 +48,25 @@ void Machine::addDataMemory(uint32_t StartAddress, uint32_t Size, const char* Da
 }
 
 int Machine::setCommandLineArguments(std::string parameters) {
-  unsigned int totalSize = 0, offset, spDataLimit = getRegister(29);
+  unsigned int sp = getRegister(29), offset;
 
   std::istringstream iss(parameters);
   std::vector<std::string> argv(std::istream_iterator<std::string>{iss}, std::istream_iterator<std::string>());
   argv.insert(argv.cbegin(), BinPath);
 
-  for(auto argument : argv)
-    totalSize += argument.length()+1;
+  offset += sp+8+(4*argv.size());
+  setMemValueAt(sp, (uint32_t) argv.size());                          
 
-  if(totalSize >= MAX_ARGUMENT_SIZE)
-  {
-    std::cerr << "Error: Arguments size is " << totalSize << ". Higher than MAX_ARGUMENT_SIZE (" << MAX_ARGUMENT_SIZE << ")";
-    return -1;
-  }
-  
-  setMemValueAt(spDataLimit, (uint32_t) argv.size());
-  spDataLimit -= 4;
-  offset = getRegister(29);
-
-  //Reversed, then argc
   for(auto argument : argv) {
-    unsigned argSize = argument.length()+1;
-    copystr(DataMemory.get() + offset, argument.c_str(), argSize);
-    setMemValueAt(spDataLimit, offset);
-
-    spDataLimit -= 4;
-    offset -= argSize;
+    sp += 4;                                                          //Subtract stack pointer
+    unsigned argSize = argument.length()+1;                           //Argument size
+    copystr(DataMemory.get() + offset, argument.c_str(), argSize);    //Put argument in sp+4+size(arg[0..])=offset
+    setMemValueAt(sp, (uint32_t) offset+DataMemOffset);               //Put offset in sp
+    offset += argSize;                                                //Increment offset by argument Size
   }
 
+  setMemValueAt(sp+4, 0);
+  //copystr(DataMemory.get() + offset, "\0", 1);
   return 0;
 }
 
