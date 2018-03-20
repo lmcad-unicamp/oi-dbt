@@ -11,6 +11,10 @@ using namespace dbt;
   #define CORRECT_ASSERT()
 #endif //DEBUG
 
+#define STACK_SIZE 512 * 1024 * 1024 /*512mb*/
+#define HEAP_SIZE  512 * 1024 * 1024 /*512mb*/
+#define MAX_ARGUMENT_SIZE 1024 * 1024 /* 1mb */
+
 union HalfUn {
 	char asC_[2];
 	uint16_t asH_;
@@ -43,26 +47,39 @@ void Machine::addDataMemory(uint32_t StartAddress, uint32_t Size, const char* Da
   copystr(DataMemory.get() + Offset, DataBuffer, Size);
 }
 
-void Machine::setArgumentsForBin(std::string parameters)
+int Machine::setCommandLineArguments(std::string parameters)
 {
-  char *p;
+  unsigned int totalSize = 0, offset, spDataLimit = getRegister(29);
+
   std::istringstream iss(parameters);
-  
   std::vector<std::string> argv(std::istream_iterator<std::string>{iss}, std::istream_iterator<std::string>());
-  //dataMem = dataMem + (DataMemLimit/4); 
-  int offset = 48;
+  argv.insert(argv.cbegin(), BinPath);
 
-  *((uint32_t*)(DataMemory.get() + offset)) = vector.size()+1;
+  for(auto argument : argv)
+    totalSize += argument.length()+1;
 
-  offset += BinPath.length()-1;
-  strcpy(&(DataMemory[offset]), BinPath.c_str());
-
-
-  for (auto argument : argv)
+  if(totalSize >= MAX_ARGUMENT_SIZE)
   {
-    offset += argument.length()-1;
-    strcpy(&(DataMemory[offset]), argument.c_str());
+    std::cerr << "Error: Arguments size is " << totalSize << ". Higher than MAX_ARGUMENT_SIZE (" << MAX_ARGUMENT_SIZE << ")";
+    return -1;
   }
+  
+  setMemValueAt(spDataLimit, (uint32_t) argv.size()+1);
+  spDataLimit -= 4;
+  offset = DataMemOffset+STACK_SIZE/4;
+
+  //Reversed, then argc
+  for(auto argument : argv)
+  {
+    unsigned argSize = argument.length()+1;
+    copystr(DataMemory.get() + offset, argument.c_str(), argSize);
+    setMemValueAt(spDataLimit, offset);
+
+    spDataLimit -= 4;
+    offset -= argSize;
+  }
+
+  return 0;
 }
 
 uint32_t Machine::getPC() {
@@ -218,8 +235,7 @@ std::vector<uint32_t> Machine::getVectorOfMethodEntries() {
 
 using namespace ELFIO;
 
-#define STACK_SIZE 512 * 1024 * 1024 /*512mb*/
-#define HEAP_SIZE  512 * 1024 * 1024 /*512mb*/
+
 
 void Machine::reset() {
   loadELF(BinPath);
@@ -294,8 +310,8 @@ int Machine::loadELF(const std::string ElfPath) {
   for (auto I = SymbolStartAddresses.begin(); I != SymbolStartAddresses.end(); ++I) 
     Symbols[*I] = {SymbolNames[*I], *SymbolStartAddresses.upper_bound(*I)};
 
-  setRegister(29, DataMemLimit-STACK_SIZE/4); //StackPointer
-  setRegister(30, DataMemLimit-STACK_SIZE/4); //StackPointer
+  setRegister(29, (DataMemLimit-STACK_SIZE/4)-(((DataMemLimit-STACK_SIZE/4)%4))); //StackPointer
+  setRegister(30, (DataMemLimit-STACK_SIZE/4)-(((DataMemLimit-STACK_SIZE/4)%4))); //StackPointer
   
   setPC(reader.get_entry());
 

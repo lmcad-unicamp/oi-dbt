@@ -6,7 +6,7 @@
 using namespace dbt;
 using namespace dbt::OIDecoder;
 
-//#define PRINTINST
+#define PRINTINST
 
 #ifdef PRINTINST
 #include <OIPrinter.hpp>
@@ -759,7 +759,9 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
     );
   
   IMPLEMENT_BR(jne,
+      std::cout << "I.RS: " << M.getRegister(I.RS) << ", RT: " << M.getRegister(I.RT) << "\n";
       if (M.getRegister(I.RS) != M.getRegister(I.RT)) { 
+        std::cout << "NOT EQUAL! \n";
         M.setPC(M.getPC() + (I.Imm << 2) + 4);
         ImplRFT.onBranch(M);
         GOTO_NEXT;

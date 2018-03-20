@@ -156,7 +156,10 @@ int main(int argc, char** argv) {
 
 
   if(ArgumentsFlag.was_set())
-    M.setArgumentsForBin(ArgumentsFlag.get_value());
+  {
+    if(M.setCommandLineArguments(ArgumentsFlag.get_value()) < 0)
+      exit(1);
+  }
   
   //Adjust to --args
 
