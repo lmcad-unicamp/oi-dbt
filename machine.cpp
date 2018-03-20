@@ -36,6 +36,7 @@ void Machine::setCodeMemory(uint32_t StartAddress, uint32_t Size, const char* Co
 }
 
 void Machine::allocDataMemory(uint32_t Offset, uint32_t TotalSize) {
+  DataMemTotalSize = TotalSize;
   DataMemOffset = Offset;
   DataMemLimit = Offset + TotalSize;
   DataMemory = std::unique_ptr<char[]>(new char[TotalSize]);
@@ -43,18 +44,21 @@ void Machine::allocDataMemory(uint32_t Offset, uint32_t TotalSize) {
 
 void Machine::addDataMemory(uint32_t StartAddress, uint32_t Size, const char* DataBuffer) {
   uint32_t Offset = StartAddress - DataMemOffset;
-  DataMemLimit += Size;
+  DataMemLimit += Size;               //Ops, allocated memory stills the same, no more allocation is done and DataMemLimit is updated!
   copystr(DataMemory.get() + Offset, DataBuffer, Size);
 }
 
 int Machine::setCommandLineArguments(std::string parameters) {
-  unsigned int sp = getRegister(29), offset;
+  unsigned int sp = getRegister(29), totalSize=0, offset;
 
   std::istringstream iss(parameters);
   std::vector<std::string> argv(std::istream_iterator<std::string>{iss}, std::istream_iterator<std::string>());
   argv.insert(argv.cbegin(), BinPath);
 
-  offset += sp+8+(4*argv.size());
+  for (auto argument : argv)
+    totalSize += argument.length()+1;
+
+  offset = DataMemTotalSize-totalSize-1;
   setMemValueAt(sp, (uint32_t) argv.size());                          
 
   for(auto argument : argv) {
@@ -66,7 +70,7 @@ int Machine::setCommandLineArguments(std::string parameters) {
   }
 
   setMemValueAt(sp+4, 0);
-  //copystr(DataMemory.get() + offset, "\0", 1);
+  copystr(DataMemory.get() + offset, "\0", 1);
   return 0;
 }
 

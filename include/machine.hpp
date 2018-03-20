@@ -55,6 +55,7 @@ namespace dbt {
 
     uint32_t DataMemOffset;
     uint32_t CodeMemOffset;
+    uint32_t DataMemTotalSize;
 
     uint32_t DataMemLimit;
     uint32_t CodeMemLimit;
