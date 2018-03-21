@@ -53,6 +53,11 @@ using namespace dbt::OIDecoder;
 
 #define rotate_right(x, n) (((x) >> (n)) | ((x) << ((sizeof(x) * 8) - (n))))
 
+typedef union WordBit {
+  float asF;
+  int32_t asI;
+} WordBit;
+
 bool isnan(double x) { return x != x; }
 bool isnan(float x)  { return x != x; }
 
@@ -219,6 +224,7 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
   /**********************   Int Inst   **************************/
 
   IMPLEMENT(add, 
+
       M.setRegister(I.RD, M.getRegister(I.RS) + M.getRegister(I.RT));
     );
   
@@ -422,7 +428,7 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
     );
 
   IMPLEMENT(ijmphi, 
-      M.setRegister(IJMP_REG, 0 | I.Addrs << 12); 
+      M.setRegister(IJMP_REG, 0 | (I.Addrs << 12)); 
     );
   
   /**********************  Float Inst  **************************/
@@ -625,19 +631,27 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
    );
 
    IMPLEMENT(mtc1, 
-       M.setFloatRegister(I.RT, M.getRegister(I.RS));
+       WordBit Tmp;
+       Tmp.asF = M.getRegister(I.RS);
+       M.setFloatRegister(I.RT, Tmp.asF);
     );
 
    IMPLEMENT(mfc1, 
-       M.setRegister(I.RS, M.getFloatRegister(I.RT));
+       WordBit Tmp;
+       Tmp.asF = M.getFloatRegister(I.RT);
+       M.setRegister(I.RS, Tmp.asI);
     );
 
    IMPLEMENT(truncws, 
-       M.setFloatRegister(I.RS, (int32_t) M.getFloatRegister(I.RT));
+       WordBit Tmp;
+       Tmp.asI = (int32_t) M.getFloatRegister(I.RT);
+       M.setFloatRegister(I.RS, Tmp.asF);
     );
 
    IMPLEMENT(truncwd, 
-       M.setFloatRegister(I.RS, (int32_t) M.getDoubleRegister(I.RT));
+       WordBit Tmp;
+       Tmp.asI = (int32_t) M.getDoubleRegister(I.RT);
+       M.setFloatRegister(I.RS, Tmp.asF);
     );
 
    IMPLEMENT(cvtsw, 
