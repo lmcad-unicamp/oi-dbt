@@ -23,7 +23,7 @@ namespace dbt {
       Mulu , Movz, Xori, Sdc1, Swc1, Maddd, Movs, Muls, Coltd, Swxc1, Negd, Lwxc1  , Syscall, Mtlc1 , Divs , Subs , Mflc1, 
       Mfhc1, Divd, Subd, Negs, Ext , Madds, Shrr, Movf, Movt , Ldxc1, Muld, Sdxc1  , Msubs  , Coled , Culed, Msubd, Movzd,
       Movfd, Asrr, Absd, Abss, Cund, Movnd, Ror, Movzs, Movfs, Colts, Movns, Coles , Sqrtd  , Sqrts , Cults, Cules, Cultd,
-      Movtd, Null 
+      Movtd, Cuns, Null 
     };
 
     enum EncodingType {
@@ -205,6 +205,7 @@ namespace dbt {
         case OIInstType::Cults:
         case OIInstType::Cultd:
         case OIInstType::Cund:
+        case OIInstType::Cuns:
         case OIInstType::Negd:
         case OIInstType::Negs:
         case OIInstType::Mflc1:
@@ -375,6 +376,7 @@ namespace dbt {
         if (Ext == 0b10001 ) I.Type = OIInstType::Cultd;
         if (Ext == 0b10010 ) I.Type = OIInstType::Cults;
         if (Ext == 0b10011 ) I.Type = OIInstType::Cund;
+        if (Ext == 0b10100 ) I.Type = OIInstType::Cuns;
         if (Ext == 0b10101 ) I.Type = OIInstType::Cvtsd;
         if (Ext == 0b10110 ) I.Type = OIInstType::Cvtds;
         if (Ext == 0b10111 ) I.Type = OIInstType::Cvtdw;

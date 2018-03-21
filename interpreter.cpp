@@ -192,6 +192,7 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
       SET_DISPACH(Addrs, Cults,   &&cults);
       SET_DISPACH(Addrs, Cultd,   &&cultd);
       SET_DISPACH(Addrs, Cules,   &&cules);
+      SET_DISPACH(Addrs, Cuns,    &&cuns);
       SET_DISPACH(Addrs, Cund,    &&cund);
       SET_DISPACH(Addrs, Negd,    &&negd);
       SET_DISPACH(Addrs, Negs,    &&negs);
@@ -712,6 +713,10 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
 
    IMPLEMENT(cund,
        M.setRegister(CC_REG, (isnan(M.getDoubleRegister(I.RS)) || isnan(M.getDoubleRegister(I.RT))) ? 1 : 0);
+    );
+
+   IMPLEMENT(cuns,
+       M.setRegister(CC_REG, (isnan(M.getFloatRegister(I.RS)) || isnan(M.getFloatRegister(I.RT))) ? 1 : 0);
     );
 
    IMPLEMENT(sqrtd, 

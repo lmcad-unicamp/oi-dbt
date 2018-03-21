@@ -327,6 +327,9 @@ namespace dbt {
         case Cund:
           Out << "C.un.d";
           break;
+        case Cuns:
+          Out << "C.un.s";
+          break;
         case Divs:
           Out << "div.s";
           break;
