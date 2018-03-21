@@ -40,16 +40,13 @@ int LinuxSyscallManager::processSyscall(Machine& M) {
   }
 
   case SyscallType::Open: {
-    char* filename = M.getByteMemoryPtr() + (M.getRegister(5) - M.getDataMemOffset());
-    char* flag = M.getByteMemoryPtr() + (M.getRegister(5) - M.getDataMemOffset()+strlen(filename)+1);
-    ssize_t r = -1;
-
-    if(strcmp(flag, "r") == 0)
-      r = open(filename, O_RDONLY);
-    else if(strcmp(flag, "w") == 0)
-      r = open(filename, O_WRONLY);
+    const char* filename = M.getByteMemoryPtr() + (M.getRegister(5) - M.getDataMemOffset());
+    const int flags = M.getRegister(6);
     
+    ssize_t r = -1;
+    r = open(filename, flags);
     M.setRegister(2, r);
+
     assert(r >= 0 && "Error with file descriptor..");
     return 0;
   }
@@ -57,6 +54,17 @@ int LinuxSyscallManager::processSyscall(Machine& M) {
   case SyscallType::Close: {
     ssize_t r = close(M.getRegister(5));
     M.setRegister(2, r);
+    return 0;
+  }
+  
+  case SyscallType::Creat: {
+    const char* filename = M.getByteMemoryPtr() + (M.getRegister(5) - M.getDataMemOffset());
+    const int flags = M.getRegister(6);
+
+    ssize_t r = creat(filename, flags);
+    M.setRegister(2, r);
+
+    assert(r >= 0 && "Error with file descriptor..");
     return 0;
   }
 
