@@ -629,14 +629,14 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
 
     case dbt::OIDecoder::Mtc1: {
         Value* RS  = genLoadRegister(Inst.RS, Func);
-        Value* Res = Builder->CreateSIToFP(RS, Type::getFloatTy(TheContext));
+        Value* Res = Builder->CreateBitCast(RS, Type::getFloatTy(TheContext)); 
         genStoreRegister(Inst.RT, Res, Func, RegType::Float);
         break;
       } 
 
     case dbt::OIDecoder::Mfc1: {
         Value* RT  = genLoadRegister(Inst.RT, Func, RegType::Float);
-        Value* Res = Builder->CreateFPToSI(RT, Type::getInt32Ty(TheContext));
+        Value* Res = Builder->CreateBitCast(RT, Type::getInt32Ty(TheContext)); 
         genStoreRegister(Inst.RS, Res, Func, RegType::Int);
         break;
       } 
@@ -683,7 +683,7 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
     case dbt::OIDecoder::Truncwd: {
         Value* RT    = genLoadRegister(Inst.RT, Func, RegType::Double);
         Value* Int   = Builder->CreateFPToSI(RT, Type::getInt32Ty(TheContext));
-        Value* Float = Builder->CreateSIToFP(Int, Type::getFloatTy(TheContext));
+        Value* Float = Builder->CreateBitCast(Int, Type::getFloatTy(TheContext));
         genStoreRegister(Inst.RS, Float, Func, RegType::Float);
         break;
       }
@@ -691,7 +691,7 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
     case dbt::OIDecoder::Truncws: {
         Value* RT    = genLoadRegister(Inst.RT, Func, RegType::Float);
         Value* Int   = Builder->CreateFPToSI(RT, Type::getInt32Ty(TheContext));
-        Value* Float = Builder->CreateSIToFP(Int, Type::getFloatTy(TheContext));
+        Value* Float = Builder->CreateBitCast(Int, Type::getFloatTy(TheContext));
         genStoreRegister(Inst.RS, Float, Func, RegType::Float);
         break;
       }

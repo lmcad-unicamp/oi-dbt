@@ -106,7 +106,7 @@ namespace dbt {
           Out << "modu";
           break;
         case Syscall:
-          Out << "sycall";
+          Out << "syscall";
           break;
         case Nop:
           Out << "nop";
@@ -327,6 +327,9 @@ namespace dbt {
         case Cund:
           Out << "C.un.d";
           break;
+        case Cuns:
+          Out << "C.un.s";
+          break;
         case Divs:
           Out << "div.s";
           break;
@@ -397,7 +400,7 @@ namespace dbt {
           Out << "  $" << (uint32_t) I.RD << ", $" << (uint32_t) I.RS << ", $" << (uint32_t) I.RT;
           break;
         case EncodingType::PL12:
-          Out << "  $" << (uint32_t) I.RT << ", $" << (uint32_t) I.RS;
+          Out << "  $" << (uint32_t) I.RS << ", $" << (uint32_t) I.RT;
           break;
         case EncodingType::PL20:
           if (I.Type == OIInstType::Jlez || I.Type == OIInstType::Jgtz || I.Type == OIInstType::Jltz || I.Type == OIInstType::Jgez) 
