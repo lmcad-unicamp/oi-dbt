@@ -22,7 +22,7 @@ clarg::argString ToCompileFlag("-tc", "Functions to compile", "");
 clarg::argString ArgumentsFlag("--args", "Pass Parameters to binary file (as string)", "");
 
 void usage(char* PrgName) {
-  cout << "Version: 0.0.1 (07-02-2018)\n\n";
+  cout << "Version: 0.0.1 (21-03-2018)\n\n";
 
   cout << "Usage: " << PrgName << 
     " [-rft {net, mret2, lef, lei, netplus, mb}] [-interpret] -bin PathToBinary\n\n";

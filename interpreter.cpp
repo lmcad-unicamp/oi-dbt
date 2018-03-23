@@ -6,7 +6,7 @@
 using namespace dbt;
 using namespace dbt::OIDecoder;
 
-//#define PRINTINST
+#define PRINTINST
 
 #ifdef PRINTINST
 #include <OIPrinter.hpp>
@@ -356,7 +356,7 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
     );
 
   IMPLEMENT(shrr,
-      M.setRegister(I.RD, M.getRegister(I.RT) >> (M.getRegister(I.RS) & 0x1F));
+      M.setRegister(I.RD, (uint32_t) M.getRegister(I.RT) >> (M.getRegister(I.RS) & 0x1F));
     );
   
   IMPLEMENT(movn,

@@ -61,12 +61,15 @@ int Machine::setCommandLineArguments(std::string parameters) {
   offset = DataMemTotalSize-totalSize-1;
   setMemValueAt(sp, (uint32_t) argv.size());                          
 
+  std::cout << "Argc: " << argv.size() << "\n";
+
   for(auto argument : argv) {
     sp += 4;                                                          //Subtract stack pointer
     unsigned argSize = argument.length()+1;                           //Argument size
     copystr(DataMemory.get() + offset, argument.c_str(), argSize);    //Put argument in sp+4+size(arg[0..])=offset
     setMemValueAt(sp, (uint32_t) offset+DataMemOffset);               //Put offset in sp
     offset += argSize;                                                //Increment offset by argument Size
+    std::cout << argument << "\n";
   }
 
   setMemValueAt(sp+4, 0);

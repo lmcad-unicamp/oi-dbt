@@ -68,6 +68,18 @@ int LinuxSyscallManager::processSyscall(Machine& M) {
     return 0;
   }
 
+    
+  case SyscallType::Lseek: {
+    //const char* filename = M.getByteMemoryPtr() + (M.getRegister(5) - M.getDataMemOffset());
+    //const int flags = M.getRegister(6);
+
+    ssize_t r = lseek(M.getRegister(5), M.getRegister(6), M.getRegister(7));
+    M.setRegister(2, r);
+
+    assert(r >= 0 && "Error with file descriptor..");
+    return 0;
+  }
+
   default:
     std::cerr << "Syscall (" << SysTy << ") not implemented!\n";
     exit(2);
