@@ -10,7 +10,8 @@ using namespace dbt::OIDecoder;
 
 #ifdef PRINTINST
 #include <OIPrinter.hpp>
-#define DEBUG_PRINT(Addr, Inst) std::cout << std::hex << Addr << "\t" << OIPrinter::getString(Inst) << std::dec << "\n";
+//#define DEBUG_PRINT(Addr, Inst) std::cerr << Inst.Type << (Inst.Type == 113 ? OIPrinter::getString(Inst) : "") << "\n";
+#define DEBUG_PRINT(Addr, Inst) std::cerr << std::hex << Addr << "\t" << OIPrinter::getString(Inst) << std::dec << "\n";
 #else
 #define DEBUG_PRINT(Addr, Inst) 
 #endif
@@ -52,7 +53,6 @@ using namespace dbt::OIDecoder;
     GOTO_NEXT
 
 #define rotate_right(x, n) (((x) >> (n)) | ((x) << ((sizeof(x) * 8) - (n))))
-
 typedef union WordBit {
   float asF;
   int32_t asI;
@@ -540,6 +540,7 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
     );
 
    IMPLEMENT(movt,
+      std::cerr << (int)I.RS << " " << M.getRegister(I.RS) << " " << M.getRegister(I.RT)<< " " << (int)CC_REG << " " << M.getRegister(CC_REG) << "\n";
       if (M.getRegister(CC_REG) != 0)
         M.setRegister(I.RS, M.getRegister(I.RT));
     );
@@ -596,6 +597,7 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
     );
 
    IMPLEMENT(muls, 
+       std::cerr << M.getFloatRegister(I.RS) << "*" << M.getFloatRegister(I.RT) << "\n";
        M.setFloatRegister(I.RD, M.getFloatRegister(I.RS) * M.getFloatRegister(I.RT));
     );
 
@@ -628,6 +630,7 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
    );
 
    IMPLEMENT(madds, 
+       std::cerr << M.getFloatRegister(I.RS) <<"*"<< M.getFloatRegister(I.RT) <<"+"<< M.getFloatRegister(I.RV) << "\n";
        M.setFloatRegister(I.RD, M.getFloatRegister(I.RS) * M.getFloatRegister(I.RT) + M.getFloatRegister(I.RV));
    );
 
@@ -656,11 +659,15 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
     );
 
    IMPLEMENT(cvtsw, 
-       M.setFloatRegister(I.RS, (float) (int) M.getFloatRegister(I.RT));
+       WordBit Tmp;
+       Tmp.asF = M.getFloatRegister(I.RT);
+       M.setFloatRegister(I.RS, (float) (int) Tmp.asI);
     );
    
    IMPLEMENT(cvtdw, 
-       M.setDoubleRegister(I.RS, (double) (int) M.getFloatRegister(I.RT));
+       WordBit Tmp;
+       Tmp.asF = M.getFloatRegister(I.RT);
+       M.setDoubleRegister(I.RS, (double) (int) Tmp.asI);
     );
 
    IMPLEMENT(cvtds, 
@@ -692,6 +699,7 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
    IMPLEMENT(coles,
        float A = M.getFloatRegister(I.RS);
        float B = M.getFloatRegister(I.RT);
+       std::cerr << A << " == " << B <<"?\n";
        M.setRegister(CC_REG, A <= B ? (isnan(A) || isnan(B) ? 0 : 1) : 0);
     );
 

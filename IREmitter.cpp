@@ -397,7 +397,7 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
 
     case dbt::OIDecoder::Cvtdw: {  
         Value* FloatValue  = genLoadRegister(Inst.RT, Func, RegType::Float);
-        Value* IntValue    = Builder->CreateFPToSI(FloatValue, Type::getInt32Ty(TheContext));
+        Value* IntValue = Builder->CreateBitCast(FloatValue, Type::getInt32Ty(TheContext));
         Value* DoubleValue = Builder->CreateSIToFP(IntValue, Type::getDoubleTy(TheContext));
         genStoreRegister(Inst.RS, DoubleValue, Func, RegType::Double);
         break;
@@ -405,7 +405,7 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
 
     case dbt::OIDecoder::Cvtsw: {  
         Value* RT  = genLoadRegister(Inst.RT, Func, RegType::Float);
-        Value* Int = Builder->CreateFPToSI(RT, Type::getInt32Ty(TheContext));
+        Value* Int = Builder->CreateBitCast(RT, Type::getInt32Ty(TheContext));
         Value* Float = Builder->CreateSIToFP(Int, Type::getFloatTy(TheContext));
         genStoreRegister(Inst.RS, Float, Func, RegType::Float);
         break;
