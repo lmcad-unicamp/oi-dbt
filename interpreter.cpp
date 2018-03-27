@@ -6,7 +6,7 @@
 using namespace dbt;
 using namespace dbt::OIDecoder;
 
-#define PRINTINST
+//#define PRINTINST
 
 #ifdef PRINTINST
 #include <OIPrinter.hpp>
@@ -540,7 +540,6 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
     );
 
    IMPLEMENT(movt,
-      std::cerr << (int)I.RS << " " << M.getRegister(I.RS) << " " << M.getRegister(I.RT)<< " " << (int)CC_REG << " " << M.getRegister(CC_REG) << "\n";
       if (M.getRegister(CC_REG) != 0)
         M.setRegister(I.RS, M.getRegister(I.RT));
     );
@@ -597,7 +596,6 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
     );
 
    IMPLEMENT(muls, 
-       std::cerr << M.getFloatRegister(I.RS) << "*" << M.getFloatRegister(I.RT) << "\n";
        M.setFloatRegister(I.RD, M.getFloatRegister(I.RS) * M.getFloatRegister(I.RT));
     );
 
@@ -630,13 +628,12 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
    );
 
    IMPLEMENT(madds, 
-       std::cerr << M.getFloatRegister(I.RS) <<"*"<< M.getFloatRegister(I.RT) <<"+"<< M.getFloatRegister(I.RV) << "\n";
        M.setFloatRegister(I.RD, M.getFloatRegister(I.RS) * M.getFloatRegister(I.RT) + M.getFloatRegister(I.RV));
    );
 
    IMPLEMENT(mtc1, 
        WordBit Tmp;
-       Tmp.asF = M.getRegister(I.RS);
+       Tmp.asI = M.getRegister(I.RS);
        M.setFloatRegister(I.RT, Tmp.asF);
     );
 
@@ -699,7 +696,6 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
    IMPLEMENT(coles,
        float A = M.getFloatRegister(I.RS);
        float B = M.getFloatRegister(I.RT);
-       std::cerr << A << " == " << B <<"?\n";
        M.setRegister(CC_REG, A <= B ? (isnan(A) || isnan(B) ? 0 : 1) : 0);
     );
 
