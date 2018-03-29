@@ -341,11 +341,11 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
       } 
 
     case dbt::OIDecoder::Ext: {  
-        Value* R1 = Builder->CreateSub(genImm(32), genImm(Inst.RV + Inst.RT + 1));
-        Value* R2 = Builder->CreateShl(genLoadRegister(Inst.RS, Func), R1);
+        Value* R1 = Builder->CreateSub(genImm(32), genImm(Inst.RS + Inst.RT + 1));
+        Value* R2 = Builder->CreateShl(genLoadRegister(Inst.RD, Func), R1);
         Value* R3 = Builder->CreateSub(genImm(32), genImm(Inst.RT + 1));
         Value* R4 = Builder->CreateLShr(R2, R3);
-        genStoreRegister(Inst.RD, R4, Func, RegType::Int);
+        genStoreRegister(Inst.RV, R4, Func, RegType::Int);
         setIfNotTheFirstInstGen(R1);
         break;
       } 
