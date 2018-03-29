@@ -19,7 +19,7 @@ clarg::argBool   VerboseFlag("-v",  "display the compiled regions");
 clarg::argBool   HelpFlag("-h",  "display the help message");
 clarg::argInt    RegionLimitSize("-l", "region size limit", 0);
 clarg::argString ToCompileFlag("-tc", "Functions to compile", "");
-clarg::argString ArgumentsFlag("--args", "Pass Parameters to binary file (as string)", "");
+clarg::argString ArgumentsFlag("-args", "Pass Parameters to binary file (as string)", "");
 
 void usage(char* PrgName) {
   cout << "Version: 0.0.1 (21-03-2018)\n\n";
