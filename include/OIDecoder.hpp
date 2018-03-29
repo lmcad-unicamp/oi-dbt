@@ -519,7 +519,7 @@ namespace dbt {
       }
 
       if (I.Type == OIInstType::Null) {
-        std::cout << "Houston: we have a problem! Inst (" << std::hex << CodedInst << ") not implemented!\n";
+        std::cout << "Houston: we have a problem! Inst (" << std::hex << CodedInst << ") not implemented! \n";
         exit(1);
       }
 

@@ -383,9 +383,9 @@ namespace dbt {
       switch (dbt::OIDecoder::getEncodingType(I.Type)) {
         // TODO PL26ij and PL20i
         case EncodingType::PL26i:
-          if (I.Type == OIInstType::Ldw || I.Type == OIInstType::Stw) 
+          if (I.Type == OIInstType::Ldw || I.Type == OIInstType::Stw)
             Out << "  $" << (uint32_t) I.RT << ", " << I.Imm << "($" << (uint32_t) I.RS << ")";
-          else if (I.Type == OIInstType::Jne || I.Type == OIInstType::Jnez || I.Type == OIInstType::Jeq || I.Type == OIInstType::Jeqz) 
+          else if (I.Type == OIInstType::Jne || I.Type == OIInstType::Jnez || I.Type == OIInstType::Jeq || I.Type == OIInstType::Jeqz)
             Out << "  $" << (uint32_t) I.RT << ", $" << (uint32_t) I.RS << ", " << ((I.Imm << 2) + 4);
           else
             Out << "  $" << (uint32_t) I.RT << ", $" << (uint32_t) I.RS << ", " << I.Imm;
@@ -403,7 +403,7 @@ namespace dbt {
           Out << "  $" << (uint32_t) I.RS << ", $" << (uint32_t) I.RT;
           break;
         case EncodingType::PL20:
-          if (I.Type == OIInstType::Jlez || I.Type == OIInstType::Jgtz || I.Type == OIInstType::Jltz || I.Type == OIInstType::Jgez) 
+          if (I.Type == OIInstType::Jlez || I.Type == OIInstType::Jgtz || I.Type == OIInstType::Jltz || I.Type == OIInstType::Jgez)
             Out << " $" << (uint32_t) I.RT << ", " << ((I.Imm << 2) + 4);
           else
             Out << " $" << (uint32_t) I.RT << ", " << I.Imm;
@@ -421,7 +421,7 @@ namespace dbt {
           Out << " " << ((I.Imm << 2) + 4);
           break;
         case EncodingType::PL0:
-        default: 
+        default:
           std::cout << "---";
           break;
       }
