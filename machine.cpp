@@ -167,10 +167,11 @@ float Machine::getFloatRegister(uint16_t R) {
 }
 
 double Machine::getDoubleRegister(uint16_t R) {
-  double res;
+  /*double res;
   uint64_t input = ((uint64_t)Register[2*R + 131]) + (((uint64_t)Register[2*R+130]) << 32);
   memcpy(&res, &input, sizeof(input));
-  return res;//return ((double*)Register)[R + 65];
+  return res;*/
+  return ((double*)Register)[R + 65];
 }
 
 void Machine::setRegister(uint16_t R, int32_t V) {
@@ -182,11 +183,11 @@ void Machine::setFloatRegister(uint16_t R, float V) {
 }
 
 void Machine::setDoubleRegister(uint16_t R, double V) {
-  uint64_t temp;
+  /*uint64_t temp;
   memcpy(&temp, &V, sizeof(temp));
   Register[2*R + 131] = temp & 0xFFFFFFFF;
-  Register[2*R + 130] = temp >> 32;
-//  ((double*)Register)[R + 65] = V;
+  Register[2*R + 130] = temp >> 32;*/
+  ((double*)Register)[R + 65] = V;
 }
 
 int32_t* Machine::getRegisterPtr() {

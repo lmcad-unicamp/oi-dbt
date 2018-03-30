@@ -444,8 +444,8 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
     );
 
    IMPLEMENT(ldc1, 
-      M.setRegister(130 + I.RT*2 + 1, M.getMemValueAt(M.getRegister(I.RS) + I.Imm+0).asI_);
-      M.setRegister(130 + I.RT*2 + 0, M.getMemValueAt(M.getRegister(I.RS) + I.Imm+4).asI_);
+      M.setRegister(130 + I.RT*2 + 1, M.getMemValueAt(M.getRegister(I.RS) + I.Imm+4).asI_);
+      M.setRegister(130 + I.RT*2 + 0, M.getMemValueAt(M.getRegister(I.RS) + I.Imm+0).asI_);
     );
 
    IMPLEMENT(lwc1, 
@@ -457,18 +457,18 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
     );
 
    IMPLEMENT(ldxc1, 
-      M.setRegister(130 + I.RD*2 + 1,  M.getMemValueAt(M.getRegister(I.RT) + M.getRegister(I.RS)+0).asI_);
-      M.setRegister(130 + I.RD*2 + 0,  M.getMemValueAt(M.getRegister(I.RT) + M.getRegister(I.RS)+4).asI_);
+      M.setRegister(130 + I.RD*2 + 1,  M.getMemValueAt(M.getRegister(I.RT) + M.getRegister(I.RS)+4).asI_);
+      M.setRegister(130 + I.RD*2 + 0,  M.getMemValueAt(M.getRegister(I.RT) + M.getRegister(I.RS)+0).asI_);
     );
 
    IMPLEMENT(sdxc1, 
-      M.setMemValueAt(M.getRegister(I.RT) + M.getRegister(I.RS) + 4, M.getRegister(130 + I.RD*2 + 0));
-      M.setMemValueAt(M.getRegister(I.RT) + M.getRegister(I.RS)    , M.getRegister(130 + I.RD*2 + 1));
+      M.setMemValueAt(M.getRegister(I.RT) + M.getRegister(I.RS) +0, M.getRegister(130 + I.RD*2 + 0));
+      M.setMemValueAt(M.getRegister(I.RT) + M.getRegister(I.RS) +4 , M.getRegister(130 + I.RD*2 + 1));
     );
 
    IMPLEMENT(sdc1, 
-      M.setMemValueAt(M.getRegister(I.RS) + I.Imm + 4, M.getRegister(130 + I.RT*2+0));
-      M.setMemValueAt(M.getRegister(I.RS) + I.Imm    , M.getRegister(130 + I.RT*2+1));
+      M.setMemValueAt(M.getRegister(I.RS) + I.Imm +0, M.getRegister(130 + I.RT*2+0));
+      M.setMemValueAt(M.getRegister(I.RS) + I.Imm +4, M.getRegister(130 + I.RT*2+1));
     );
 
    IMPLEMENT(swc1, 
