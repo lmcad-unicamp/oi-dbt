@@ -162,6 +162,7 @@ namespace dbt {
         case OIInstType::Sdxc1:
         case OIInstType::Ldxc1:
         case OIInstType::Shrr:
+	case OIInstType::Ror:
           return EncodingType::PL18;
         case OIInstType::Jlez:
         case OIInstType::Jgtz:
@@ -221,8 +222,7 @@ namespace dbt {
         case OIInstType::Abss:
         case OIInstType::Sqrtd:
         case OIInstType::Sqrts:
-        case OIInstType::Ror:
-          return EncodingType::PL12;
+           return EncodingType::PL12;
         case OIInstType::Bc1f:
         case OIInstType::Bc1t:
           return EncodingType::PL16;
