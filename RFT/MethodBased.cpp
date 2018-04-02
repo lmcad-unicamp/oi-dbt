@@ -14,10 +14,10 @@ void MethodBased::addFunctionToCompile(uint32_t PC, Machine &M) {
       insertInstruction(Addr, M.getInstAt(Addr).asI_); 
     bool Inserted = finishRegionFormation();
     if (Inserted) {
-      std::cout << "Compiling " << M.getMethodName(PC) << " " << PC << " -> " << M.getMethodEnd(PC)<< " ("<< TheManager.getNumOfOIRegions() << ")\n";
-      std::cout << "Waiting for it....";
+//      std::cout << "Compiling " << M.getMethodName(PC) << " " << PC << " -> " << M.getMethodEnd(PC)<< " ("<< TheManager.getNumOfOIRegions() << ")\n";
+//      std::cout << "Waiting for it....";
       while (!TheManager.isNativeRegionEntry(PC)) {}
-      std::cout << "Done.\n";
+//      std::cout << "Done.\n";
     }
   }
 

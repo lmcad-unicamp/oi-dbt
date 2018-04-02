@@ -142,7 +142,7 @@ int main(int argc, char** argv) {
   SyscallM = std::make_unique<dbt::LinuxSyscallManager>();
 
   if (PreheatFlag.was_set()) {
-    std::cout << "Preheating...\n";
+    std::cerr << "Preheating...\n";
     dbt::ITDInterpreter I(*SyscallM.get(), *RftChosen.get());
     I.executeAll(M);
     std::cerr << "done\n";

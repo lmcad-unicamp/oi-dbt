@@ -53,7 +53,17 @@ uint64_t instacc = 0;
     M.incPC();\
     GOTO_NEXT
 
-#define rotate_right(x, n) (((x) >> (n)) | ((x) << ((sizeof(x) * 8) - (n))))
+//#define rotate_right(x, n) (((x) >> (n)) | ((x) << ((sizeof(x) * 8) - (n))))
+static inline uint32_t rotate_right(uint32_t input, uint32_t shiftamount) {
+  return (((uint32_t)input) >> shiftamount) |
+         (((uint32_t)input) << (32 - shiftamount));
+}
+
+typedef union DWordBit {
+  double asF;
+  uint64_t asI;
+} DWordBit;
+
 typedef union WordBit {
   float asF;
   int32_t asI;
@@ -480,35 +490,29 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
     );
 
    IMPLEMENT(mtlc1, 
-       double Temp = M.getDoubleRegister(I.RT);
-       uint64_t ToInt;
-       memcpy(&ToInt, &Temp, sizeof(uint64_t));
-       ToInt = (ToInt & 0xFFFFFFFF00000000ULL) + (((uint64_t) M.getRegister(I.RS)));
-       memcpy(&Temp, &ToInt, sizeof(uint64_t));
-       M.setDoubleRegister(I.RT, Temp);
+       DWordBit DW;
+       DW.asF = M.getDoubleRegister(I.RT);
+       DW.asI = (DW.asI & 0xFFFFFFFF00000000ULL) + (((uint64_t) M.getRegister(I.RS)));
+       M.setDoubleRegister(I.RT, DW.asF);
     );
 
    IMPLEMENT(mthc1, 
-       double Temp = M.getDoubleRegister(I.RT);
-       uint64_t ToInt;
-       memcpy(&ToInt, &Temp, sizeof(uint64_t));
-       ToInt = (ToInt & 0xFFFFFFFFULL) + (((uint64_t) M.getRegister(I.RS)) << 32);
-       memcpy(&Temp, &ToInt, sizeof(uint64_t));
-       M.setDoubleRegister(I.RT, Temp);
+       DWordBit DW;
+       DW.asF = M.getDoubleRegister(I.RT);
+       DW.asI = (DW.asI & 0xFFFFFFFFULL) + (((uint64_t) M.getRegister(I.RS)) << 32);
+       M.setDoubleRegister(I.RT, DW.asF);
     );
 
    IMPLEMENT(mflc1, 
-       uint64_t Temp;
-       double Input = M.getDoubleRegister(I.RT);
-       memcpy(&Temp, &Input, sizeof(uint64_t));
-       M.setRegister(I.RS, (uint32_t)(Temp & 0xFFFFFFFF));
+       DWordBit DW;
+       DW.asF = M.getDoubleRegister(I.RT);
+       M.setRegister(I.RS, (uint32_t)(DW.asI & 0xFFFFFFFF));
    );
 
    IMPLEMENT(mfhc1, 
-       uint64_t Temp;
-       double Input = M.getDoubleRegister(I.RT);
-       memcpy(&Temp, &Input, sizeof(uint64_t));
-       M.setRegister(I.RS, (uint32_t)(Temp >> 32));
+       DWordBit DW;
+       DW.asF = M.getDoubleRegister(I.RT);
+       M.setRegister(I.RS, (uint32_t)(DW.asI >> 32));
    );
 
    IMPLEMENT(ceqd, 
