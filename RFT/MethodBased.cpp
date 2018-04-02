@@ -11,13 +11,13 @@ void MethodBased::addFunctionToCompile(uint32_t PC, Machine &M) {
   if (M.isMethodEntry(PC) && (!CompileOnlyHot || ToCompile.count(M.getMethodName(PC)) != 0)) {
     startRegionFormation(PC);
     for (uint32_t Addr = PC; Addr < M.getMethodEnd(PC); Addr += 4) 
-      insertInstruction(Addr, M.getInstAt(Addr).asI_); 
+        insertInstruction(Addr, M.getInstAt(Addr).asI_); 
     bool Inserted = finishRegionFormation();
     if (Inserted) {
-//      std::cout << "Compiling " << M.getMethodName(PC) << " " << PC << " -> " << M.getMethodEnd(PC)<< " ("<< TheManager.getNumOfOIRegions() << ")\n";
-//      std::cout << "Waiting for it....";
+      //      std::cout << "Compiling " << M.getMethodName(PC) << " " << PC << " -> " << M.getMethodEnd(PC)<< " ("<< TheManager.getNumOfOIRegions() << ")\n";
+      //      std::cout << "Waiting for it....";
       while (!TheManager.isNativeRegionEntry(PC)) {}
-//      std::cout << "Done.\n";
+      //      std::cout << "Done.\n";
     }
   }
 

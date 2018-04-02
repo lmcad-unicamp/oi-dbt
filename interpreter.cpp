@@ -6,7 +6,7 @@
 using namespace dbt;
 using namespace dbt::OIDecoder;
 
-#define PRINTINST
+//#define PRINTINST
 
 uint64_t instacc = 0;
 #ifdef PRINTINST

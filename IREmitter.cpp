@@ -300,28 +300,28 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
 
     case dbt::OIDecoder::Slti: {
         Value* Res = Builder->CreateICmpSLT(genLoadRegister(Inst.RS, Func), genImm(Inst.Imm));
-        Value* ResCasted = Builder->CreateIntCast(Res, Type::getInt32Ty(TheContext), true);
+        Value* ResCasted = Builder->CreateZExt(Res, Type::getInt32Ty(TheContext));
         genStoreRegister(Inst.RT, ResCasted, Func);
         break;
       }
 
     case dbt::OIDecoder::Slt: {
         Value* Res = Builder->CreateICmpSLT(genLoadRegister(Inst.RS, Func), genLoadRegister(Inst.RT, Func));
-        Value* ResCasted = Builder->CreateIntCast(Res, Type::getInt32Ty(TheContext), true);
+        Value* ResCasted = Builder->CreateZExt(Res, Type::getInt32Ty(TheContext));
         genStoreRegister(Inst.RD, ResCasted, Func);
         break;
       }
 
     case dbt::OIDecoder::Sltiu: {
         Value* Res = Builder->CreateICmpULT(genLoadRegister(Inst.RS, Func), genImm(Inst.Imm & 0x3FFF));
-        Value* ResCasted = Builder->CreateIntCast(Res, Type::getInt32Ty(TheContext), true);
+        Value* ResCasted = Builder->CreateZExt(Res, Type::getInt32Ty(TheContext));
         genStoreRegister(Inst.RT, ResCasted, Func);
         break;
       }
 
     case dbt::OIDecoder::Sltu: {
         Value* Res = Builder->CreateICmpULT(genLoadRegister(Inst.RS, Func), genLoadRegister(Inst.RT, Func));
-        Value* ResCasted = Builder->CreateIntCast(Res, Type::getInt32Ty(TheContext), true);
+        Value* ResCasted = Builder->CreateZExt(Res, Type::getInt32Ty(TheContext));
         genStoreRegister(Inst.RD, ResCasted, Func);
         break;
       }

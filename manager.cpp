@@ -46,17 +46,17 @@ void Manager::runPipeline() {
 
     auto Module = IRE->generateRegionIR(EntryAddress, OIRegion, DataMemOffset, BrTargets, IRJIT->getTargetMachine(), NativeRegions); 
 
-    if (VerboseOutput)
-      Module->print(llvm::errs(), nullptr);
+/*    if (VerboseOutput)
+      Module->print(llvm::errs(), nullptr);*/
 
-/*    if (VerboseOutput) {
+    if (VerboseOutput) {
       std::cout << "---------------------- Printing OIRegion (OpenISA instr.) --------------------" << std::endl;
 
       for (auto Pair : OIRegion)
         std::cout << std::hex << Pair[0] << ":\t" << dbt::OIPrinter::getString(OIDecoder::decode(Pair[1])) << "\n";
 
       std::cout << "\n" << std::endl;
-    }*/
+    }
 
     unsigned Size = 1;
     for (auto& F : *Module) 
