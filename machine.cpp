@@ -128,7 +128,7 @@ uint16_t Machine::getMemHalfAt(uint32_t Addr) {
 
 Word Machine::getMemValueAt(uint32_t Addr) {
   uint32_t CorrectAddr = Addr - DataMemOffset;
-  assert((Addr % 4) == 0 && "Address not aligned!");
+  //assert((Addr % 4) == 0 && "Address not aligned!");
   Word Bytes;
   CORRECT_ASSERT();
   Bytes.asI_ = *((uint32_t*)(DataMemory.get() + CorrectAddr)); 
@@ -137,7 +137,7 @@ Word Machine::getMemValueAt(uint32_t Addr) {
 
 void Machine::setMemValueAt(uint32_t Addr, uint32_t Value) {
   uint32_t CorrectAddr = Addr - DataMemOffset;
-  assert((Addr % 4) == 0 && "Address not aligned!");
+  //assert((Addr % 4) == 0 && "Address not aligned!");
   CORRECT_ASSERT();
   *((uint32_t*)(DataMemory.get() + CorrectAddr)) = Value;
 }

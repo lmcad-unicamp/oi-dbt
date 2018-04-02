@@ -46,6 +46,7 @@ int LinuxSyscallManager::processSyscall(Machine& M) {
     ssize_t r = -1;
     r = open(filename, flags);
     M.setRegister(2, r);
+    std::cout << "Open file: " << filename << " " << flags << std::endl;
 
     assert(r >= 0 && "Error with file descriptor..");
     return 0;

@@ -6,13 +6,13 @@
 using namespace dbt;
 using namespace dbt::OIDecoder;
 
-//#define PRINTINST
+#define PRINTINST
 
 uint64_t instacc = 0;
 #ifdef PRINTINST
 #include <OIPrinter.hpp>
 //#define DEBUG_PRINT(Addr, Inst) std::cerr << OIPrinter::getString(Inst) << "\n";
-#define DEBUG_PRINT(Addr, Inst) std::cerr << std::dec << (++instacc) <<" -- "<<std::hex << Addr << "\t" << OIPrinter::getString(Inst) << std::dec << "\n";
+#define DEBUG_PRINT(Addr, Inst) std::cerr << /*std::dec << (++instacc) <<" -- "<<*/ std::hex << Addr << "\t" << OIPrinter::getString(Inst) << std::dec << "\n";
 #else
 #define DEBUG_PRINT(Addr, Inst) 
 #endif
@@ -87,6 +87,7 @@ void ITDInterpreter::setDecodedInst(uint32_t Addrs, OIInst DI) {
 void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs) {
   for (uint32_t Addrs = StartAddrs; Addrs < EndAddrs; Addrs+=4) {
     Word W = M.getInstAt(Addrs);
+    //std::cout << std::hex << Addrs << std::endl;
     OIInst I = decode(W.asI_);
     switch(I.Type) {
       SET_DISPACH(Addrs, Absd,    &&absd);
@@ -160,6 +161,7 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
       SET_DISPACH(Addrs, Movd,    &&movd);
       SET_DISPACH(Addrs, Movf,    &&movf);
       SET_DISPACH(Addrs, Movt,    &&movt);
+      SET_DISPACH(Addrs, Movts,    &&movts);
       SET_DISPACH(Addrs, Movs,    &&movs);
       SET_DISPACH(Addrs, Movzd,   &&movzd);
       SET_DISPACH(Addrs, Movzs,   &&movzs);
@@ -194,6 +196,7 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
       SET_DISPACH(Addrs, Cultd,   &&cultd);
       SET_DISPACH(Addrs, Cules,   &&cules);
       SET_DISPACH(Addrs, Cuns,    &&cuns);
+      SET_DISPACH(Addrs, Cueqd,    &&cueqd); 
       SET_DISPACH(Addrs, Cund,    &&cund);
       SET_DISPACH(Addrs, Negd,    &&negd);
       SET_DISPACH(Addrs, Negs,    &&negs);
@@ -545,6 +548,10 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
         M.setRegister(I.RS, M.getRegister(I.RT));
     );
 
+   IMPLEMENT(movts,
+      if (M.getRegister(CC_REG) != 0)
+        M.setFloatRegister(I.RS, M.getFloatRegister(I.RT));
+    );
    IMPLEMENT(movs, 
        M.setFloatRegister(I.RS, M.getFloatRegister(I.RT));
     );
@@ -722,6 +729,11 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
 
    IMPLEMENT(cuns,
        M.setRegister(CC_REG, (isnan(M.getFloatRegister(I.RS)) || isnan(M.getFloatRegister(I.RT))) ? 1 : 0);
+    );
+
+
+   IMPLEMENT(cueqd,
+       M.setRegister(CC_REG, (M.getFloatRegister(I.RS) == M.getFloatRegister(I.RT)) ? 1 : 0);
     );
 
    IMPLEMENT(sqrtd, 
