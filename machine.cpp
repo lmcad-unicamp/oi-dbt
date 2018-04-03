@@ -220,20 +220,20 @@ void Machine::setOffNativeExecution() {
 }
 
 bool Machine::isMethodEntry(uint32_t Addr) {
-  return Symbols.count(Addr) != 0;
+  return Symbolls.count(Addr) != 0;
 }
 
 uint32_t Machine::getMethodEnd(uint32_t Addr) {
-  return Symbols[Addr].second;
+  return Symbolls[Addr].second;
 }
 
 std::string Machine::getMethodName(uint32_t Addr) {
-  return Symbols[Addr].first;
+  return Symbolls[Addr].first;
 }
 
 std::vector<uint32_t> Machine::getVectorOfMethodEntries() {
   std::vector<uint32_t> R;
-  for (auto KV : Symbols)
+  for (auto KV : Symbolls)
     R.push_back(KV.first);
   return R;
 }
@@ -302,7 +302,7 @@ int Machine::loadELF(const std::string ElfPath) {
       unsigned char other;
       for ( unsigned int j = 0; j < symbols.get_symbols_num(); ++j ) {
         symbols.get_symbol( j, name, value, size, bind, type, section_index, other );
-        if (type == 0 && name != "" && value != 0) { 
+        if (type == 0 && name != "" && value != 0 && value < CodeMemLimit) { 
           SymbolStartAddresses.insert(value);
           SymbolNames[value] = name;
         }
@@ -311,7 +311,7 @@ int Machine::loadELF(const std::string ElfPath) {
   }
 
   for (auto I = SymbolStartAddresses.begin(); I != SymbolStartAddresses.end(); ++I) 
-    Symbols[*I] = {SymbolNames[*I], *SymbolStartAddresses.upper_bound(*I)};
+    Symbolls[*I] = {SymbolNames[*I], *SymbolStartAddresses.upper_bound(*I)};
 
   for (int i = 0; i < 258; i++) 
     Register[i] = 0;

@@ -68,7 +68,7 @@ namespace dbt {
 
     std::string BinPath;
 
-    std::unordered_map<uint32_t, std::pair<std::string, uint32_t>> Symbols;
+    std::unordered_map<uint32_t, std::pair<std::string, uint32_t>> Symbolls;
   public:
     Machine() { Register[0] = 0; };
 

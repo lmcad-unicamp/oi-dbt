@@ -43,12 +43,6 @@ void dbt::IROpt::optimizeIRFunction(llvm::Module *M, OptLevel Level) {
       BasicPM->add(llvm::createCFGSimplificationPass());
       BasicPM->add(llvm::createInstructionCombiningPass());
 
-/*      llvm::PassManagerBuilder Builder;
-      Builder.OptLevel = 3;
-      Builder.SizeLevel = 0;
-
-      Builder.populateFunctionPassManager(*BasicPM.get());*/
-
       BasicPM->doInitialization();
     }
 

@@ -143,13 +143,8 @@ int main(int argc, char** argv) {
 
   if (PreheatFlag.was_set()) {
 	 if(ArgumentsFlag.was_set())
-  	{
-    		if(M.setCommandLineArguments(ArgumentsFlag.get_value()) < 0)
-      		exit(1);
-  	}
-  
-
- 
+    if(M.setCommandLineArguments(ArgumentsFlag.get_value()) < 0)
+      exit(1);
 
     std::cerr << "Preheating...\n";
     dbt::ITDInterpreter I(*SyscallM.get(), *RftChosen.get());
@@ -165,13 +160,9 @@ int main(int argc, char** argv) {
 
 
   if(ArgumentsFlag.was_set())
-  {
     if(M.setCommandLineArguments(ArgumentsFlag.get_value()) < 0)
       exit(1);
-  }
   
-  //Adjust to --args
-
   GlobalTimer.startClock();
   dbt::ITDInterpreter I(*SyscallM.get(), *RftChosen.get());
   std::cerr << "Starting execution:\n";
