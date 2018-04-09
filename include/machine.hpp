@@ -23,6 +23,9 @@
 
 #define uptr std::unique_ptr
 
+#define STACK_SIZE 8 * 1024 * 1024 /*8mb*/
+#define HEAP_SIZE  8 * 1024 * 1024 /*8mb*/
+
 namespace dbt {
   union Word {
     char asC_[4];
@@ -41,6 +44,8 @@ namespace dbt {
 
   class Machine {
   private:
+    uint32_t stackSize = STACK_SIZE;
+    uint32_t heapSize = HEAP_SIZE;
 
     // Int Regs     0   -  63
     // LDI          64
@@ -84,6 +89,10 @@ namespace dbt {
     uint32_t getPC();
     void setPC(uint32_t);
     void incPC();
+
+    void setStackSize(uint32_t size) { stackSize = size; };
+    void setHeapSize(uint32_t size)  { heapSize = size;  };
+
 
     Word getInstAt(uint32_t);
     Word getInstAtPC();

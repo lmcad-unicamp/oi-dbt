@@ -50,9 +50,11 @@ int LinuxSyscallManager::processSyscall(Machine& M) {
 	r = open(filename, flags | O_CREAT, S_IRWXU);
     
     M.setRegister(2, r);
+    #ifdef DEBUG
     std::cerr << "Open file: " << filename << "; Flags:" << flags << " (r=" << r << ")" << std::endl;
 
     assert(r >= 0 && "Error with file descriptor..");
+    #endif
     return 0;
   }
 

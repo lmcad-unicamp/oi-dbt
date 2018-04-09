@@ -12,9 +12,7 @@ using namespace dbt;
   #define CORRECT_ASSERT()
 #endif //DEBUG
 
-#define STACK_SIZE 8 * 1024 * 1024 /*8mb*/
-#define HEAP_SIZE  8 * 1024 * 1024 /*8mb*/
-#define MAX_ARGUMENT_SIZE 1024 * 1024 /* 1mb */
+//#define MAX_ARGUMENT_SIZE 1024 * 1024 /* 1mb */
 
 union HalfUn {
 	char asC_[2];
@@ -62,15 +60,18 @@ int Machine::setCommandLineArguments(std::string parameters) {
   offset = DataMemTotalSize-totalSize-1;
   setMemValueAt(sp, (uint32_t) argv.size());                          
 
+  #ifdef DEBUG
   //std::cout << "Argc: " << argv.size() << "\n";
-
+  #endif
   for(auto argument : argv) {
     sp += 4;                                                          //Subtract stack pointer
     unsigned argSize = argument.length()+1;                           //Argument size
     copystr(DataMemory.get() + offset, argument.c_str(), argSize);    //Put argument in sp+4+size(arg[0..])=offset
     setMemValueAt(sp, (uint32_t) offset+DataMemOffset);               //Put offset in sp
     offset += argSize;                                                //Increment offset by argument Size
-    //std::cout << argument << "\n";
+    #ifdef DEBUG
+    std::cout << argument << "\n";
+    #endif
   }
 
   setMemValueAt(sp+4, 0);
@@ -286,7 +287,7 @@ int Machine::loadELF(const std::string ElfPath) {
       Started = true;
   }
 
-  allocDataMemory(AddressOffset, (TotalDataSize + STACK_SIZE + HEAP_SIZE) + (4 - (TotalDataSize + STACK_SIZE + HEAP_SIZE) % 4));
+  allocDataMemory(AddressOffset, (TotalDataSize + stackSize + heapSize) + (4 - (TotalDataSize + stackSize + heapSize) % 4));
 
   std::unordered_map<uint32_t, std::string> SymbolNames;
   std::set<uint32_t> SymbolStartAddresses;
@@ -329,7 +330,7 @@ int Machine::loadELF(const std::string ElfPath) {
   for (int i = 0; i < 258; i++) 
     Register[i] = 0;
 
-  uint32_t StackAddr = DataMemLimit-STACK_SIZE/4;
+  uint32_t StackAddr = DataMemLimit-stackSize/4;
   setRegister(29, StackAddr + (4 - StackAddr%4)); //StackPointer
   setRegister(30, StackAddr + (4 - StackAddr%4)); //StackPointer
   

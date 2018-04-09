@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <memory>
+#include <machine.hpp>
 
 clarg::argString RFTFlag("-rft", "Region Formation Technique (net)", "net");
 clarg::argInt    HotnessFlag("-hot", "Hotness threshold for the RFTs", 50);
@@ -20,10 +21,18 @@ clarg::argBool   HelpFlag("-h",  "display the help message");
 clarg::argInt    RegionLimitSize("-l", "region size limit", 0);
 clarg::argString ToCompileFlag("-tc", "Functions to compile", "");
 clarg::argString ArgumentsFlag("-args", "Pass Parameters to binary file (as string)", "");
+clarg::argInt	 stackSizeFlag("-stack", "Set new stack size. (Default: 8mb)" , STACK_SIZE);
+clarg::argInt	 heapSizeFlag ("-heap", "Set new heap size (Default: 8mb)", HEAP_SIZE);
+#ifdef DEBUG
+clarg::argInt debugFlag ("-d", "Set Debug Level. This value can be 1 or 2 (1 - Less verbosive; 2 - More Verbosive)", 1);
+#endif
 
 void usage(char* PrgName) {
-  cout << "Version: 0.0.1 (21-03-2018)\n\n";
-
+  cout << "Version: 0.0.1 (09-04-2018)";
+  #ifdef DEBUG
+  cout << " (Debug Build) ";  
+  #endif
+  cout << "\n\n";
   cout << "Usage: " << PrgName << 
     " [-rft {net, mret2, lef, lei, netplus, mb}] [-interpret] -bin PathToBinary\n\n";
 
@@ -131,8 +140,18 @@ int main(int argc, char** argv) {
   }
 
   if(HotnessFlag.was_set()) {
-    std::cerr << "The Hotness Threshold is set to " << HotnessFlag.get_value() << std::endl;
+    std::cerr << "The Hotness Threshold was set to " << HotnessFlag.get_value() << std::endl;
     RftChosen->setHotnessThreshold(HotnessFlag.get_value());
+  }
+
+  if (stackSizeFlag.was_set()) {
+    std::cerr << "Stack size was set to " << stackSizeFlag.get_value() << std::endl;
+    M.setStackSize(stackSizeFlag.get_value()); 
+  }
+
+  if (heapSizeFlag.was_set()) {
+    std::cerr << "Heap size was set to " << heapSizeFlag.get_value() << std::endl;
+    M.setHeapSize(heapSizeFlag.get_value());
   }
 
   if (RegionLimitSize.was_set()) 
@@ -147,6 +166,9 @@ int main(int argc, char** argv) {
       exit(1);
 
     std::cerr << "Preheating...\n";
+
+    GlobalTimer.startClock();
+    
     dbt::ITDInterpreter I(*SyscallM.get(), *RftChosen.get());
     I.executeAll(M);
     std::cerr << "done\n";
@@ -156,6 +178,9 @@ int main(int argc, char** argv) {
     std::cerr << "done\n";
 
     RftChosen = std::make_unique<dbt::PreheatRFT>(TheManager);
+
+    GlobalTimer.stopClock();
+    GlobalTimer.printReport("Preheat");
   }
 
 
