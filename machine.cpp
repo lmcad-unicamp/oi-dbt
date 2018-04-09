@@ -2,6 +2,7 @@
 #include <machine.hpp>
 
 #include <cstring>
+//#define PRINTREG
 
 using namespace dbt;
 
@@ -61,7 +62,7 @@ int Machine::setCommandLineArguments(std::string parameters) {
   offset = DataMemTotalSize-totalSize-1;
   setMemValueAt(sp, (uint32_t) argv.size());                          
 
-  std::cout << "Argc: " << argv.size() << "\n";
+  //std::cout << "Argc: " << argv.size() << "\n";
 
   for(auto argument : argv) {
     sp += 4;                                                          //Subtract stack pointer
@@ -69,7 +70,7 @@ int Machine::setCommandLineArguments(std::string parameters) {
     copystr(DataMemory.get() + offset, argument.c_str(), argSize);    //Put argument in sp+4+size(arg[0..])=offset
     setMemValueAt(sp, (uint32_t) offset+DataMemOffset);               //Put offset in sp
     offset += argSize;                                                //Increment offset by argument Size
-    std::cout << argument << "\n";
+    //std::cout << argument << "\n";
   }
 
   setMemValueAt(sp+4, 0);
@@ -110,6 +111,9 @@ Word Machine::getNextInst() {
 void Machine::setMemByteAt(uint32_t Addr, uint8_t Value) {
   uint32_t CorrectAddr = Addr - DataMemOffset;
   CORRECT_ASSERT();
+  #ifdef PRINTREG
+  std::cerr << "MEM[" << std::hex << CorrectAddr << "]=" << Value << "; (uint8_t);  "; 
+  #endif
   DataMemory[CorrectAddr] = Value;
 }
 
@@ -139,6 +143,9 @@ void Machine::setMemValueAt(uint32_t Addr, uint32_t Value) {
   uint32_t CorrectAddr = Addr - DataMemOffset;
   //assert((Addr % 4) == 0 && "Address not aligned!");
   CORRECT_ASSERT();
+  #ifdef PRINTREG
+  std::cerr << "MEM[" << std::hex << CorrectAddr << "]=" << Value << "; (uint32_t);  "; 
+  #endif
   *((uint32_t*)(DataMemory.get() + CorrectAddr)) = Value;
 }
 
@@ -159,6 +166,9 @@ uint32_t Machine::getDataMemOffset() {
 }
 
 int32_t Machine::getRegister(uint16_t R) {
+  #ifdef PRINTREG
+  std::cerr << "GET R[" << std::dec << R << "]: " << std::hex << Register[R] << ";  ";
+  #endif 
   return Register[R];
 }
 
@@ -175,7 +185,10 @@ double Machine::getDoubleRegister(uint16_t R) {
 }
 
 void Machine::setRegister(uint16_t R, int32_t V) {
-  Register[R] = V;
+    #ifdef PRINTREG
+    std::cerr << "R[" << std::dec << R << "] = " << std::hex << V << ";  ";
+    #endif 
+    Register[R] = V;
 }
 
 void Machine::setFloatRegister(uint16_t R, float V) {

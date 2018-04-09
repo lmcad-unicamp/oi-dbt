@@ -8,6 +8,8 @@
 #define IJMP_REG  65
 #define CC_REG    257
 
+//#define PRINTREG
+
 namespace dbt {
   namespace OIDecoder {
     union Word {
@@ -245,7 +247,10 @@ namespace dbt {
           I.Imm = getImm1(W);
           I.RS = getRS(W);
           I.RT = getRT(W);
-          break;
+          #ifdef PRINTREG
+          //std::cout << "RS: " << I.RS << "; RT: " << I.RT << "; Imm: " << I.Imm << ";\n";
+          #endif
+	  break;
         case EncodingType::PL24:
           I.RV = getRV(W);
           I.RD = getRD(W);

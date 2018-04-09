@@ -7,12 +7,24 @@ using namespace dbt;
 using namespace dbt::OIDecoder;
 
 //#define PRINTINST
+//#define COLOR
+//#define PRINTREG
+
+
+#ifdef COLOR
+#define COLOR_CYAN "\033[1;35m"
+#define COLOR_NONE "\033[0m"
+#else
+#define COLOR_CYAN ""
+#define COLOR_NONE ""
+#endif
 
 uint64_t instacc = 0;
 #ifdef PRINTINST
 #include <OIPrinter.hpp>
 //#define DEBUG_PRINT(Addr, Inst) std::cerr << OIPrinter::getString(Inst) << "\n";
-#define DEBUG_PRINT(Addr, Inst) std::cerr << /*std::dec << (++instacc) <<" -- "<<*/ std::hex << Addr << "\t" << OIPrinter::getString(Inst) << std::dec << "\n";
+//#define DEBUG_PRINT(Addr, Inst) std::cerr << /*std::dec << (++instacc) <<" -- "<<*/ std::hex << Addr << "\t" << OIPrinter::getString(Inst) << std::dec << "\n";
+#define DEBUG_PRINT(Addr, Inst) std::cerr << "\n" << COLOR_CYAN <<  std::dec << (++instacc) <<" -- "<< std::hex << Addr << "\t" << OIPrinter::getString(Inst) << std::dec << COLOR_NONE << "\t";
 #else
 #define DEBUG_PRINT(Addr, Inst) 
 #endif
