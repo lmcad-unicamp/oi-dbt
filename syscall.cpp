@@ -45,12 +45,12 @@ int LinuxSyscallManager::processSyscall(Machine& M) {
     
     ssize_t r = -1;
     if (flags == 0 || flags == 1 || flags == 2)
-	r = open(filename, flags | O_RDONLY);
+	r = open(filename, flags);
     else    
-	r = open(filename, flags | O_CREAT | S_IRWXU);
+	r = open(filename, flags | O_CREAT, S_IRWXU);
     
     M.setRegister(2, r);
-    std::cout << "Open file: " << filename << " " << flags << std::endl;
+    std::cerr << "Open file: " << filename << "; Flags:" << flags << " (r=" << r << ")" << std::endl;
 
     assert(r >= 0 && "Error with file descriptor..");
     return 0;
