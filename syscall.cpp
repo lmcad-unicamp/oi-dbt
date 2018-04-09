@@ -44,7 +44,11 @@ int LinuxSyscallManager::processSyscall(Machine& M) {
     const int flags = M.getRegister(6);
     
     ssize_t r = -1;
-    r = open(filename, flags | O_CREAT);
+    if (flags == 0 || flags == 1 || flags == 2)
+	r = open(filename, flags | O_RDONLY);
+    else    
+	r = open(filename, flags | O_CREAT | S_IRWXU);
+    
     M.setRegister(2, r);
     std::cout << "Open file: " << filename << " " << flags << std::endl;
 
