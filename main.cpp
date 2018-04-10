@@ -21,8 +21,8 @@ clarg::argBool   HelpFlag("-h",  "display the help message");
 clarg::argInt    RegionLimitSize("-l", "region size limit", 0);
 clarg::argString ToCompileFlag("-tc", "Functions to compile", "");
 clarg::argString ArgumentsFlag("-args", "Pass Parameters to binary file (as string)", "");
-clarg::argInt	 stackSizeFlag("-stack", "Set new stack size. (Default: 8mb)" , STACK_SIZE);
-clarg::argInt	 heapSizeFlag ("-heap", "Set new heap size (Default: 8mb)", HEAP_SIZE);
+clarg::argInt	 stackSizeFlag("-stack", "Set new stack size. (Default: 128mb)" , STACK_SIZE);
+clarg::argInt	 heapSizeFlag ("-heap", "Set new heap size (Default: 128mb)", HEAP_SIZE);
 #ifdef DEBUG
 clarg::argInt debugFlag ("-d", "Set Debug Level. This value can be 1 or 2 (1 - Less verbosive; 2 - More Verbosive)", 1);
 #endif
@@ -100,6 +100,17 @@ int main(int argc, char** argv) {
   if (validateArguments())
     return 1;
 
+  if (stackSizeFlag.was_set()) {
+    std::cerr << "Stack size was set to " << stackSizeFlag.get_value() << std::endl;
+    M.setStackSize(stackSizeFlag.get_value()); 
+  }
+
+  if (heapSizeFlag.was_set()) {
+    std::cerr << "Heap size was set to " << heapSizeFlag.get_value() << std::endl;
+    M.setHeapSize(heapSizeFlag.get_value());
+  }
+
+
   int loadStatus = M.loadELF(BinaryFlag.get_value());
 
   if (!loadStatus) {
@@ -142,16 +153,6 @@ int main(int argc, char** argv) {
   if(HotnessFlag.was_set()) {
     std::cerr << "The Hotness Threshold was set to " << HotnessFlag.get_value() << std::endl;
     RftChosen->setHotnessThreshold(HotnessFlag.get_value());
-  }
-
-  if (stackSizeFlag.was_set()) {
-    std::cerr << "Stack size was set to " << stackSizeFlag.get_value() << std::endl;
-    M.setStackSize(stackSizeFlag.get_value()); 
-  }
-
-  if (heapSizeFlag.was_set()) {
-    std::cerr << "Heap size was set to " << heapSizeFlag.get_value() << std::endl;
-    M.setHeapSize(heapSizeFlag.get_value());
   }
 
   if (RegionLimitSize.was_set()) 

@@ -51,7 +51,7 @@ int LinuxSyscallManager::processSyscall(Machine& M) {
     
     M.setRegister(2, r);
     #ifdef DEBUG
-    std::cerr << "Open file: " << filename << "; Flags:" << flags << " (r=" << r << ")" << std::endl;
+    //std::cerr << "Open file: " << filename << "; Flags:" << flags << " (r=" << r << ")" << std::endl;
 
     assert(r >= 0 && "Error with file descriptor..");
     #endif

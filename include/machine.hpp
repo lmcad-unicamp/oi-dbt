@@ -23,8 +23,8 @@
 
 #define uptr std::unique_ptr
 
-#define STACK_SIZE 8 * 1024 * 1024 /*8mb*/
-#define HEAP_SIZE  8 * 1024 * 1024 /*8mb*/
+#define STACK_SIZE 128 * 1024 * 1024 /*8mb*/
+#define HEAP_SIZE  128 * 1024 * 1024 /*8mb*/
 
 namespace dbt {
   union Word {

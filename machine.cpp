@@ -70,7 +70,7 @@ int Machine::setCommandLineArguments(std::string parameters) {
     setMemValueAt(sp, (uint32_t) offset+DataMemOffset);               //Put offset in sp
     offset += argSize;                                                //Increment offset by argument Size
     #ifdef DEBUG
-    std::cout << argument << "\n";
+    //std::cout << argument << "\n";
     #endif
   }
 
