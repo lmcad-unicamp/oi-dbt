@@ -1,0 +1,95 @@
+\hypertarget{classdbt_1_1_r_f_t}{}\section{dbt\+:\+:R\+FT Class Reference}
+\label{classdbt_1_1_r_f_t}\index{dbt\+::\+R\+FT@{dbt\+::\+R\+FT}}
+
+
+Inheritance diagram for dbt\+:\+:R\+FT\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=268pt]{classdbt_1_1_r_f_t__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for dbt\+:\+:R\+FT\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=175pt]{classdbt_1_1_r_f_t__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries R\+FT} (\hyperlink{classdbt_1_1_manager}{Manager} \&M)\hypertarget{classdbt_1_1_r_f_t_a08e8344fcf006e7686b9a7fbea7379f6}{}\label{classdbt_1_1_r_f_t_a08e8344fcf006e7686b9a7fbea7379f6}
+
+\item 
+void {\bfseries print\+Regions} ()\hypertarget{classdbt_1_1_r_f_t_a7720a6ce7c8ffb857c1b7f33c0a89572}{}\label{classdbt_1_1_r_f_t_a7720a6ce7c8ffb857c1b7f33c0a89572}
+
+\item 
+void {\bfseries set\+Hotness\+Threshold} (unsigned int threshold)\hypertarget{classdbt_1_1_r_f_t_ac43200cf626524d6ca5697cd8f6d794e}{}\label{classdbt_1_1_r_f_t_ac43200cf626524d6ca5697cd8f6d794e}
+
+\item 
+void {\bfseries set\+Region\+Limit\+Size} (unsigned Limit)\hypertarget{classdbt_1_1_r_f_t_a4b0cd26491d435a4952761271f5fce6d}{}\label{classdbt_1_1_r_f_t_a4b0cd26491d435a4952761271f5fce6d}
+
+\item 
+virtual void {\bfseries on\+Branch} (\hyperlink{classdbt_1_1_machine}{dbt\+::\+Machine} \&)=0\hypertarget{classdbt_1_1_r_f_t_a10f61ba84db60a1da5ee5cc74804585f}{}\label{classdbt_1_1_r_f_t_a10f61ba84db60a1da5ee5cc74804585f}
+
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void {\bfseries start\+Region\+Formation} (uint32\+\_\+t)\hypertarget{classdbt_1_1_r_f_t_a52a661cac3101446ded778953167857d}{}\label{classdbt_1_1_r_f_t_a52a661cac3101446ded778953167857d}
+
+\item 
+bool {\bfseries finish\+Region\+Formation} ()\hypertarget{classdbt_1_1_r_f_t_aacccb0531cd987fb5a7f36ecf6a3748c}{}\label{classdbt_1_1_r_f_t_aacccb0531cd987fb5a7f36ecf6a3748c}
+
+\item 
+void {\bfseries insert\+Instruction} (uint32\+\_\+t, uint32\+\_\+t)\hypertarget{classdbt_1_1_r_f_t_afa6211edc8eda4c885da61d96cda62c7}{}\label{classdbt_1_1_r_f_t_afa6211edc8eda4c885da61d96cda62c7}
+
+\item 
+void {\bfseries set\+Branch\+Target} (uint32\+\_\+t, uint32\+\_\+t)\hypertarget{classdbt_1_1_r_f_t_aba15abcd233b0aecdaa0edb0c89ead0d}{}\label{classdbt_1_1_r_f_t_aba15abcd233b0aecdaa0edb0c89ead0d}
+
+\item 
+void {\bfseries insert\+Instruction} (std\+::array$<$ uint32\+\_\+t, 2 $>$ \&)\hypertarget{classdbt_1_1_r_f_t_ab3656263cb1446b41e9d3f24481dfa24}{}\label{classdbt_1_1_r_f_t_ab3656263cb1446b41e9d3f24481dfa24}
+
+\item 
+bool {\bfseries has\+Recorded\+Addrs} (uint32\+\_\+t)\hypertarget{classdbt_1_1_r_f_t_a24370d694a70801229b9715f5b885735}{}\label{classdbt_1_1_r_f_t_a24370d694a70801229b9715f5b885735}
+
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+unsigned {\bfseries Hotness\+Threshold} = 50\hypertarget{classdbt_1_1_r_f_t_a03facc8b4254fa669d60ce76577aabb5}{}\label{classdbt_1_1_r_f_t_a03facc8b4254fa669d60ce76577aabb5}
+
+\item 
+spp\+::sparse\+\_\+hash\+\_\+map$<$ uint32\+\_\+t, uint8\+\_\+t $>$ {\bfseries Exec\+Freq}\hypertarget{classdbt_1_1_r_f_t_a0002b19ea0428e5b620b700f7d68e6e7}{}\label{classdbt_1_1_r_f_t_a0002b19ea0428e5b620b700f7d68e6e7}
+
+\item 
+spp\+::sparse\+\_\+hash\+\_\+map$<$ uint32\+\_\+t, uint32\+\_\+t $>$ {\bfseries Branches\+Targets}\hypertarget{classdbt_1_1_r_f_t_a7554ac4d22167967f3cefca30f7eea32}{}\label{classdbt_1_1_r_f_t_a7554ac4d22167967f3cefca30f7eea32}
+
+\item 
+O\+I\+Inst\+List {\bfseries O\+I\+Region}\hypertarget{classdbt_1_1_r_f_t_a343b0402924fbc86768e754bfbee3ade}{}\label{classdbt_1_1_r_f_t_a343b0402924fbc86768e754bfbee3ade}
+
+\item 
+bool {\bfseries Recording} = false\hypertarget{classdbt_1_1_r_f_t_a2b40bb36d8fd5f7b383ee7c1108ea604}{}\label{classdbt_1_1_r_f_t_a2b40bb36d8fd5f7b383ee7c1108ea604}
+
+\item 
+uint32\+\_\+t {\bfseries Recording\+Entry}\hypertarget{classdbt_1_1_r_f_t_aa64122cac618590fcd7d7ed727956972}{}\label{classdbt_1_1_r_f_t_aa64122cac618590fcd7d7ed727956972}
+
+\item 
+uint32\+\_\+t {\bfseries Last\+Target}\hypertarget{classdbt_1_1_r_f_t_aee36a172a40500f952e7278098cca08d}{}\label{classdbt_1_1_r_f_t_aee36a172a40500f952e7278098cca08d}
+
+\item 
+unsigned {\bfseries Region\+Limit\+Size} = -\/1\hypertarget{classdbt_1_1_r_f_t_adad85e8e15a66607c9ed15b50e90894c}{}\label{classdbt_1_1_r_f_t_adad85e8e15a66607c9ed15b50e90894c}
+
+\item 
+\hyperlink{classdbt_1_1_manager}{Manager} \& {\bfseries The\+Manager}\hypertarget{classdbt_1_1_r_f_t_ad8b0934dbd7cb1e0cdf5992aa84a80fd}{}\label{classdbt_1_1_r_f_t_ad8b0934dbd7cb1e0cdf5992aa84a80fd}
+
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+include/R\+F\+T.\+hpp\item 
+R\+F\+T/R\+F\+T.\+cpp\end{DoxyCompactItemize}

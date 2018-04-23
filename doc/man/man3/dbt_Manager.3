@@ -1,0 +1,80 @@
+.TH "dbt::Manager" 3 "Mon Apr 23 2018" "Version 0.0.1" "OpenISA Dynamic Binary Translator" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+dbt::Manager \- 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Public Types"
+
+.in +1c
+.ti -1c
+.RI "enum \fBOptPolitic\fP { \fBNone\fP, \fBNormal\fP, \fBAggressive\fP }"
+.br
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "unsigned \fBgetCompiledRegions\fP (void)"
+.br
+.ti -1c
+.RI "unsigned \fBgetOICompiled\fP (void)"
+.br
+.ti -1c
+.RI "bool \fBgetRegionRecording\fP (void)"
+.br
+.ti -1c
+.RI "void \fBsetRegionRecorging\fP (bool value)"
+.br
+.ti -1c
+.RI "unsigned \fBgetLLVMCompiled\fP (void)"
+.br
+.ti -1c
+.RI "float \fBgetAvgOptCodeSize\fP (void)"
+.br
+.ti -1c
+.RI "\fBManager\fP (unsigned T, OptPolitic O, uint32_t DMO, bool VO=false)"
+.br
+.ti -1c
+.RI "bool \fBaddOIRegion\fP (uint32_t, OIInstList, spp::sparse_hash_map< uint32_t, uint32_t >)"
+.br
+.ti -1c
+.RI "int32_t \fBjumpToRegion\fP (uint32_t, \fBdbt::Machine\fP &)"
+.br
+.ti -1c
+.RI "bool \fBisRegionEntry\fP (uint32_t EntryAddress)"
+.br
+.ti -1c
+.RI "bool \fBisNativeRegionEntry\fP (uint32_t EntryAddress)"
+.br
+.ti -1c
+.RI "size_t \fBgetNumOfOIRegions\fP ()"
+.br
+.ti -1c
+.RI "unsigned int \fBgetNumOfThreads\fP (void)"
+.br
+.ti -1c
+.RI "float \fBgetAvgRegionsSize\fP ()"
+.br
+.ti -1c
+.RI "bool \fBinCodeCache\fP (uint32_t Addrs)"
+.br
+.ti -1c
+.RI "std::vector< uint32_t > \fBgetDirectTransitions\fP (uint32_t EntryAddrs)"
+.br
+.ti -1c
+.RI "OIInstList \fBgetCompiledOIRegion\fP (uint32_t EntryAddrs)"
+.br
+.ti -1c
+.RI "std::unordered_map< uint32_t, OIInstList >::iterator \fBoiregions_begin\fP ()"
+.br
+.ti -1c
+.RI "std::unordered_map< uint32_t, OIInstList >::iterator \fBoiregions_end\fP ()"
+.br
+.in -1c
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for OpenISA Dynamic Binary Translator from the source code\&.

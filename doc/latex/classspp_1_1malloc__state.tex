@@ -1,0 +1,163 @@
+\hypertarget{classspp_1_1malloc__state}{}\section{spp\+:\+:malloc\+\_\+state Class Reference}
+\label{classspp_1_1malloc__state}\index{spp\+::malloc\+\_\+state@{spp\+::malloc\+\_\+state}}
+
+
+Collaboration diagram for spp\+:\+:malloc\+\_\+state\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=236pt]{classspp_1_1malloc__state__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+S\+P\+P\+\_\+\+F\+O\+R\+C\+E\+I\+N\+L\+I\+NE void $\ast$ {\bfseries \+\_\+malloc} (size\+\_\+t bytes)\hypertarget{classspp_1_1malloc__state_a6c02c6c88aad2a19d9bb685615a27524}{}\label{classspp_1_1malloc__state_a6c02c6c88aad2a19d9bb685615a27524}
+
+\item 
+S\+P\+P\+\_\+\+F\+O\+R\+C\+E\+I\+N\+L\+I\+NE void {\bfseries \+\_\+free} (\hyperlink{structspp_1_1malloc__chunk}{mchunkptr} p)\hypertarget{classspp_1_1malloc__state_aa9e5165e8d009073752600249ecdce5a}{}\label{classspp_1_1malloc__state_aa9e5165e8d009073752600249ecdce5a}
+
+\item 
+void $\ast$ {\bfseries internal\+\_\+malloc} (size\+\_\+t b)\hypertarget{classspp_1_1malloc__state_af91f59ed2adf8f6b4626a00bcdca402c}{}\label{classspp_1_1malloc__state_af91f59ed2adf8f6b4626a00bcdca402c}
+
+\item 
+void {\bfseries internal\+\_\+free} (void $\ast$mem)\hypertarget{classspp_1_1malloc__state_ad04deda57d4c0add1c7066e621da73f7}{}\label{classspp_1_1malloc__state_ad04deda57d4c0add1c7066e621da73f7}
+
+\item 
+S\+P\+P\+\_\+\+I\+M\+PL void {\bfseries init\+\_\+top} (\hyperlink{structspp_1_1malloc__chunk}{mchunkptr} p, size\+\_\+t psize)\hypertarget{classspp_1_1malloc__state_af81590f6860e0dd62c518d909e24d058}{}\label{classspp_1_1malloc__state_af81590f6860e0dd62c518d909e24d058}
+
+\item 
+S\+P\+P\+\_\+\+I\+M\+PL void {\bfseries init\+\_\+bins} ()\hypertarget{classspp_1_1malloc__state_ac1d851d864191e79f6778e29f4f71d89}{}\label{classspp_1_1malloc__state_ac1d851d864191e79f6778e29f4f71d89}
+
+\item 
+S\+P\+P\+\_\+\+I\+M\+PL void {\bfseries init} (char $\ast$tbase, size\+\_\+t tsize)\hypertarget{classspp_1_1malloc__state_a8e8a971951701b53968700ce24dafe45}{}\label{classspp_1_1malloc__state_a8e8a971951701b53968700ce24dafe45}
+
+\item 
+S\+P\+P\+\_\+\+I\+M\+PL void $\ast$ {\bfseries sys\+\_\+alloc} (size\+\_\+t nb)\hypertarget{classspp_1_1malloc__state_a439998e8956b1201079f4e2f9e2f1e6d}{}\label{classspp_1_1malloc__state_a439998e8956b1201079f4e2f9e2f1e6d}
+
+\item 
+S\+P\+P\+\_\+\+I\+M\+PL size\+\_\+t {\bfseries release\+\_\+unused\+\_\+segments} ()\hypertarget{classspp_1_1malloc__state_ae9d5b38d1f822866f53d2aa8bb1cfdc9}{}\label{classspp_1_1malloc__state_ae9d5b38d1f822866f53d2aa8bb1cfdc9}
+
+\item 
+S\+P\+P\+\_\+\+I\+M\+PL int {\bfseries sys\+\_\+trim} (size\+\_\+t pad)\hypertarget{classspp_1_1malloc__state_a8650f05c89acbb6200d66893513bc31d}{}\label{classspp_1_1malloc__state_a8650f05c89acbb6200d66893513bc31d}
+
+\item 
+S\+P\+P\+\_\+\+I\+M\+PL void {\bfseries dispose\+\_\+chunk} (\hyperlink{structspp_1_1malloc__chunk}{mchunkptr} p, size\+\_\+t psize)\hypertarget{classspp_1_1malloc__state_a8adcdd3083b435bd79363f2548234087}{}\label{classspp_1_1malloc__state_a8adcdd3083b435bd79363f2548234087}
+
+\item 
+S\+P\+P\+\_\+\+I\+M\+PL \hyperlink{structspp_1_1malloc__chunk}{mchunkptr} {\bfseries try\+\_\+realloc\+\_\+chunk} (\hyperlink{structspp_1_1malloc__chunk}{mchunkptr} p, size\+\_\+t nb, int can\+\_\+move)\hypertarget{classspp_1_1malloc__state_a5a067b16f5d28b425138921634b389d4}{}\label{classspp_1_1malloc__state_a5a067b16f5d28b425138921634b389d4}
+
+\item 
+S\+P\+P\+\_\+\+I\+M\+PL void $\ast$ {\bfseries internal\+\_\+memalign} (size\+\_\+t alignment, size\+\_\+t bytes)\hypertarget{classspp_1_1malloc__state_a2bc26a09f2678723c01ea4be6f93c2f6}{}\label{classspp_1_1malloc__state_a2bc26a09f2678723c01ea4be6f93c2f6}
+
+\item 
+S\+P\+P\+\_\+\+I\+M\+PL void $\ast$$\ast$ {\bfseries ialloc} (size\+\_\+t n\+\_\+elements, size\+\_\+t $\ast$sizes, int opts, void $\ast$chunks\mbox{[}$\,$\mbox{]})\hypertarget{classspp_1_1malloc__state_a8a02edd5571fbdd2af38963209094ac9}{}\label{classspp_1_1malloc__state_a8a02edd5571fbdd2af38963209094ac9}
+
+\item 
+S\+P\+P\+\_\+\+I\+M\+PL size\+\_\+t {\bfseries internal\+\_\+bulk\+\_\+free} (void $\ast$array\mbox{[}$\,$\mbox{]}, size\+\_\+t nelem)\hypertarget{classspp_1_1malloc__state_ac24182cd5c6c13ca387edbc8a1e4c179}{}\label{classspp_1_1malloc__state_ac24182cd5c6c13ca387edbc8a1e4c179}
+
+\item 
+S\+P\+P\+\_\+\+I\+M\+PL void {\bfseries internal\+\_\+inspect\+\_\+all} (void($\ast$handler)(void $\ast$start, void $\ast$end, size\+\_\+t used\+\_\+bytes, void $\ast$callback\+\_\+arg), void $\ast$arg)\hypertarget{classspp_1_1malloc__state_ace0c165766c8dd4ccd49483bb5abe0b0}{}\label{classspp_1_1malloc__state_ace0c165766c8dd4ccd49483bb5abe0b0}
+
+\item 
+bool {\bfseries use\+\_\+lock} () const \hypertarget{classspp_1_1malloc__state_a40778a4e78e9c1024224c3b48e5d6936}{}\label{classspp_1_1malloc__state_a40778a4e78e9c1024224c3b48e5d6936}
+
+\item 
+void {\bfseries enable\+\_\+lock} ()\hypertarget{classspp_1_1malloc__state_ad10a9850b916657297f9a4909ea0ac5f}{}\label{classspp_1_1malloc__state_ad10a9850b916657297f9a4909ea0ac5f}
+
+\item 
+void {\bfseries set\+\_\+lock} (int)\hypertarget{classspp_1_1malloc__state_ae590e15a182af12304ab4e910f82a58e}{}\label{classspp_1_1malloc__state_ae590e15a182af12304ab4e910f82a58e}
+
+\item 
+void {\bfseries disable\+\_\+lock} ()\hypertarget{classspp_1_1malloc__state_abb2ff112f0aa1dca63de25c2b5832c56}{}\label{classspp_1_1malloc__state_abb2ff112f0aa1dca63de25c2b5832c56}
+
+\item 
+bool {\bfseries use\+\_\+mmap} () const \hypertarget{classspp_1_1malloc__state_a276e8b49b5404e349bbbd3063f3559bd}{}\label{classspp_1_1malloc__state_a276e8b49b5404e349bbbd3063f3559bd}
+
+\item 
+void {\bfseries enable\+\_\+mmap} ()\hypertarget{classspp_1_1malloc__state_ae0399950aa4fde11d443ed45aab61bf5}{}\label{classspp_1_1malloc__state_ae0399950aa4fde11d443ed45aab61bf5}
+
+\item 
+void {\bfseries disable\+\_\+mmap} ()\hypertarget{classspp_1_1malloc__state_a4f3e7ce5d350d431b0382cdd5da43faa}{}\label{classspp_1_1malloc__state_a4f3e7ce5d350d431b0382cdd5da43faa}
+
+\item 
+bool {\bfseries ok\+\_\+address} (void $\ast$a) const \hypertarget{classspp_1_1malloc__state_ac1479121ed4af10974bed32349d53403}{}\label{classspp_1_1malloc__state_ac1479121ed4af10974bed32349d53403}
+
+\item 
+bool {\bfseries ok\+\_\+magic} () const \hypertarget{classspp_1_1malloc__state_a055fd30b0497f92b1c47863160d43426}{}\label{classspp_1_1malloc__state_a055fd30b0497f92b1c47863160d43426}
+
+\item 
+bool {\bfseries is\+\_\+initialized} () const \hypertarget{classspp_1_1malloc__state_ad53b3b8bf8f3aa2f952ac2b1b0ab3fe9}{}\label{classspp_1_1malloc__state_ad53b3b8bf8f3aa2f952ac2b1b0ab3fe9}
+
+\item 
+bool {\bfseries use\+\_\+noncontiguous} () const \hypertarget{classspp_1_1malloc__state_a4aad3229e71533f8fc38385dbfb651f6}{}\label{classspp_1_1malloc__state_a4aad3229e71533f8fc38385dbfb651f6}
+
+\item 
+void {\bfseries disable\+\_\+contiguous} ()\hypertarget{classspp_1_1malloc__state_a14a69422c9c17254abf545c6611bf60f}{}\label{classspp_1_1malloc__state_a14a69422c9c17254abf545c6611bf60f}
+
+\item 
+\hyperlink{structspp_1_1malloc__segment}{msegmentptr} {\bfseries segment\+\_\+holding} (char $\ast$addr) const \hypertarget{classspp_1_1malloc__state_afaf848f198d11625cee9a88feaeff04b}{}\label{classspp_1_1malloc__state_afaf848f198d11625cee9a88feaeff04b}
+
+\item 
+int {\bfseries has\+\_\+segment\+\_\+link} (\hyperlink{structspp_1_1malloc__segment}{msegmentptr} ss) const \hypertarget{classspp_1_1malloc__state_a5fb0af1977b049f31a01d0693c6bcd12}{}\label{classspp_1_1malloc__state_a5fb0af1977b049f31a01d0693c6bcd12}
+
+\item 
+bool {\bfseries should\+\_\+trim} (size\+\_\+t s) const \hypertarget{classspp_1_1malloc__state_a376f65bd84ff1b8e9750c94cd53cf607}{}\label{classspp_1_1malloc__state_a376f65bd84ff1b8e9750c94cd53cf607}
+
+\item 
+void {\bfseries check\+\_\+free\+\_\+chunk} (\hyperlink{structspp_1_1malloc__chunk}{mchunkptr})\hypertarget{classspp_1_1malloc__state_a482e07234a8951398ecc62fcb7b7e44c}{}\label{classspp_1_1malloc__state_a482e07234a8951398ecc62fcb7b7e44c}
+
+\item 
+void {\bfseries check\+\_\+inuse\+\_\+chunk} (\hyperlink{structspp_1_1malloc__chunk}{mchunkptr})\hypertarget{classspp_1_1malloc__state_ab53b48fb21a60271cdb6910ea152679d}{}\label{classspp_1_1malloc__state_ab53b48fb21a60271cdb6910ea152679d}
+
+\item 
+void {\bfseries check\+\_\+malloced\+\_\+chunk} (void $\ast$, size\+\_\+t)\hypertarget{classspp_1_1malloc__state_a2bc4a38132ddadf548206af483b353cd}{}\label{classspp_1_1malloc__state_a2bc4a38132ddadf548206af483b353cd}
+
+\item 
+void {\bfseries check\+\_\+mmapped\+\_\+chunk} (\hyperlink{structspp_1_1malloc__chunk}{mchunkptr})\hypertarget{classspp_1_1malloc__state_aa2d94fb4ce8627bd545742fc653f258f}{}\label{classspp_1_1malloc__state_aa2d94fb4ce8627bd545742fc653f258f}
+
+\item 
+void {\bfseries check\+\_\+malloc\+\_\+state} ()\hypertarget{classspp_1_1malloc__state_a59e36d521dda8eaea2f5f403601b839c}{}\label{classspp_1_1malloc__state_a59e36d521dda8eaea2f5f403601b839c}
+
+\item 
+void {\bfseries check\+\_\+top\+\_\+chunk} (\hyperlink{structspp_1_1malloc__chunk}{mchunkptr})\hypertarget{classspp_1_1malloc__state_ac74ba71b3339afbe63e679e279b8dbc9}{}\label{classspp_1_1malloc__state_ac74ba71b3339afbe63e679e279b8dbc9}
+
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static bool {\bfseries ok\+\_\+next} (void $\ast$p, void $\ast$n)\hypertarget{classspp_1_1malloc__state_a51a292c6f86cd146896de41782663473}{}\label{classspp_1_1malloc__state_a51a292c6f86cd146896de41782663473}
+
+\item 
+static bool {\bfseries ok\+\_\+inuse} (\hyperlink{structspp_1_1malloc__chunk}{mchunkptr} p)\hypertarget{classspp_1_1malloc__state_a5ef4a52faff6174f6f2b9f1498accef8}{}\label{classspp_1_1malloc__state_a5ef4a52faff6174f6f2b9f1498accef8}
+
+\item 
+static bool {\bfseries ok\+\_\+pinuse} (\hyperlink{structspp_1_1malloc__chunk}{mchunkptr} p)\hypertarget{classspp_1_1malloc__state_ac632bdc37e967a3700f03a96d7cfbdfa}{}\label{classspp_1_1malloc__state_ac632bdc37e967a3700f03a96d7cfbdfa}
+
+\item 
+static bool {\bfseries rtcheck} (bool e)\hypertarget{classspp_1_1malloc__state_a6183f88aca62e7450fa22a9bc3912fd0}{}\label{classspp_1_1malloc__state_a6183f88aca62e7450fa22a9bc3912fd0}
+
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+size\+\_\+t {\bfseries \+\_\+footprint}\hypertarget{classspp_1_1malloc__state_aac068f3b09d8bac0d7f22e25ab1ad7f5}{}\label{classspp_1_1malloc__state_aac068f3b09d8bac0d7f22e25ab1ad7f5}
+
+\item 
+size\+\_\+t {\bfseries \+\_\+max\+\_\+footprint}\hypertarget{classspp_1_1malloc__state_a68cb4370d88f2641ae2a9da584766b69}{}\label{classspp_1_1malloc__state_a68cb4370d88f2641ae2a9da584766b69}
+
+\item 
+size\+\_\+t {\bfseries \+\_\+footprint\+\_\+limit}\hypertarget{classspp_1_1malloc__state_a3cc44f377d222a88fc0984a97b6a27aa}{}\label{classspp_1_1malloc__state_a3cc44f377d222a88fc0984a97b6a27aa}
+
+\item 
+flag\+\_\+t {\bfseries \+\_\+mflags}\hypertarget{classspp_1_1malloc__state_a1e6e169f9360b06807a45c1f187cb244}{}\label{classspp_1_1malloc__state_a1e6e169f9360b06807a45c1f187cb244}
+
+\item 
+\hyperlink{structspp_1_1malloc__segment}{msegment} {\bfseries \+\_\+seg}\hypertarget{classspp_1_1malloc__state_aabcc376a84274264495a830b111a795a}{}\label{classspp_1_1malloc__state_aabcc376a84274264495a830b111a795a}
+
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/sparsepp/spp\+\_\+dlalloc.\+h\end{DoxyCompactItemize}

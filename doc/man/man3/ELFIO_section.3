@@ -1,0 +1,92 @@
+.TH "ELFIO::section" 3 "Mon Apr 23 2018" "Version 0.0.1" "OpenISA Dynamic Binary Translator" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ELFIO::section \- 
+.SH SYNOPSIS
+.br
+.PP
+.PP
+Inherited by \fBELFIO::section_impl< T >\fP\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBELFIO_GET_ACCESS_DECL\fP (Elf_Half, index)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS_DECL\fP (std::string, name)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS_DECL\fP (Elf_Word, type)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS_DECL\fP (Elf_Xword, flags)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS_DECL\fP (Elf_Word, info)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS_DECL\fP (Elf_Word, link)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS_DECL\fP (Elf_Xword, addr_align)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS_DECL\fP (Elf_Xword, entry_size)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS_DECL\fP (Elf64_Addr, address)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS_DECL\fP (Elf_Xword, size)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS_DECL\fP (Elf_Word, name_string_offset)"
+.br
+.ti -1c
+.RI "virtual const char * \fBget_data\fP () const =0"
+.br
+.ti -1c
+.RI "virtual void \fBset_data\fP (const char *pData, Elf_Word size)=0"
+.br
+.ti -1c
+.RI "virtual void \fBset_data\fP (const std::string &data)=0"
+.br
+.ti -1c
+.RI "virtual void \fBappend_data\fP (const char *pData, Elf_Word size)=0"
+.br
+.ti -1c
+.RI "virtual void \fBappend_data\fP (const std::string &data)=0"
+.br
+.in -1c
+.SS "Protected Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS_DECL\fP (Elf64_Off, offset)"
+.br
+.ti -1c
+.RI "\fBELFIO_SET_ACCESS_DECL\fP (Elf_Half, index)"
+.br
+.ti -1c
+.RI "virtual void \fBload\fP (std::istream &f, std::streampos header_offset)=0"
+.br
+.ti -1c
+.RI "virtual void \fBsave\fP (std::ostream &f, std::streampos header_offset, std::streampos data_offset)=0"
+.br
+.ti -1c
+.RI "virtual bool \fBis_address_initialized\fP () const =0"
+.br
+.in -1c
+.SS "Friends"
+
+.in +1c
+.ti -1c
+.RI "class \fBelfio\fP"
+.br
+.in -1c
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for OpenISA Dynamic Binary Translator from the source code\&.

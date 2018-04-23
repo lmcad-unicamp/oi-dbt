@@ -1,0 +1,97 @@
+\hypertarget{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings}{}\section{spp\+\_\+\+:\+:sparsehash\+\_\+internal\+:\+:sh\+\_\+hashtable\+\_\+settings$<$ Key, Hash\+Func, Size\+Type, H\+T\+\_\+\+M\+I\+N\+\_\+\+B\+U\+C\+K\+E\+TS $>$ Class Template Reference}
+\label{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings}\index{spp\+\_\+\+::sparsehash\+\_\+internal\+::sh\+\_\+hashtable\+\_\+settings$<$ Key, Hash\+Func, Size\+Type, H\+T\+\_\+\+M\+I\+N\+\_\+\+B\+U\+C\+K\+E\+T\+S $>$@{spp\+\_\+\+::sparsehash\+\_\+internal\+::sh\+\_\+hashtable\+\_\+settings$<$ Key, Hash\+Func, Size\+Type, H\+T\+\_\+\+M\+I\+N\+\_\+\+B\+U\+C\+K\+E\+T\+S $>$}}
+
+
+Inheritance diagram for spp\+\_\+\+:\+:sparsehash\+\_\+internal\+:\+:sh\+\_\+hashtable\+\_\+settings$<$ Key, Hash\+Func, Size\+Type, H\+T\+\_\+\+M\+I\+N\+\_\+\+B\+U\+C\+K\+E\+TS $>$\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=224pt]{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for spp\+\_\+\+:\+:sparsehash\+\_\+internal\+:\+:sh\+\_\+hashtable\+\_\+settings$<$ Key, Hash\+Func, Size\+Type, H\+T\+\_\+\+M\+I\+N\+\_\+\+B\+U\+C\+K\+E\+TS $>$\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=224pt]{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+typedef Key {\bfseries key\+\_\+type}\hypertarget{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_a6f63b3df3db31d08897a693100fae245}{}\label{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_a6f63b3df3db31d08897a693100fae245}
+
+\item 
+typedef Hash\+Func {\bfseries hasher}\hypertarget{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_a360f71644967743327a00e52ee67ae7a}{}\label{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_a360f71644967743327a00e52ee67ae7a}
+
+\item 
+typedef Size\+Type {\bfseries size\+\_\+type}\hypertarget{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_ad0761843633a1c5a9dfa37be9325f0fb}{}\label{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_ad0761843633a1c5a9dfa37be9325f0fb}
+
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries sh\+\_\+hashtable\+\_\+settings} (const hasher \&hf, const float ht\+\_\+occupancy\+\_\+flt, const float ht\+\_\+empty\+\_\+flt)\hypertarget{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_aa9a8e70728b852e4e5269f984db0f07c}{}\label{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_aa9a8e70728b852e4e5269f984db0f07c}
+
+\item 
+size\+\_\+t {\bfseries hash} (const key\+\_\+type \&v) const \hypertarget{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_a7dae04884d27942f484f05d76eab93e4}{}\label{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_a7dae04884d27942f484f05d76eab93e4}
+
+\item 
+float {\bfseries enlarge\+\_\+factor} () const \hypertarget{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_a7beced86fe95b646098d9acda81bca48}{}\label{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_a7beced86fe95b646098d9acda81bca48}
+
+\item 
+void {\bfseries set\+\_\+enlarge\+\_\+factor} (float f)\hypertarget{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_a1cbdea08d173d12cf7bff877a3ccb8c4}{}\label{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_a1cbdea08d173d12cf7bff877a3ccb8c4}
+
+\item 
+float {\bfseries shrink\+\_\+factor} () const \hypertarget{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_a6b9b013dbef26bcba0d6016fe26a6b7c}{}\label{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_a6b9b013dbef26bcba0d6016fe26a6b7c}
+
+\item 
+void {\bfseries set\+\_\+shrink\+\_\+factor} (float f)\hypertarget{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_ab1b58cb9097c9931c0aa96bfce2c4a67}{}\label{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_ab1b58cb9097c9931c0aa96bfce2c4a67}
+
+\item 
+size\+\_\+type {\bfseries enlarge\+\_\+threshold} () const \hypertarget{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_a4c207cb8df52a7d303cde34282b50997}{}\label{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_a4c207cb8df52a7d303cde34282b50997}
+
+\item 
+void {\bfseries set\+\_\+enlarge\+\_\+threshold} (size\+\_\+type t)\hypertarget{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_a63d951e2debbf11da60fe0a012bc0c23}{}\label{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_a63d951e2debbf11da60fe0a012bc0c23}
+
+\item 
+size\+\_\+type {\bfseries shrink\+\_\+threshold} () const \hypertarget{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_aaad2407688a64d70c6270d970ce94616}{}\label{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_aaad2407688a64d70c6270d970ce94616}
+
+\item 
+void {\bfseries set\+\_\+shrink\+\_\+threshold} (size\+\_\+type t)\hypertarget{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_a2acb2e1b4dbe292cd5f90ea01f4d0e50}{}\label{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_a2acb2e1b4dbe292cd5f90ea01f4d0e50}
+
+\item 
+size\+\_\+type {\bfseries enlarge\+\_\+size} (size\+\_\+type x) const \hypertarget{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_a84cd1bbcfbe1d3442d409900b0e8f46e}{}\label{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_a84cd1bbcfbe1d3442d409900b0e8f46e}
+
+\item 
+size\+\_\+type {\bfseries shrink\+\_\+size} (size\+\_\+type x) const \hypertarget{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_a5f454be22a174447c9d328be9797d7ef}{}\label{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_a5f454be22a174447c9d328be9797d7ef}
+
+\item 
+bool {\bfseries consider\+\_\+shrink} () const \hypertarget{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_a07a928648ec6071000d962a690a5503b}{}\label{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_a07a928648ec6071000d962a690a5503b}
+
+\item 
+void {\bfseries set\+\_\+consider\+\_\+shrink} (bool t)\hypertarget{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_aab8c4b7ea3ceef6b598bc243d375804d}{}\label{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_aab8c4b7ea3ceef6b598bc243d375804d}
+
+\item 
+unsigned int {\bfseries num\+\_\+ht\+\_\+copies} () const \hypertarget{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_a9477e2401911bf044286d4be20dada35}{}\label{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_a9477e2401911bf044286d4be20dada35}
+
+\item 
+void {\bfseries inc\+\_\+num\+\_\+ht\+\_\+copies} ()\hypertarget{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_aadeb27e742db125d5485cef998c37d05}{}\label{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_aadeb27e742db125d5485cef998c37d05}
+
+\item 
+void {\bfseries reset\+\_\+thresholds} (size\+\_\+type num\+\_\+buckets)\hypertarget{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_a068a5481ab5e82e2a1ea9b1cd46f9d39}{}\label{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_a068a5481ab5e82e2a1ea9b1cd46f9d39}
+
+\item 
+void {\bfseries set\+\_\+resizing\+\_\+parameters} (float shrink, float grow)\hypertarget{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_aac61000835265ff3e10111910ea1a99d}{}\label{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_aac61000835265ff3e10111910ea1a99d}
+
+\item 
+size\+\_\+type {\bfseries min\+\_\+buckets} (size\+\_\+type num\+\_\+elts, size\+\_\+type min\+\_\+buckets\+\_\+wanted)\hypertarget{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_a0ea66114fef9d1ed03cada5d16d7cede}{}\label{classspp___1_1sparsehash__internal_1_1sh__hashtable__settings_a0ea66114fef9d1ed03cada5d16d7cede}
+
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/sparsepp/spp.\+h\end{DoxyCompactItemize}

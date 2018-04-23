@@ -1,0 +1,96 @@
+.TH "spp_::table_iterator< tabletype >" 3 "Mon Apr 23 2018" "Version 0.0.1" "OpenISA Dynamic Binary Translator" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+spp_::table_iterator< tabletype > \- 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Public Types"
+
+.in +1c
+.ti -1c
+.RI "typedef \fBtable_iterator\fP \fBiterator\fP"
+.br
+.ti -1c
+.RI "typedef std::random_access_iterator_tag \fBiterator_category\fP"
+.br
+.ti -1c
+.RI "typedef tabletype::value_type \fBvalue_type\fP"
+.br
+.ti -1c
+.RI "typedef tabletype::difference_type \fBdifference_type\fP"
+.br
+.ti -1c
+.RI "typedef tabletype::size_type \fBsize_type\fP"
+.br
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBtable_iterator\fP (tabletype *tbl=0, size_type p=0)"
+.br
+.ti -1c
+.RI "void \fBcheck\fP () const "
+.br
+.ti -1c
+.RI "\fBiterator\fP & \fBoperator+=\fP (size_type t)"
+.br
+.ti -1c
+.RI "\fBiterator\fP & \fBoperator\-=\fP (size_type t)"
+.br
+.ti -1c
+.RI "\fBiterator\fP & \fBoperator++\fP ()"
+.br
+.ti -1c
+.RI "\fBiterator\fP & \fBoperator\-\-\fP ()"
+.br
+.ti -1c
+.RI "\fBiterator\fP \fBoperator++\fP (int)"
+.br
+.ti -1c
+.RI "\fBiterator\fP \fBoperator\-\-\fP (int)"
+.br
+.ti -1c
+.RI "\fBiterator\fP \fBoperator+\fP (difference_type i) const "
+.br
+.ti -1c
+.RI "\fBiterator\fP \fBoperator\-\fP (difference_type i) const "
+.br
+.ti -1c
+.RI "difference_type \fBoperator\-\fP (\fBiterator\fP it) const "
+.br
+.ti -1c
+.RI "bool \fBoperator==\fP (const \fBiterator\fP &it) const "
+.br
+.ti -1c
+.RI "bool \fBoperator<\fP (const \fBiterator\fP &it) const "
+.br
+.ti -1c
+.RI "bool \fBoperator!=\fP (const \fBiterator\fP &it) const "
+.br
+.ti -1c
+.RI "bool \fBoperator<=\fP (const \fBiterator\fP &it) const "
+.br
+.ti -1c
+.RI "bool \fBoperator>\fP (const \fBiterator\fP &it) const "
+.br
+.ti -1c
+.RI "bool \fBoperator>=\fP (const \fBiterator\fP &it) const "
+.br
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "tabletype * \fBtable\fP"
+.br
+.ti -1c
+.RI "size_type \fBpos\fP"
+.br
+.in -1c
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for OpenISA Dynamic Binary Translator from the source code\&.

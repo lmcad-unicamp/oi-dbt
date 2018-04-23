@@ -1,0 +1,82 @@
+.TH "ELFIO::segment_impl< T >" 3 "Mon Apr 23 2018" "Version 0.0.1" "OpenISA Dynamic Binary Translator" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ELFIO::segment_impl< T > \- 
+.SH SYNOPSIS
+.br
+.PP
+.PP
+Inherits \fBELFIO::segment\fP\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBsegment_impl\fP (\fBendianess_convertor\fP *convertor_)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS\fP (Elf_Word, type, ph\&.p_type)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS\fP (Elf_Word, flags, ph\&.p_flags)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS\fP (Elf_Xword, align, ph\&.p_align)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS\fP (Elf64_Addr, virtual_address, ph\&.p_vaddr)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS\fP (Elf64_Addr, physical_address, ph\&.p_paddr)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS\fP (Elf_Xword, file_size, ph\&.p_filesz)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS\fP (Elf_Xword, memory_size, ph\&.p_memsz)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_ACCESS\fP (Elf64_Off, offset, ph\&.p_offset)"
+.br
+.ti -1c
+.RI "Elf_Half \fBget_index\fP () const "
+.br
+.ti -1c
+.RI "const char * \fBget_data\fP () const "
+.br
+.ti -1c
+.RI "Elf_Half \fBadd_section_index\fP (Elf_Half sec_index, Elf_Xword addr_align)"
+.br
+.ti -1c
+.RI "Elf_Half \fBget_sections_num\fP () const "
+.br
+.ti -1c
+.RI "Elf_Half \fBget_section_index_at\fP (Elf_Half num) const "
+.br
+.in -1c
+.SS "Protected Member Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBset_offset\fP (Elf64_Off value)"
+.br
+.ti -1c
+.RI "bool \fBis_offset_initialized\fP () const "
+.br
+.ti -1c
+.RI "const std::vector< Elf_Half > & \fBget_sections\fP () const "
+.br
+.ti -1c
+.RI "void \fBset_index\fP (Elf_Half value)"
+.br
+.ti -1c
+.RI "void \fBload\fP (std::istream &stream, std::streampos header_offset)"
+.br
+.ti -1c
+.RI "void \fBsave\fP (std::ostream &f, std::streampos header_offset, std::streampos data_offset)"
+.br
+.in -1c
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for OpenISA Dynamic Binary Translator from the source code\&.

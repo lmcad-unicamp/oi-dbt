@@ -1,0 +1,7 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$structspp___1_1integral__constant.html" title="spp_::integral_constant\l\&lt; bool,(is_integral\&lt; T\l \&gt;::value\|\|is_floating\l_point\&lt; T \&gt;::value)\&gt;" alt="" coords="5,56,163,127"/>
+<area shape="rect" id="node2" href="$structspp___1_1is__relocatable.html" title="spp_::is_relocatable\&lt; T \&gt;" alt="" coords="211,78,381,105"/>
+<area shape="rect" id="node3" href="$structspp___1_1is__relocatable_3_01const_01_t_01_4.html" title="spp_::is_relocatable\l\&lt; const T \&gt;" alt="" coords="429,5,568,47"/>
+<area shape="rect" id="node4" href="$structspp___1_1is__relocatable_3_01const_01volatile_01_t_01_4.html" title="spp_::is_relocatable\l\&lt; const volatile T \&gt;" alt="" coords="429,71,568,112"/>
+<area shape="rect" id="node5" href="$structspp___1_1is__relocatable_3_01volatile_01_t_01_4.html" title="spp_::is_relocatable\l\&lt; volatile T \&gt;" alt="" coords="429,136,568,177"/>
+</map>

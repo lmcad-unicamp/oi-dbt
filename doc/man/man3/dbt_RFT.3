@@ -1,0 +1,86 @@
+.TH "dbt::RFT" 3 "Mon Apr 23 2018" "Version 0.0.1" "OpenISA Dynamic Binary Translator" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+dbt::RFT \- 
+.SH SYNOPSIS
+.br
+.PP
+.PP
+Inherited by \fBdbt::LEI\fP, \fBdbt::MethodBased\fP, \fBdbt::MRET2\fP, \fBdbt::NET\fP, \fBdbt::NETPlus\fP, \fBdbt::NullRFT\fP, and \fBdbt::PreheatRFT\fP\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBRFT\fP (\fBManager\fP &M)"
+.br
+.ti -1c
+.RI "void \fBprintRegions\fP ()"
+.br
+.ti -1c
+.RI "void \fBsetHotnessThreshold\fP (unsigned int threshold)"
+.br
+.ti -1c
+.RI "void \fBsetRegionLimitSize\fP (unsigned Limit)"
+.br
+.ti -1c
+.RI "virtual void \fBonBranch\fP (\fBdbt::Machine\fP &)=0"
+.br
+.in -1c
+.SS "Protected Member Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBstartRegionFormation\fP (uint32_t)"
+.br
+.ti -1c
+.RI "bool \fBfinishRegionFormation\fP ()"
+.br
+.ti -1c
+.RI "void \fBinsertInstruction\fP (uint32_t, uint32_t)"
+.br
+.ti -1c
+.RI "void \fBsetBranchTarget\fP (uint32_t, uint32_t)"
+.br
+.ti -1c
+.RI "void \fBinsertInstruction\fP (std::array< uint32_t, 2 > &)"
+.br
+.ti -1c
+.RI "bool \fBhasRecordedAddrs\fP (uint32_t)"
+.br
+.in -1c
+.SS "Protected Attributes"
+
+.in +1c
+.ti -1c
+.RI "unsigned \fBHotnessThreshold\fP = 50"
+.br
+.ti -1c
+.RI "spp::sparse_hash_map< uint32_t, uint8_t > \fBExecFreq\fP"
+.br
+.ti -1c
+.RI "spp::sparse_hash_map< uint32_t, uint32_t > \fBBranchesTargets\fP"
+.br
+.ti -1c
+.RI "OIInstList \fBOIRegion\fP"
+.br
+.ti -1c
+.RI "bool \fBRecording\fP = false"
+.br
+.ti -1c
+.RI "uint32_t \fBRecordingEntry\fP"
+.br
+.ti -1c
+.RI "uint32_t \fBLastTarget\fP"
+.br
+.ti -1c
+.RI "unsigned \fBRegionLimitSize\fP = \-1"
+.br
+.ti -1c
+.RI "\fBManager\fP & \fBTheManager\fP"
+.br
+.in -1c
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for OpenISA Dynamic Binary Translator from the source code\&.

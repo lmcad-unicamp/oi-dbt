@@ -1,0 +1,66 @@
+\hypertarget{classspp___1_1libc__allocator}{}\section{spp\+\_\+\+:\+:libc\+\_\+allocator$<$ T $>$ Class Template Reference}
+\label{classspp___1_1libc__allocator}\index{spp\+\_\+\+::libc\+\_\+allocator$<$ T $>$@{spp\+\_\+\+::libc\+\_\+allocator$<$ T $>$}}
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structspp___1_1libc__allocator_1_1rebind}{rebind}
+\end{DoxyCompactItemize}
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+typedef T {\bfseries value\+\_\+type}\hypertarget{classspp___1_1libc__allocator_afe4fa699e49fd1c2f4b82547d164698e}{}\label{classspp___1_1libc__allocator_afe4fa699e49fd1c2f4b82547d164698e}
+
+\item 
+typedef T $\ast$ {\bfseries pointer}\hypertarget{classspp___1_1libc__allocator_a44d02c858595dc2c7995e1747dab358c}{}\label{classspp___1_1libc__allocator_a44d02c858595dc2c7995e1747dab358c}
+
+\item 
+typedef ptrdiff\+\_\+t {\bfseries difference\+\_\+type}\hypertarget{classspp___1_1libc__allocator_a26cd30f4c336f7ecddd19ac1de175e2f}{}\label{classspp___1_1libc__allocator_a26cd30f4c336f7ecddd19ac1de175e2f}
+
+\item 
+typedef const T $\ast$ {\bfseries const\+\_\+pointer}\hypertarget{classspp___1_1libc__allocator_ae6ef4ded49d1150c83a781cb828882fc}{}\label{classspp___1_1libc__allocator_ae6ef4ded49d1150c83a781cb828882fc}
+
+\item 
+typedef size\+\_\+t {\bfseries size\+\_\+type}\hypertarget{classspp___1_1libc__allocator_a2833d2b379ad067aed3f3d0ad14b61cc}{}\label{classspp___1_1libc__allocator_a2833d2b379ad067aed3f3d0ad14b61cc}
+
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries libc\+\_\+allocator} (const \hyperlink{classspp___1_1libc__allocator}{libc\+\_\+allocator} \&)\hypertarget{classspp___1_1libc__allocator_a9753e14c02159f383a2d0c45033c0fd5}{}\label{classspp___1_1libc__allocator_a9753e14c02159f383a2d0c45033c0fd5}
+
+\item 
+\hyperlink{classspp___1_1libc__allocator}{libc\+\_\+allocator} \& {\bfseries operator=} (const \hyperlink{classspp___1_1libc__allocator}{libc\+\_\+allocator} \&)\hypertarget{classspp___1_1libc__allocator_a99556024547627ce5288f9fdb9df69f1}{}\label{classspp___1_1libc__allocator_a99556024547627ce5288f9fdb9df69f1}
+
+\item 
+{\bfseries libc\+\_\+allocator} (\hyperlink{classspp___1_1libc__allocator}{libc\+\_\+allocator} \&\&)\hypertarget{classspp___1_1libc__allocator_a286af05245e73e68f6bb259b56d115a8}{}\label{classspp___1_1libc__allocator_a286af05245e73e68f6bb259b56d115a8}
+
+\item 
+\hyperlink{classspp___1_1libc__allocator}{libc\+\_\+allocator} \& {\bfseries operator=} (\hyperlink{classspp___1_1libc__allocator}{libc\+\_\+allocator} \&\&)\hypertarget{classspp___1_1libc__allocator_a50d126edb622f99126da870bddd7b12d}{}\label{classspp___1_1libc__allocator_a50d126edb622f99126da870bddd7b12d}
+
+\item 
+pointer {\bfseries allocate} (size\+\_\+t n, const\+\_\+pointer=0)\hypertarget{classspp___1_1libc__allocator_a7b66db1f9511221d705cc6108dd3c85c}{}\label{classspp___1_1libc__allocator_a7b66db1f9511221d705cc6108dd3c85c}
+
+\item 
+void {\bfseries deallocate} (pointer p, size\+\_\+t)\hypertarget{classspp___1_1libc__allocator_a55476fb1ca07f24dd621808221c535d5}{}\label{classspp___1_1libc__allocator_a55476fb1ca07f24dd621808221c535d5}
+
+\item 
+pointer {\bfseries reallocate} (pointer p, size\+\_\+t new\+\_\+size)\hypertarget{classspp___1_1libc__allocator_ab5a0bcd38a26aa2582a7626bf4606beb}{}\label{classspp___1_1libc__allocator_ab5a0bcd38a26aa2582a7626bf4606beb}
+
+\item 
+pointer {\bfseries reallocate} (pointer p, size\+\_\+t, size\+\_\+t new\+\_\+size)\hypertarget{classspp___1_1libc__allocator_accdbc29d92193ccbf9dbebbe464e5b51}{}\label{classspp___1_1libc__allocator_accdbc29d92193ccbf9dbebbe464e5b51}
+
+\item 
+size\+\_\+type {\bfseries max\+\_\+size} () const \hypertarget{classspp___1_1libc__allocator_a75240dfe08e21b69576f6a7a8fb3bc57}{}\label{classspp___1_1libc__allocator_a75240dfe08e21b69576f6a7a8fb3bc57}
+
+\item 
+void {\bfseries construct} (pointer p, const value\+\_\+type \&val)\hypertarget{classspp___1_1libc__allocator_a9fb80454b2ac10640c6bfc02c35171d6}{}\label{classspp___1_1libc__allocator_a9fb80454b2ac10640c6bfc02c35171d6}
+
+\item 
+void {\bfseries destroy} (pointer p)\hypertarget{classspp___1_1libc__allocator_afc1282552730f3934c0a73d98358ab98}{}\label{classspp___1_1libc__allocator_afc1282552730f3934c0a73d98358ab98}
+
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/sparsepp/spp\+\_\+utils.\+h\end{DoxyCompactItemize}

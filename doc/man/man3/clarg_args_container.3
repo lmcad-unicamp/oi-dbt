@@ -1,0 +1,48 @@
+.TH "clarg::args_container" 3 "Mon Apr 23 2018" "Version 0.0.1" "OpenISA Dynamic Binary Translator" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+clarg::args_container \- 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBregister_argument\fP (\fBarg_base\fP *arg)"
+.br
+.ti -1c
+.RI "void \fBarguments_descriptions\fP (ostream &os, string prefix, string suffix)"
+.br
+.ti -1c
+.RI "void \fBlist_arguments\fP (ostream &os, bool defined_only)"
+.br
+.ti -1c
+.RI "int \fBparse_arguments_from_file\fP ()"
+.br
+.ti -1c
+.RI "int \fBparse_arguments\fP (int argc, char *argv[])"
+.br
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "MAP< string, \fBarg_base\fP * > \fBargs\fP"
+.br
+.ti -1c
+.RI "string \fBprog_name\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Arguments container\&. All the arguments are added into this object\&. 
+.SH "Member Function Documentation"
+.PP 
+.SS "int clarg::args_container::parse_arguments_from_file ()\fC [inline]\fP"
+Read the arguments from file\&. Returns 0 if ok, != 0 otherwise\&. TODO: this is not implemented yet\&. The goal of this method is to parser all the arguments from an argument file\&. In this way, you may dump all the arguments used in a given run and re-use them by parsing from the file\&. To do so, you may infoke this method\&. 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for OpenISA Dynamic Binary Translator from the source code\&.

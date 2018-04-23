@@ -1,0 +1,44 @@
+.TH "md__r_e_a_d_m_e" 3 "Mon Apr 23 2018" "Version 0.0.1" "OpenISA Dynamic Binary Translator" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+md__r_e_a_d_m_e \- OI-DBT: The OpenISA Dynamic Binary Translator 
+OI-DBT implements a fast OpenISA interpreter with support to several techniques for region selection, dynamic compilation using the LLVM (6\&.0) infrastructure and a multilevel profile guided optimization pipeline; all of them which can be applied in parallel\&.
+.PP
+.SS "Bulding it"
+.PP
+To build OI-DBT, you are going to need g++7\&.1 or later with C++17 support, CMake 2\&.8 or later, PAPI and LLVM 6\&.0\&. After installing all dependencies, it is a simple cmake/make usage:
+.PP
+.PP
+.nf
+1 cd dbt-openisa
+2 mkdir build
+3 cd build
+4 cmake \&.\&.
+5 make
+6 sudo make install
+.fi
+.PP
+.PP
+.SS "Usage"
+.PP
+After building and installing oi-dbt, you can easily use it to emulate OpenISA elf binaries using the following commands:
+.PP
+.PP
+.nf
+1 oi-dbt [-rft {net, mret2, lei, lef, netplus} | -interpreter] -bin PathToBinary [-v]
+2 
+3 ARGUMENTS:
+4   -bin : Path to the binary which will be emulated\&.
+5   -h : Displays the help message
+6   -interpret : Only interpret\&.
+7   -rft : Region Formation Technique (net)
+8   -v : Displays the OpenISA instructions from the compiled regions
+.fi
+.PP
+.PP
+.SS "LICENSE"
+.PP
+This project is being developed at the Institute of Computing - Unicamp as part of  doctoral thesis\&. You are free to contact him and use this code under the MIT LICENSE\&.
+.PP
+The OI-DBT is part of The OpenISA Project: an infrastructure for a new, open source and fast emulated architecture\&. 

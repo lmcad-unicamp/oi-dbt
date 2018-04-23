@@ -1,0 +1,53 @@
+.TH "include/machine.hpp" 3 "Mon Apr 23 2018" "Version 0.0.1" "OpenISA Dynamic Binary Translator" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/machine.hpp \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <RFT\&.hpp>\fP
+.br
+\fC#include <cstdint>\fP
+.br
+\fC#include <unordered_map>\fP
+.br
+\fC#include <memory>\fP
+.br
+\fC#include <vector>\fP
+.br
+\fC#include <functional>\fP
+.br
+
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "union \fBdbt::Word\fP"
+.br
+.ti -1c
+.RI "union \fBdbt::QWord\fP"
+.br
+.ti -1c
+.RI "class \fBdbt::Machine\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBuptr\fP   std::unique_ptr"
+.br
+.ti -1c
+.RI "#define \fBSTACK_SIZE\fP   128 * 1024 * 1024 /*8mb*/"
+.br
+.ti -1c
+.RI "#define \fBHEAP_SIZE\fP   128 * 1024 * 1024 /*8mb*/"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+This file contains the declaration of the Machine class\&. 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for OpenISA Dynamic Binary Translator from the source code\&.

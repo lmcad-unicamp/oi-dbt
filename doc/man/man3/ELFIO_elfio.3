@@ -1,0 +1,112 @@
+.TH "ELFIO::elfio" 3 "Mon Apr 23 2018" "Version 0.0.1" "OpenISA Dynamic Binary Translator" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ELFIO::elfio \- 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "class \fBSections\fP"
+.br
+.ti -1c
+.RI "class \fBSegments\fP"
+.br
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBcreate\fP (unsigned char file_class, unsigned char encoding)"
+.br
+.ti -1c
+.RI "bool \fBload\fP (const std::string &file_name)"
+.br
+.ti -1c
+.RI "bool \fBload\fP (std::istream &stream)"
+.br
+.ti -1c
+.RI "bool \fBsave\fP (const std::string &file_name)"
+.br
+.ti -1c
+.RI "\fBELFIO_HEADER_ACCESS_GET\fP (unsigned char, class)"
+.br
+.ti -1c
+.RI "\fBELFIO_HEADER_ACCESS_GET\fP (unsigned char, elf_version)"
+.br
+.ti -1c
+.RI "\fBELFIO_HEADER_ACCESS_GET\fP (unsigned char, encoding)"
+.br
+.ti -1c
+.RI "\fBELFIO_HEADER_ACCESS_GET\fP (Elf_Word, version)"
+.br
+.ti -1c
+.RI "\fBELFIO_HEADER_ACCESS_GET\fP (Elf_Half, header_size)"
+.br
+.ti -1c
+.RI "\fBELFIO_HEADER_ACCESS_GET\fP (Elf_Half, section_entry_size)"
+.br
+.ti -1c
+.RI "\fBELFIO_HEADER_ACCESS_GET\fP (Elf_Half, segment_entry_size)"
+.br
+.ti -1c
+.RI "\fBELFIO_HEADER_ACCESS_GET_SET\fP (unsigned char, os_abi)"
+.br
+.ti -1c
+.RI "\fBELFIO_HEADER_ACCESS_GET_SET\fP (unsigned char, abi_version)"
+.br
+.ti -1c
+.RI "\fBELFIO_HEADER_ACCESS_GET_SET\fP (Elf_Half, type)"
+.br
+.ti -1c
+.RI "\fBELFIO_HEADER_ACCESS_GET_SET\fP (Elf_Half, machine)"
+.br
+.ti -1c
+.RI "\fBELFIO_HEADER_ACCESS_GET_SET\fP (Elf_Word, flags)"
+.br
+.ti -1c
+.RI "\fBELFIO_HEADER_ACCESS_GET_SET\fP (Elf64_Addr, entry)"
+.br
+.ti -1c
+.RI "\fBELFIO_HEADER_ACCESS_GET_SET\fP (Elf64_Off, sections_offset)"
+.br
+.ti -1c
+.RI "\fBELFIO_HEADER_ACCESS_GET_SET\fP (Elf64_Off, segments_offset)"
+.br
+.ti -1c
+.RI "\fBELFIO_HEADER_ACCESS_GET_SET\fP (Elf_Half, section_name_str_index)"
+.br
+.ti -1c
+.RI "const \fBendianess_convertor\fP & \fBget_convertor\fP () const "
+.br
+.ti -1c
+.RI "Elf_Xword \fBget_default_entry_size\fP (Elf_Word section_type) const "
+.br
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "class \fBELFIO::elfio::Sections\fP \fBsections\fP"
+.br
+.ti -1c
+.RI "class \fBELFIO::elfio::Segments\fP \fBsegments\fP"
+.br
+.in -1c
+.SS "Friends"
+
+.in +1c
+.ti -1c
+.RI "class \fBSections\fP"
+.br
+.ti -1c
+.RI "class \fBSegments\fP"
+.br
+.in -1c
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for OpenISA Dynamic Binary Translator from the source code\&.

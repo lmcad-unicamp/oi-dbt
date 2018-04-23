@@ -1,0 +1,31 @@
+.TH "ELFIO::dynamic_section_accessor" 3 "Mon Apr 23 2018" "Version 0.0.1" "OpenISA Dynamic Binary Translator" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ELFIO::dynamic_section_accessor \- 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBdynamic_section_accessor\fP (const \fBelfio\fP &elf_file_, \fBsection\fP *section_)"
+.br
+.ti -1c
+.RI "Elf_Xword \fBget_entries_num\fP () const "
+.br
+.ti -1c
+.RI "bool \fBget_entry\fP (Elf_Xword index, Elf_Xword &tag, Elf_Xword &value, std::string &str) const "
+.br
+.ti -1c
+.RI "void \fBadd_entry\fP (Elf_Xword &tag, Elf_Xword &value)"
+.br
+.ti -1c
+.RI "void \fBadd_entry\fP (Elf_Xword &tag, std::string &str)"
+.br
+.in -1c
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for OpenISA Dynamic Binary Translator from the source code\&.

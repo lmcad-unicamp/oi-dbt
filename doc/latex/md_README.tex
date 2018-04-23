@@ -1,0 +1,39 @@
+O\+I-\/\+D\+BT implements a fast Open\+I\+SA interpreter with support to several techniques for region selection, dynamic compilation using the L\+L\+VM (6.\+0) infrastructure and a multilevel profile guided optimization pipeline; all of them which can be applied in parallel.
+
+\subsection*{Bulding it}
+
+To build O\+I-\/\+D\+BT, you are going to need g++7.1 or later with C++17 support, C\+Make 2.\+8 or later, P\+A\+PI and L\+L\+VM 6.\+0. After installing all dependencies, it is a simple cmake/make usage\+:
+
+
+\begin{DoxyCode}
+1 cd dbt-openisa
+2 mkdir build
+3 cd build
+4 cmake ..
+5 make
+6 sudo make install
+\end{DoxyCode}
+
+
+\subsubsection*{Usage}
+
+After building and installing oi-\/dbt, you can easily use it to emulate Open\+I\+SA elf binaries using the following commands\+:
+
+
+\begin{DoxyCode}
+1 oi-dbt [-rft \{net, mret2, lei, lef, netplus\} | -interpreter] -bin PathToBinary [-v]
+2 
+3 ARGUMENTS:
+4   -bin : Path to the binary which will be emulated.
+5   -h : Displays the help message
+6   -interpret : Only interpret.
+7   -rft : Region Formation Technique (net)
+8   -v : Displays the OpenISA instructions from the compiled regions
+\end{DoxyCode}
+
+
+\subsubsection*{L\+I\+C\+E\+N\+SE}
+
+This project is being developed at the Institute of Computing -\/ Unicamp as part of  doctoral thesis. You are free to contact him and use this code under the M\+IT L\+I\+C\+E\+N\+SE.
+
+The O\+I-\/\+D\+BT is part of The Open\+I\+SA Project\+: an infrastructure for a new, open source and fast emulated architecture. 

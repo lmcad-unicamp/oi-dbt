@@ -1,0 +1,162 @@
+.TH "spp::malloc_state" 3 "Mon Apr 23 2018" "Version 0.0.1" "OpenISA Dynamic Binary Translator" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+spp::malloc_state \- 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "SPP_FORCEINLINE void * \fB_malloc\fP (size_t bytes)"
+.br
+.ti -1c
+.RI "SPP_FORCEINLINE void \fB_free\fP (\fBmchunkptr\fP p)"
+.br
+.ti -1c
+.RI "void * \fBinternal_malloc\fP (size_t b)"
+.br
+.ti -1c
+.RI "void \fBinternal_free\fP (void *mem)"
+.br
+.ti -1c
+.RI "SPP_IMPL void \fBinit_top\fP (\fBmchunkptr\fP p, size_t psize)"
+.br
+.ti -1c
+.RI "SPP_IMPL void \fBinit_bins\fP ()"
+.br
+.ti -1c
+.RI "SPP_IMPL void \fBinit\fP (char *tbase, size_t tsize)"
+.br
+.ti -1c
+.RI "SPP_IMPL void * \fBsys_alloc\fP (size_t nb)"
+.br
+.ti -1c
+.RI "SPP_IMPL size_t \fBrelease_unused_segments\fP ()"
+.br
+.ti -1c
+.RI "SPP_IMPL int \fBsys_trim\fP (size_t pad)"
+.br
+.ti -1c
+.RI "SPP_IMPL void \fBdispose_chunk\fP (\fBmchunkptr\fP p, size_t psize)"
+.br
+.ti -1c
+.RI "SPP_IMPL \fBmchunkptr\fP \fBtry_realloc_chunk\fP (\fBmchunkptr\fP p, size_t nb, int can_move)"
+.br
+.ti -1c
+.RI "SPP_IMPL void * \fBinternal_memalign\fP (size_t alignment, size_t bytes)"
+.br
+.ti -1c
+.RI "SPP_IMPL void ** \fBialloc\fP (size_t n_elements, size_t *sizes, int opts, void *chunks[])"
+.br
+.ti -1c
+.RI "SPP_IMPL size_t \fBinternal_bulk_free\fP (void *array[], size_t nelem)"
+.br
+.ti -1c
+.RI "SPP_IMPL void \fBinternal_inspect_all\fP (void(*handler)(void *start, void *end, size_t used_bytes, void *callback_arg), void *arg)"
+.br
+.ti -1c
+.RI "bool \fBuse_lock\fP () const "
+.br
+.ti -1c
+.RI "void \fBenable_lock\fP ()"
+.br
+.ti -1c
+.RI "void \fBset_lock\fP (int)"
+.br
+.ti -1c
+.RI "void \fBdisable_lock\fP ()"
+.br
+.ti -1c
+.RI "bool \fBuse_mmap\fP () const "
+.br
+.ti -1c
+.RI "void \fBenable_mmap\fP ()"
+.br
+.ti -1c
+.RI "void \fBdisable_mmap\fP ()"
+.br
+.ti -1c
+.RI "bool \fBok_address\fP (void *a) const "
+.br
+.ti -1c
+.RI "bool \fBok_magic\fP () const "
+.br
+.ti -1c
+.RI "bool \fBis_initialized\fP () const "
+.br
+.ti -1c
+.RI "bool \fBuse_noncontiguous\fP () const "
+.br
+.ti -1c
+.RI "void \fBdisable_contiguous\fP ()"
+.br
+.ti -1c
+.RI "\fBmsegmentptr\fP \fBsegment_holding\fP (char *addr) const "
+.br
+.ti -1c
+.RI "int \fBhas_segment_link\fP (\fBmsegmentptr\fP ss) const "
+.br
+.ti -1c
+.RI "bool \fBshould_trim\fP (size_t s) const "
+.br
+.ti -1c
+.RI "void \fBcheck_free_chunk\fP (\fBmchunkptr\fP)"
+.br
+.ti -1c
+.RI "void \fBcheck_inuse_chunk\fP (\fBmchunkptr\fP)"
+.br
+.ti -1c
+.RI "void \fBcheck_malloced_chunk\fP (void *, size_t)"
+.br
+.ti -1c
+.RI "void \fBcheck_mmapped_chunk\fP (\fBmchunkptr\fP)"
+.br
+.ti -1c
+.RI "void \fBcheck_malloc_state\fP ()"
+.br
+.ti -1c
+.RI "void \fBcheck_top_chunk\fP (\fBmchunkptr\fP)"
+.br
+.in -1c
+.SS "Static Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "static bool \fBok_next\fP (void *p, void *n)"
+.br
+.ti -1c
+.RI "static bool \fBok_inuse\fP (\fBmchunkptr\fP p)"
+.br
+.ti -1c
+.RI "static bool \fBok_pinuse\fP (\fBmchunkptr\fP p)"
+.br
+.ti -1c
+.RI "static bool \fBrtcheck\fP (bool e)"
+.br
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "size_t \fB_footprint\fP"
+.br
+.ti -1c
+.RI "size_t \fB_max_footprint\fP"
+.br
+.ti -1c
+.RI "size_t \fB_footprint_limit\fP"
+.br
+.ti -1c
+.RI "flag_t \fB_mflags\fP"
+.br
+.ti -1c
+.RI "\fBmsegment\fP \fB_seg\fP"
+.br
+.in -1c
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for OpenISA Dynamic Binary Translator from the source code\&.

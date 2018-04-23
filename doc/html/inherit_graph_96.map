@@ -1,0 +1,15 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node2" href="$structspp___1_1spp__hash_3_01bool_01_4.html" title="spp_::spp_hash\&lt; bool \&gt;" alt="" coords="171,5,333,32"/>
+<area shape="rect" id="node3" href="$structspp___1_1spp__hash_3_01char_01_4.html" title="spp_::spp_hash\&lt; char \&gt;" alt="" coords="171,56,333,83"/>
+<area shape="rect" id="node4" href="$structspp___1_1spp__hash_3_01double_01_4.html" title="spp_::spp_hash\&lt; double \&gt;" alt="" coords="164,107,340,133"/>
+<area shape="rect" id="node5" href="$structspp___1_1spp__hash_3_01float_01_4.html" title="spp_::spp_hash\&lt; float \&gt;" alt="" coords="171,157,333,184"/>
+<area shape="rect" id="node6" href="$structspp___1_1spp__hash_3_01int16__t_01_4.html" title="spp_::spp_hash\&lt; int16_t \&gt;" alt="" coords="163,208,341,235"/>
+<area shape="rect" id="node7" href="$structspp___1_1spp__hash_3_01int32__t_01_4.html" title="spp_::spp_hash\&lt; int32_t \&gt;" alt="" coords="163,259,341,285"/>
+<area shape="rect" id="node8" href="$structspp___1_1spp__hash_3_01int64__t_01_4.html" title="spp_::spp_hash\&lt; int64_t \&gt;" alt="" coords="163,309,341,336"/>
+<area shape="rect" id="node9" href="$structspp___1_1spp__hash_3_01signed_01char_01_4.html" title="spp_::spp_hash\&lt; signed\l char \&gt;" alt="" coords="170,361,334,402"/>
+<area shape="rect" id="node10" href="$structspp___1_1spp__hash_3_01uint16__t_01_4.html" title="spp_::spp_hash\&lt; uint16_t \&gt;" alt="" coords="160,427,344,453"/>
+<area shape="rect" id="node11" href="$structspp___1_1spp__hash_3_01uint32__t_01_4.html" title="spp_::spp_hash\&lt; uint32_t \&gt;" alt="" coords="160,477,344,504"/>
+<area shape="rect" id="node12" href="$structspp___1_1spp__hash_3_01uint64__t_01_4.html" title="spp_::spp_hash\&lt; uint64_t \&gt;" alt="" coords="160,528,344,555"/>
+<area shape="rect" id="node13" href="$structspp___1_1spp__hash_3_01unsigned_01char_01_4.html" title="spp_::spp_hash\&lt; unsigned\l char \&gt;" alt="" coords="163,579,341,621"/>
+<area shape="rect" id="node14" href="$structspp___1_1spp__hash_3_01wchar__t_01_4.html" title="spp_::spp_hash\&lt; wchar_t \&gt;" alt="" coords="160,645,344,672"/>
+</map>

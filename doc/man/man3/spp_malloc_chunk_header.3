@@ -1,0 +1,76 @@
+.TH "spp::malloc_chunk_header" 3 "Mon Apr 23 2018" "Version 0.0.1" "OpenISA Dynamic Binary Translator" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+spp::malloc_chunk_header \- 
+.SH SYNOPSIS
+.br
+.PP
+.PP
+Inherited by \fBspp::malloc_chunk\fP, and \fBspp::malloc_tree_chunk\fP\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBset_size_and_pinuse_of_free_chunk\fP (size_t s)"
+.br
+.ti -1c
+.RI "void \fBset_foot\fP (size_t s)"
+.br
+.ti -1c
+.RI "bool \fBcinuse\fP () const "
+.br
+.ti -1c
+.RI "bool \fBpinuse\fP () const "
+.br
+.ti -1c
+.RI "bool \fBflag4inuse\fP () const "
+.br
+.ti -1c
+.RI "bool \fBis_inuse\fP () const "
+.br
+.ti -1c
+.RI "bool \fBis_mmapped\fP () const "
+.br
+.ti -1c
+.RI "size_t \fBchunksize\fP () const "
+.br
+.ti -1c
+.RI "void \fBclear_pinuse\fP ()"
+.br
+.ti -1c
+.RI "void \fBset_flag4\fP ()"
+.br
+.ti -1c
+.RI "void \fBclear_flag4\fP ()"
+.br
+.ti -1c
+.RI "\fBmalloc_chunk_header\fP * \fBchunk_plus_offset\fP (size_t s)"
+.br
+.ti -1c
+.RI "\fBmalloc_chunk_header\fP * \fBchunk_minus_offset\fP (size_t s)"
+.br
+.ti -1c
+.RI "\fBmalloc_chunk_header\fP * \fBnext_chunk\fP ()"
+.br
+.ti -1c
+.RI "\fBmalloc_chunk_header\fP * \fBprev_chunk\fP ()"
+.br
+.ti -1c
+.RI "size_t \fBnext_pinuse\fP ()"
+.br
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "size_t \fB_prev_foot\fP"
+.br
+.ti -1c
+.RI "size_t \fB_head\fP"
+.br
+.in -1c
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for OpenISA Dynamic Binary Translator from the source code\&.

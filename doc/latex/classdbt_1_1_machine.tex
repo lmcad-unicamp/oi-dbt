@@ -1,0 +1,143 @@
+\hypertarget{classdbt_1_1_machine}{}\section{dbt\+:\+:Machine Class Reference}
+\label{classdbt_1_1_machine}\index{dbt\+::\+Machine@{dbt\+::\+Machine}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void {\bfseries reset} ()\hypertarget{classdbt_1_1_machine_af4376a00206c3e7cad3294c3061320f4}{}\label{classdbt_1_1_machine_af4376a00206c3e7cad3294c3061320f4}
+
+\item 
+void {\bfseries alloc\+Data\+Memory} (uint32\+\_\+t, uint32\+\_\+t)\hypertarget{classdbt_1_1_machine_adadfdadbb10bfa1828949cc3ba3539de}{}\label{classdbt_1_1_machine_adadfdadbb10bfa1828949cc3ba3539de}
+
+\item 
+void {\bfseries set\+Code\+Memory} (uint32\+\_\+t, uint32\+\_\+t, const char $\ast$)\hypertarget{classdbt_1_1_machine_ae7ea0283ec3d78901485f5bdbc44c33e}{}\label{classdbt_1_1_machine_ae7ea0283ec3d78901485f5bdbc44c33e}
+
+\item 
+void {\bfseries add\+Data\+Memory} (uint32\+\_\+t, uint32\+\_\+t, const char $\ast$)\hypertarget{classdbt_1_1_machine_a0614b04f790e70983b99ae1c58cb9e4c}{}\label{classdbt_1_1_machine_a0614b04f790e70983b99ae1c58cb9e4c}
+
+\item 
+bool {\bfseries is\+Preheating} (void)\hypertarget{classdbt_1_1_machine_ae9857ab32203ba67af61fc9e42e6f483}{}\label{classdbt_1_1_machine_ae9857ab32203ba67af61fc9e42e6f483}
+
+\item 
+void {\bfseries set\+Preheating} (bool state)\hypertarget{classdbt_1_1_machine_a07ade7e51bb052aece7d76859ee2bbc5}{}\label{classdbt_1_1_machine_a07ade7e51bb052aece7d76859ee2bbc5}
+
+\item 
+int {\bfseries set\+Command\+Line\+Arguments} (std\+::string)\hypertarget{classdbt_1_1_machine_a68433e4bdf46d4a826ba5823f504c17b}{}\label{classdbt_1_1_machine_a68433e4bdf46d4a826ba5823f504c17b}
+
+\item 
+uint32\+\_\+t {\bfseries get\+Last\+PC} ()\hypertarget{classdbt_1_1_machine_aa2b9f83e24a84f352329e8f01dba0879}{}\label{classdbt_1_1_machine_aa2b9f83e24a84f352329e8f01dba0879}
+
+\item 
+uint32\+\_\+t {\bfseries get\+PC} ()\hypertarget{classdbt_1_1_machine_a94d26dc2f8e7a64449bb4f90087c412b}{}\label{classdbt_1_1_machine_a94d26dc2f8e7a64449bb4f90087c412b}
+
+\item 
+void {\bfseries set\+PC} (uint32\+\_\+t)\hypertarget{classdbt_1_1_machine_a026cc300f7bcf2056a35748be87fea4d}{}\label{classdbt_1_1_machine_a026cc300f7bcf2056a35748be87fea4d}
+
+\item 
+void {\bfseries inc\+PC} ()\hypertarget{classdbt_1_1_machine_a132ffb9632ab5e73956afef05a57dd8e}{}\label{classdbt_1_1_machine_a132ffb9632ab5e73956afef05a57dd8e}
+
+\item 
+void {\bfseries set\+Stack\+Size} (uint32\+\_\+t size)\hypertarget{classdbt_1_1_machine_a02f96d0b277d21ce2d0ede5b95e6add6}{}\label{classdbt_1_1_machine_a02f96d0b277d21ce2d0ede5b95e6add6}
+
+\item 
+void {\bfseries set\+Heap\+Size} (uint32\+\_\+t size)\hypertarget{classdbt_1_1_machine_a72f117a70049292854f2dd27a02f1b39}{}\label{classdbt_1_1_machine_a72f117a70049292854f2dd27a02f1b39}
+
+\item 
+\hyperlink{uniondbt_1_1_word}{Word} {\bfseries get\+Inst\+At} (uint32\+\_\+t)\hypertarget{classdbt_1_1_machine_ab86a016ece4bc692a4206f75a2557ca0}{}\label{classdbt_1_1_machine_ab86a016ece4bc692a4206f75a2557ca0}
+
+\item 
+\hyperlink{uniondbt_1_1_word}{Word} {\bfseries get\+Inst\+At\+PC} ()\hypertarget{classdbt_1_1_machine_a803e42e73a0b805eda68d3e327999104}{}\label{classdbt_1_1_machine_a803e42e73a0b805eda68d3e327999104}
+
+\item 
+\hyperlink{uniondbt_1_1_word}{Word} {\bfseries get\+Next\+Inst} ()\hypertarget{classdbt_1_1_machine_aeefe03053436877bea1778514056c66a}{}\label{classdbt_1_1_machine_aeefe03053436877bea1778514056c66a}
+
+\item 
+void {\bfseries set\+Mem\+Byte\+At} (uint32\+\_\+t, uint8\+\_\+t)\hypertarget{classdbt_1_1_machine_a04703b4ccf796df1a4fe4ee9f01ac406}{}\label{classdbt_1_1_machine_a04703b4ccf796df1a4fe4ee9f01ac406}
+
+\item 
+uint8\+\_\+t {\bfseries get\+Mem\+Byte\+At} (uint32\+\_\+t)\hypertarget{classdbt_1_1_machine_a74f675534b30a690186ed0084341a932}{}\label{classdbt_1_1_machine_a74f675534b30a690186ed0084341a932}
+
+\item 
+uint16\+\_\+t {\bfseries get\+Mem\+Half\+At} (uint32\+\_\+t)\hypertarget{classdbt_1_1_machine_a8553bd6c225157a6055c810703b6a548}{}\label{classdbt_1_1_machine_a8553bd6c225157a6055c810703b6a548}
+
+\item 
+\hyperlink{uniondbt_1_1_word}{Word} {\bfseries get\+Mem\+Value\+At} (uint32\+\_\+t)\hypertarget{classdbt_1_1_machine_ad7dcc19c447ea49f6e15ceb299339965}{}\label{classdbt_1_1_machine_ad7dcc19c447ea49f6e15ceb299339965}
+
+\item 
+void {\bfseries set\+Mem\+Value\+At} (uint32\+\_\+t, uint32\+\_\+t)\hypertarget{classdbt_1_1_machine_a34f6a4e537e673efdba6a311f88dfe0e}{}\label{classdbt_1_1_machine_a34f6a4e537e673efdba6a311f88dfe0e}
+
+\item 
+int32\+\_\+t $\ast$ {\bfseries get\+Register\+Ptr} ()\hypertarget{classdbt_1_1_machine_a046276e6a8e40c98d4536dbdd5a775b7}{}\label{classdbt_1_1_machine_a046276e6a8e40c98d4536dbdd5a775b7}
+
+\item 
+uint32\+\_\+t $\ast$ {\bfseries get\+Memory\+Ptr} ()\hypertarget{classdbt_1_1_machine_ab739dc3bf5faaec55db61b55f39035d5}{}\label{classdbt_1_1_machine_ab739dc3bf5faaec55db61b55f39035d5}
+
+\item 
+char $\ast$ {\bfseries get\+Byte\+Memory\+Ptr} ()\hypertarget{classdbt_1_1_machine_a92c7a59994c7a4b73bf87cd08e2fb12f}{}\label{classdbt_1_1_machine_a92c7a59994c7a4b73bf87cd08e2fb12f}
+
+\item 
+uint32\+\_\+t {\bfseries get\+Num\+Inst} ()\hypertarget{classdbt_1_1_machine_adfab9d2ce15782890aec405a51761380}{}\label{classdbt_1_1_machine_adfab9d2ce15782890aec405a51761380}
+
+\item 
+uint32\+\_\+t {\bfseries get\+Code\+Start\+Addrs} ()\hypertarget{classdbt_1_1_machine_af65d826f3c83548b80a7d434206ee2c9}{}\label{classdbt_1_1_machine_af65d826f3c83548b80a7d434206ee2c9}
+
+\item 
+uint32\+\_\+t {\bfseries get\+Code\+End\+Addrs} ()\hypertarget{classdbt_1_1_machine_a54e12561684732035c5e34de9817322c}{}\label{classdbt_1_1_machine_a54e12561684732035c5e34de9817322c}
+
+\item 
+uint32\+\_\+t {\bfseries get\+Data\+Mem\+Offset} ()\hypertarget{classdbt_1_1_machine_a671559f1760d6957c6a60dd7bc3dee31}{}\label{classdbt_1_1_machine_a671559f1760d6957c6a60dd7bc3dee31}
+
+\item 
+int32\+\_\+t {\bfseries get\+Register} (uint16\+\_\+t)\hypertarget{classdbt_1_1_machine_aeab8c8b53806f66077a2ed798756f2b1}{}\label{classdbt_1_1_machine_aeab8c8b53806f66077a2ed798756f2b1}
+
+\item 
+float {\bfseries get\+Float\+Register} (uint16\+\_\+t)\hypertarget{classdbt_1_1_machine_a387a89d842836d0cf009831cf8727c3c}{}\label{classdbt_1_1_machine_a387a89d842836d0cf009831cf8727c3c}
+
+\item 
+double {\bfseries get\+Double\+Register} (uint16\+\_\+t)\hypertarget{classdbt_1_1_machine_a68db01bee0d6811a86b21ff5d1a5fb9f}{}\label{classdbt_1_1_machine_a68db01bee0d6811a86b21ff5d1a5fb9f}
+
+\item 
+void {\bfseries set\+Register} (uint16\+\_\+t, int32\+\_\+t)\hypertarget{classdbt_1_1_machine_a4d4b0ccc0598dedbb1f7e86058e7fd04}{}\label{classdbt_1_1_machine_a4d4b0ccc0598dedbb1f7e86058e7fd04}
+
+\item 
+void {\bfseries set\+Float\+Register} (uint16\+\_\+t, float)\hypertarget{classdbt_1_1_machine_abf0a643718d9fe29cb63f89d7efd4c1e}{}\label{classdbt_1_1_machine_abf0a643718d9fe29cb63f89d7efd4c1e}
+
+\item 
+void {\bfseries set\+Double\+Register} (uint16\+\_\+t, double)\hypertarget{classdbt_1_1_machine_aec2eb0050a03c9835c8500ad705fa850}{}\label{classdbt_1_1_machine_aec2eb0050a03c9835c8500ad705fa850}
+
+\item 
+uint32\+\_\+t {\bfseries get\+Region\+Being\+Executed} ()\hypertarget{classdbt_1_1_machine_aaf359339ddd8a1d47d75966fb9745153}{}\label{classdbt_1_1_machine_aaf359339ddd8a1d47d75966fb9745153}
+
+\item 
+bool {\bfseries is\+On\+Native\+Execution} ()\hypertarget{classdbt_1_1_machine_a5c7aa7c78069547b7296a7aafb3d7c45}{}\label{classdbt_1_1_machine_a5c7aa7c78069547b7296a7aafb3d7c45}
+
+\item 
+void {\bfseries set\+Off\+Native\+Execution} ()\hypertarget{classdbt_1_1_machine_ac9d8f2116ce54c6d27c519252bda51b1}{}\label{classdbt_1_1_machine_ac9d8f2116ce54c6d27c519252bda51b1}
+
+\item 
+void {\bfseries set\+On\+Native\+Execution} (uint32\+\_\+t)\hypertarget{classdbt_1_1_machine_aa795d708d7571e2f508ad2eb245ce349}{}\label{classdbt_1_1_machine_aa795d708d7571e2f508ad2eb245ce349}
+
+\item 
+bool {\bfseries is\+Method\+Entry} (uint32\+\_\+t)\hypertarget{classdbt_1_1_machine_a4f5784f71f9d14d9c01ed228522c9375}{}\label{classdbt_1_1_machine_a4f5784f71f9d14d9c01ed228522c9375}
+
+\item 
+uint32\+\_\+t {\bfseries get\+Method\+End} (uint32\+\_\+t)\hypertarget{classdbt_1_1_machine_a5d1862fd7737f7d079b04228fce10faa}{}\label{classdbt_1_1_machine_a5d1862fd7737f7d079b04228fce10faa}
+
+\item 
+std\+::string {\bfseries get\+Method\+Name} (uint32\+\_\+t)\hypertarget{classdbt_1_1_machine_aff3a71490f57e0fd9698ae9f7430d83e}{}\label{classdbt_1_1_machine_aff3a71490f57e0fd9698ae9f7430d83e}
+
+\item 
+std\+::vector$<$ uint32\+\_\+t $>$ {\bfseries get\+Vector\+Of\+Method\+Entries} ()\hypertarget{classdbt_1_1_machine_a9a9d0ad83e3c253b6040faf33fcc9f15}{}\label{classdbt_1_1_machine_a9a9d0ad83e3c253b6040faf33fcc9f15}
+
+\item 
+int {\bfseries load\+E\+LF} (const std\+::string)\hypertarget{classdbt_1_1_machine_a2485da4c30d718398747d2c6ad094fb5}{}\label{classdbt_1_1_machine_a2485da4c30d718398747d2c6ad094fb5}
+
+\item 
+void {\bfseries dump\+Registers} (void)\hypertarget{classdbt_1_1_machine_a3b23f005ac2ca3ae3fef7b58af002119}{}\label{classdbt_1_1_machine_a3b23f005ac2ca3ae3fef7b58af002119}
+
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+include/\hyperlink{machine_8hpp}{machine.\+hpp}\item 
+machine.\+cpp\end{DoxyCompactItemize}

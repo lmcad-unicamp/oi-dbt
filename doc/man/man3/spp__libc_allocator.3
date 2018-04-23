@@ -1,0 +1,75 @@
+.TH "spp_::libc_allocator< T >" 3 "Mon Apr 23 2018" "Version 0.0.1" "OpenISA Dynamic Binary Translator" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+spp_::libc_allocator< T > \- 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "struct \fBrebind\fP"
+.br
+.in -1c
+.SS "Public Types"
+
+.in +1c
+.ti -1c
+.RI "typedef T \fBvalue_type\fP"
+.br
+.ti -1c
+.RI "typedef T * \fBpointer\fP"
+.br
+.ti -1c
+.RI "typedef ptrdiff_t \fBdifference_type\fP"
+.br
+.ti -1c
+.RI "typedef const T * \fBconst_pointer\fP"
+.br
+.ti -1c
+.RI "typedef size_t \fBsize_type\fP"
+.br
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBlibc_allocator\fP (const \fBlibc_allocator\fP &)"
+.br
+.ti -1c
+.RI "\fBlibc_allocator\fP & \fBoperator=\fP (const \fBlibc_allocator\fP &)"
+.br
+.ti -1c
+.RI "\fBlibc_allocator\fP (\fBlibc_allocator\fP &&)"
+.br
+.ti -1c
+.RI "\fBlibc_allocator\fP & \fBoperator=\fP (\fBlibc_allocator\fP &&)"
+.br
+.ti -1c
+.RI "pointer \fBallocate\fP (size_t n, const_pointer=0)"
+.br
+.ti -1c
+.RI "void \fBdeallocate\fP (pointer p, size_t)"
+.br
+.ti -1c
+.RI "pointer \fBreallocate\fP (pointer p, size_t new_size)"
+.br
+.ti -1c
+.RI "pointer \fBreallocate\fP (pointer p, size_t, size_t new_size)"
+.br
+.ti -1c
+.RI "size_type \fBmax_size\fP () const "
+.br
+.ti -1c
+.RI "void \fBconstruct\fP (pointer p, const value_type &val)"
+.br
+.ti -1c
+.RI "void \fBdestroy\fP (pointer p)"
+.br
+.in -1c
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for OpenISA Dynamic Binary Translator from the source code\&.

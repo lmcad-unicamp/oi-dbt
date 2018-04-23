@@ -1,0 +1,296 @@
+\hypertarget{classspp___1_1sparse__hashtable}{}\section{spp\+\_\+\+:\+:sparse\+\_\+hashtable$<$ Value, Key, Hash\+Fcn, Extract\+Key, Set\+Key, Equal\+Key, Alloc $>$ Class Template Reference}
+\label{classspp___1_1sparse__hashtable}\index{spp\+\_\+\+::sparse\+\_\+hashtable$<$ Value, Key, Hash\+Fcn, Extract\+Key, Set\+Key, Equal\+Key, Alloc $>$@{spp\+\_\+\+::sparse\+\_\+hashtable$<$ Value, Key, Hash\+Fcn, Extract\+Key, Set\+Key, Equal\+Key, Alloc $>$}}
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+typedef Key {\bfseries key\+\_\+type}\hypertarget{classspp___1_1sparse__hashtable_ac8672625819f7514422e40b9f8988156}{}\label{classspp___1_1sparse__hashtable_ac8672625819f7514422e40b9f8988156}
+
+\item 
+typedef Value {\bfseries value\+\_\+type}\hypertarget{classspp___1_1sparse__hashtable_a72e9ee551b0204f2345549815f5b86fb}{}\label{classspp___1_1sparse__hashtable_a72e9ee551b0204f2345549815f5b86fb}
+
+\item 
+typedef Hash\+Fcn {\bfseries hasher}\hypertarget{classspp___1_1sparse__hashtable_a6dc8d6a9dded92ff9a0efce8312ed88d}{}\label{classspp___1_1sparse__hashtable_a6dc8d6a9dded92ff9a0efce8312ed88d}
+
+\item 
+typedef Equal\+Key {\bfseries key\+\_\+equal}\hypertarget{classspp___1_1sparse__hashtable_a3e8202c216185434acb21bb25bdee869}{}\label{classspp___1_1sparse__hashtable_a3e8202c216185434acb21bb25bdee869}
+
+\item 
+typedef Alloc {\bfseries allocator\+\_\+type}\hypertarget{classspp___1_1sparse__hashtable_a4f45afd46269e5a8d640a9c397172f7a}{}\label{classspp___1_1sparse__hashtable_a4f45afd46269e5a8d640a9c397172f7a}
+
+\item 
+typedef allocator\+\_\+type\+::size\+\_\+type {\bfseries size\+\_\+type}\hypertarget{classspp___1_1sparse__hashtable_a47ad0b40c6df47e02edfafdd38809368}{}\label{classspp___1_1sparse__hashtable_a47ad0b40c6df47e02edfafdd38809368}
+
+\item 
+typedef allocator\+\_\+type\+::difference\+\_\+type {\bfseries difference\+\_\+type}\hypertarget{classspp___1_1sparse__hashtable_a52ce21cba2586f3cc4ea0c1fd4c96e33}{}\label{classspp___1_1sparse__hashtable_a52ce21cba2586f3cc4ea0c1fd4c96e33}
+
+\item 
+typedef value\+\_\+type \& {\bfseries reference}\hypertarget{classspp___1_1sparse__hashtable_ac87bb089206f8d229362fbb70ea14166}{}\label{classspp___1_1sparse__hashtable_ac87bb089206f8d229362fbb70ea14166}
+
+\item 
+typedef const value\+\_\+type \& {\bfseries const\+\_\+reference}\hypertarget{classspp___1_1sparse__hashtable_a0335b991176ffe550c446b00320745bd}{}\label{classspp___1_1sparse__hashtable_a0335b991176ffe550c446b00320745bd}
+
+\item 
+typedef value\+\_\+type $\ast$ {\bfseries pointer}\hypertarget{classspp___1_1sparse__hashtable_aeb08cf55b2632151a0aa77ee35c58e4d}{}\label{classspp___1_1sparse__hashtable_aeb08cf55b2632151a0aa77ee35c58e4d}
+
+\item 
+typedef const value\+\_\+type $\ast$ {\bfseries const\+\_\+pointer}\hypertarget{classspp___1_1sparse__hashtable_acf93b553d5d94e8b62e20118f31673b2}{}\label{classspp___1_1sparse__hashtable_acf93b553d5d94e8b62e20118f31673b2}
+
+\item 
+typedef \hyperlink{classspp___1_1sparsetable}{sparsetable}$<$ value\+\_\+type, allocator\+\_\+type $>$ {\bfseries Table}\hypertarget{classspp___1_1sparse__hashtable_a0e12e130f58dcb26ca670f84b9b13b70}{}\label{classspp___1_1sparse__hashtable_a0e12e130f58dcb26ca670f84b9b13b70}
+
+\item 
+typedef \hyperlink{classspp___1_1_two__d__iterator}{Table\+::ne\+\_\+iterator} {\bfseries ne\+\_\+it}\hypertarget{classspp___1_1sparse__hashtable_a9c11ba8842156425be3eef5cf0aa268c}{}\label{classspp___1_1sparse__hashtable_a9c11ba8842156425be3eef5cf0aa268c}
+
+\item 
+typedef \hyperlink{classspp___1_1_two__d__iterator}{Table\+::const\+\_\+ne\+\_\+iterator} {\bfseries cne\+\_\+it}\hypertarget{classspp___1_1sparse__hashtable_af3ca19ad9b8fe854c5f31e9d5c73c1d6}{}\label{classspp___1_1sparse__hashtable_af3ca19ad9b8fe854c5f31e9d5c73c1d6}
+
+\item 
+typedef \hyperlink{classspp___1_1_two__d__destructive__iterator}{Table\+::destructive\+\_\+iterator} {\bfseries dest\+\_\+it}\hypertarget{classspp___1_1sparse__hashtable_a3fcf6bd79b508f55f46b4038b47f1e29}{}\label{classspp___1_1sparse__hashtable_a3fcf6bd79b508f55f46b4038b47f1e29}
+
+\item 
+typedef Table\+::\+Col\+Iterator {\bfseries Col\+Iterator}\hypertarget{classspp___1_1sparse__hashtable_a8ebbcce53806d407671d340d3fba984f}{}\label{classspp___1_1sparse__hashtable_a8ebbcce53806d407671d340d3fba984f}
+
+\item 
+typedef \hyperlink{classspp___1_1_two__d__iterator}{ne\+\_\+it} {\bfseries iterator}\hypertarget{classspp___1_1sparse__hashtable_ae8af96e3bf366e9a9f9521534688dea4}{}\label{classspp___1_1sparse__hashtable_ae8af96e3bf366e9a9f9521534688dea4}
+
+\item 
+typedef \hyperlink{classspp___1_1_two__d__iterator}{cne\+\_\+it} {\bfseries const\+\_\+iterator}\hypertarget{classspp___1_1sparse__hashtable_a394b96b0f524e54c87ee2235f5dd828f}{}\label{classspp___1_1sparse__hashtable_a394b96b0f524e54c87ee2235f5dd828f}
+
+\item 
+typedef \hyperlink{classspp___1_1_two__d__destructive__iterator}{dest\+\_\+it} {\bfseries destructive\+\_\+iterator}\hypertarget{classspp___1_1sparse__hashtable_a2663107758e450a73bdc8864f680a088}{}\label{classspp___1_1sparse__hashtable_a2663107758e450a73bdc8864f680a088}
+
+\item 
+typedef \hyperlink{classspp___1_1_two__d__iterator}{iterator} {\bfseries local\+\_\+iterator}\hypertarget{classspp___1_1sparse__hashtable_a60f4702145b6835183861f80ed402214}{}\label{classspp___1_1sparse__hashtable_a60f4702145b6835183861f80ed402214}
+
+\item 
+typedef \hyperlink{classspp___1_1_two__d__iterator}{const\+\_\+iterator} {\bfseries const\+\_\+local\+\_\+iterator}\hypertarget{classspp___1_1sparse__hashtable_a3dd5bb773b078ce0c994dc5d739f6c69}{}\label{classspp___1_1sparse__hashtable_a3dd5bb773b078ce0c994dc5d739f6c69}
+
+\item 
+typedef \hyperlink{structspp___1_1sparsehash__internal_1_1pod__serializer}{sparsehash\+\_\+internal\+::pod\+\_\+serializer}$<$ value\+\_\+type $>$ {\bfseries Nopointer\+Serializer}\hypertarget{classspp___1_1sparse__hashtable_a6e6b6a529080020f61ec1b1d9cfb4cf5}{}\label{classspp___1_1sparse__hashtable_a6e6b6a529080020f61ec1b1d9cfb4cf5}
+
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classspp___1_1_two__d__iterator}{iterator} {\bfseries begin} ()\hypertarget{classspp___1_1sparse__hashtable_ae26fc6269d0e936c94f5905057e7ae06}{}\label{classspp___1_1sparse__hashtable_ae26fc6269d0e936c94f5905057e7ae06}
+
+\item 
+\hyperlink{classspp___1_1_two__d__iterator}{iterator} {\bfseries end} ()\hypertarget{classspp___1_1sparse__hashtable_afbed96ef62091d2381563ba559700c25}{}\label{classspp___1_1sparse__hashtable_afbed96ef62091d2381563ba559700c25}
+
+\item 
+\hyperlink{classspp___1_1_two__d__iterator}{const\+\_\+iterator} {\bfseries begin} () const \hypertarget{classspp___1_1sparse__hashtable_a7776b4039e3a35235d089174f1b03fa5}{}\label{classspp___1_1sparse__hashtable_a7776b4039e3a35235d089174f1b03fa5}
+
+\item 
+\hyperlink{classspp___1_1_two__d__iterator}{const\+\_\+iterator} {\bfseries end} () const \hypertarget{classspp___1_1sparse__hashtable_af71d370d1d3474df475bc2e6e6cd3b2f}{}\label{classspp___1_1sparse__hashtable_af71d370d1d3474df475bc2e6e6cd3b2f}
+
+\item 
+\hyperlink{classspp___1_1_two__d__iterator}{const\+\_\+iterator} {\bfseries cbegin} () const \hypertarget{classspp___1_1sparse__hashtable_a83be930e22e15813cc0513a69ae4f52a}{}\label{classspp___1_1sparse__hashtable_a83be930e22e15813cc0513a69ae4f52a}
+
+\item 
+\hyperlink{classspp___1_1_two__d__iterator}{const\+\_\+iterator} {\bfseries cend} () const \hypertarget{classspp___1_1sparse__hashtable_a4fcecc1f850ed114f118eb3476186f4c}{}\label{classspp___1_1sparse__hashtable_a4fcecc1f850ed114f118eb3476186f4c}
+
+\item 
+\hyperlink{classspp___1_1_two__d__iterator}{local\+\_\+iterator} {\bfseries begin} (size\+\_\+type i)\hypertarget{classspp___1_1sparse__hashtable_a4691d38a6275d3feb7fad431e7044cb9}{}\label{classspp___1_1sparse__hashtable_a4691d38a6275d3feb7fad431e7044cb9}
+
+\item 
+\hyperlink{classspp___1_1_two__d__iterator}{local\+\_\+iterator} {\bfseries end} (size\+\_\+type i)\hypertarget{classspp___1_1sparse__hashtable_a387cbd0253f09abc72df5bf79e82c149}{}\label{classspp___1_1sparse__hashtable_a387cbd0253f09abc72df5bf79e82c149}
+
+\item 
+\hyperlink{classspp___1_1_two__d__iterator}{const\+\_\+local\+\_\+iterator} {\bfseries begin} (size\+\_\+type i) const \hypertarget{classspp___1_1sparse__hashtable_aef5569228df0f143ed9bee8dd6f109f0}{}\label{classspp___1_1sparse__hashtable_aef5569228df0f143ed9bee8dd6f109f0}
+
+\item 
+\hyperlink{classspp___1_1_two__d__iterator}{const\+\_\+local\+\_\+iterator} {\bfseries end} (size\+\_\+type i) const \hypertarget{classspp___1_1sparse__hashtable_a7d23452d2c7dd754301ddc84523c00e6}{}\label{classspp___1_1sparse__hashtable_a7d23452d2c7dd754301ddc84523c00e6}
+
+\item 
+\hyperlink{classspp___1_1_two__d__iterator}{const\+\_\+local\+\_\+iterator} {\bfseries cbegin} (size\+\_\+type i) const \hypertarget{classspp___1_1sparse__hashtable_adbcf3af2deef2f9b905feeeb253065de}{}\label{classspp___1_1sparse__hashtable_adbcf3af2deef2f9b905feeeb253065de}
+
+\item 
+\hyperlink{classspp___1_1_two__d__iterator}{const\+\_\+local\+\_\+iterator} {\bfseries cend} (size\+\_\+type i) const \hypertarget{classspp___1_1sparse__hashtable_a78556848fe38ac23b85e70d45c5343a4}{}\label{classspp___1_1sparse__hashtable_a78556848fe38ac23b85e70d45c5343a4}
+
+\item 
+\hyperlink{classspp___1_1_two__d__destructive__iterator}{destructive\+\_\+iterator} {\bfseries destructive\+\_\+begin} ()\hypertarget{classspp___1_1sparse__hashtable_ab739aeeb0d35fae8a19c4c42cab86153}{}\label{classspp___1_1sparse__hashtable_ab739aeeb0d35fae8a19c4c42cab86153}
+
+\item 
+\hyperlink{classspp___1_1_two__d__destructive__iterator}{destructive\+\_\+iterator} {\bfseries destructive\+\_\+end} ()\hypertarget{classspp___1_1sparse__hashtable_af4cbb99c6f37dbe24bde57552ff7f506}{}\label{classspp___1_1sparse__hashtable_af4cbb99c6f37dbe24bde57552ff7f506}
+
+\item 
+hasher {\bfseries hash\+\_\+funct} () const \hypertarget{classspp___1_1sparse__hashtable_a4ee5558fc4ff93b04150b4631a6a095d}{}\label{classspp___1_1sparse__hashtable_a4ee5558fc4ff93b04150b4631a6a095d}
+
+\item 
+key\+\_\+equal {\bfseries key\+\_\+eq} () const \hypertarget{classspp___1_1sparse__hashtable_ab1149dfdeb169dfc9c3abf06d7a647ba}{}\label{classspp___1_1sparse__hashtable_ab1149dfdeb169dfc9c3abf06d7a647ba}
+
+\item 
+allocator\+\_\+type {\bfseries get\+\_\+allocator} () const \hypertarget{classspp___1_1sparse__hashtable_af3f1d05fc644fd5ba0c416743b3b3f51}{}\label{classspp___1_1sparse__hashtable_af3f1d05fc644fd5ba0c416743b3b3f51}
+
+\item 
+unsigned int {\bfseries num\+\_\+table\+\_\+copies} () const \hypertarget{classspp___1_1sparse__hashtable_a9d5b256b76a1c3fb7b6acb8b63dd0f75}{}\label{classspp___1_1sparse__hashtable_a9d5b256b76a1c3fb7b6acb8b63dd0f75}
+
+\item 
+size\+\_\+type {\bfseries size} () const \hypertarget{classspp___1_1sparse__hashtable_a18a49a6cb1f79b83c6c511fc628bf206}{}\label{classspp___1_1sparse__hashtable_a18a49a6cb1f79b83c6c511fc628bf206}
+
+\item 
+size\+\_\+type {\bfseries max\+\_\+size} () const \hypertarget{classspp___1_1sparse__hashtable_a37bfb933e9a18c41e45f69c4c65f18cc}{}\label{classspp___1_1sparse__hashtable_a37bfb933e9a18c41e45f69c4c65f18cc}
+
+\item 
+bool {\bfseries empty} () const \hypertarget{classspp___1_1sparse__hashtable_a7e3bcad82ed20f00c84cdc3080856252}{}\label{classspp___1_1sparse__hashtable_a7e3bcad82ed20f00c84cdc3080856252}
+
+\item 
+size\+\_\+type {\bfseries bucket\+\_\+count} () const \hypertarget{classspp___1_1sparse__hashtable_a6de56334b09392e1903e59589d887951}{}\label{classspp___1_1sparse__hashtable_a6de56334b09392e1903e59589d887951}
+
+\item 
+size\+\_\+type {\bfseries max\+\_\+bucket\+\_\+count} () const \hypertarget{classspp___1_1sparse__hashtable_a1ba40fb19998793dd9a14f0547ba8ff6}{}\label{classspp___1_1sparse__hashtable_a1ba40fb19998793dd9a14f0547ba8ff6}
+
+\item 
+size\+\_\+type {\bfseries bucket\+\_\+size} (size\+\_\+type i) const \hypertarget{classspp___1_1sparse__hashtable_ae65a2ee14d7874518478d939953dd9d2}{}\label{classspp___1_1sparse__hashtable_ae65a2ee14d7874518478d939953dd9d2}
+
+\item 
+void {\bfseries resize} (size\+\_\+type req\+\_\+elements)\hypertarget{classspp___1_1sparse__hashtable_af5de63f7fa9cd4ec3d336ed80b1ff945}{}\label{classspp___1_1sparse__hashtable_af5de63f7fa9cd4ec3d336ed80b1ff945}
+
+\item 
+void {\bfseries get\+\_\+resizing\+\_\+parameters} (float $\ast$shrink, float $\ast$grow) const \hypertarget{classspp___1_1sparse__hashtable_aae193ec101e1ccca1b6c93ea148fcd2d}{}\label{classspp___1_1sparse__hashtable_aae193ec101e1ccca1b6c93ea148fcd2d}
+
+\item 
+float {\bfseries get\+\_\+shrink\+\_\+factor} () const \hypertarget{classspp___1_1sparse__hashtable_ade4f2ded3b224f2a40bfb68b0d357022}{}\label{classspp___1_1sparse__hashtable_ade4f2ded3b224f2a40bfb68b0d357022}
+
+\item 
+float {\bfseries get\+\_\+enlarge\+\_\+factor} () const \hypertarget{classspp___1_1sparse__hashtable_a74633918fd9cc03ef037d31c97a462b7}{}\label{classspp___1_1sparse__hashtable_a74633918fd9cc03ef037d31c97a462b7}
+
+\item 
+void {\bfseries set\+\_\+resizing\+\_\+parameters} (float shrink, float grow)\hypertarget{classspp___1_1sparse__hashtable_aa7e8af589668e14f40d7737f5acd98d2}{}\label{classspp___1_1sparse__hashtable_aa7e8af589668e14f40d7737f5acd98d2}
+
+\item 
+void {\bfseries set\+\_\+shrink\+\_\+factor} (float shrink)\hypertarget{classspp___1_1sparse__hashtable_ad982fbf2da9b9e68c021f6d7d7d9ca68}{}\label{classspp___1_1sparse__hashtable_ad982fbf2da9b9e68c021f6d7d7d9ca68}
+
+\item 
+void {\bfseries set\+\_\+enlarge\+\_\+factor} (float grow)\hypertarget{classspp___1_1sparse__hashtable_a1b7393c281085b896eb9970af7e8329a}{}\label{classspp___1_1sparse__hashtable_a1b7393c281085b896eb9970af7e8329a}
+
+\item 
+{\bfseries sparse\+\_\+hashtable} (size\+\_\+type expected\+\_\+max\+\_\+items\+\_\+in\+\_\+table=0, const Hash\+Fcn \&hf=Hash\+Fcn(), const Equal\+Key \&eql=Equal\+Key(), const Extract\+Key \&ext=Extract\+Key(), const Set\+Key \&set=Set\+Key(), const allocator\+\_\+type \&alloc=allocator\+\_\+type())\hypertarget{classspp___1_1sparse__hashtable_a4a6ca4399a10f2e8b580b122ef613182}{}\label{classspp___1_1sparse__hashtable_a4a6ca4399a10f2e8b580b122ef613182}
+
+\item 
+{\bfseries sparse\+\_\+hashtable} (const \hyperlink{classspp___1_1sparse__hashtable}{sparse\+\_\+hashtable} \&ht, size\+\_\+type min\+\_\+buckets\+\_\+wanted=H\+T\+\_\+\+D\+E\+F\+A\+U\+L\+T\+\_\+\+S\+T\+A\+R\+T\+I\+N\+G\+\_\+\+B\+U\+C\+K\+E\+TS)\hypertarget{classspp___1_1sparse__hashtable_ade13ba50ff24a1223347689a2e3feba5}{}\label{classspp___1_1sparse__hashtable_ade13ba50ff24a1223347689a2e3feba5}
+
+\item 
+{\bfseries sparse\+\_\+hashtable} (\hyperlink{classspp___1_1sparse__hashtable}{sparse\+\_\+hashtable} \&\&o)\hypertarget{classspp___1_1sparse__hashtable_aa3014f0c9441a121358d193e490cefa3}{}\label{classspp___1_1sparse__hashtable_aa3014f0c9441a121358d193e490cefa3}
+
+\item 
+{\bfseries sparse\+\_\+hashtable} (\hyperlink{classspp___1_1sparse__hashtable}{sparse\+\_\+hashtable} \&\&o, const allocator\+\_\+type \&alloc)\hypertarget{classspp___1_1sparse__hashtable_a03563648de3e60c5ce4f726e4fcf9b3f}{}\label{classspp___1_1sparse__hashtable_a03563648de3e60c5ce4f726e4fcf9b3f}
+
+\item 
+\hyperlink{classspp___1_1sparse__hashtable}{sparse\+\_\+hashtable} \& {\bfseries operator=} (\hyperlink{classspp___1_1sparse__hashtable}{sparse\+\_\+hashtable} \&\&o)\hypertarget{classspp___1_1sparse__hashtable_afbc4f991be276378e1bae0a4c8a0137d}{}\label{classspp___1_1sparse__hashtable_afbc4f991be276378e1bae0a4c8a0137d}
+
+\item 
+{\bfseries sparse\+\_\+hashtable} (Move\+Dont\+CopyT mover, \hyperlink{classspp___1_1sparse__hashtable}{sparse\+\_\+hashtable} \&ht, size\+\_\+type min\+\_\+buckets\+\_\+wanted=H\+T\+\_\+\+D\+E\+F\+A\+U\+L\+T\+\_\+\+S\+T\+A\+R\+T\+I\+N\+G\+\_\+\+B\+U\+C\+K\+E\+TS)\hypertarget{classspp___1_1sparse__hashtable_aa801385c70a58f827efcf042c3e9070f}{}\label{classspp___1_1sparse__hashtable_aa801385c70a58f827efcf042c3e9070f}
+
+\item 
+\hyperlink{classspp___1_1sparse__hashtable}{sparse\+\_\+hashtable} \& {\bfseries operator=} (const \hyperlink{classspp___1_1sparse__hashtable}{sparse\+\_\+hashtable} \&ht)\hypertarget{classspp___1_1sparse__hashtable_adee96730fdf753b1f5d52721d74ea2fa}{}\label{classspp___1_1sparse__hashtable_adee96730fdf753b1f5d52721d74ea2fa}
+
+\item 
+void {\bfseries swap} (\hyperlink{classspp___1_1sparse__hashtable}{sparse\+\_\+hashtable} \&ht)\hypertarget{classspp___1_1sparse__hashtable_a795f8feaeaba50f4823661eae2f79617}{}\label{classspp___1_1sparse__hashtable_a795f8feaeaba50f4823661eae2f79617}
+
+\item 
+void {\bfseries clear} ()\hypertarget{classspp___1_1sparse__hashtable_aa93e3715a270375da8574b73a96307fe}{}\label{classspp___1_1sparse__hashtable_aa93e3715a270375da8574b73a96307fe}
+
+\item 
+\hyperlink{classspp___1_1_two__d__iterator}{iterator} {\bfseries find} (const key\+\_\+type \&key)\hypertarget{classspp___1_1sparse__hashtable_a946542d6a3a1b2ddeb3cd9626c21c7d9}{}\label{classspp___1_1sparse__hashtable_a946542d6a3a1b2ddeb3cd9626c21c7d9}
+
+\item 
+\hyperlink{classspp___1_1_two__d__iterator}{const\+\_\+iterator} {\bfseries find} (const key\+\_\+type \&key) const \hypertarget{classspp___1_1sparse__hashtable_a8745209bf805a81e71339f7f7322c95e}{}\label{classspp___1_1sparse__hashtable_a8745209bf805a81e71339f7f7322c95e}
+
+\item 
+size\+\_\+type {\bfseries bucket} (const key\+\_\+type \&key) const \hypertarget{classspp___1_1sparse__hashtable_a85d24099586087492938c03e1dfbab5b}{}\label{classspp___1_1sparse__hashtable_a85d24099586087492938c03e1dfbab5b}
+
+\item 
+size\+\_\+type {\bfseries count} (const key\+\_\+type \&key) const \hypertarget{classspp___1_1sparse__hashtable_a15311faba7cff845c575604681b51fc2}{}\label{classspp___1_1sparse__hashtable_a15311faba7cff845c575604681b51fc2}
+
+\item 
+std\+::pair$<$ \hyperlink{classspp___1_1_two__d__iterator}{iterator}, \hyperlink{classspp___1_1_two__d__iterator}{iterator} $>$ {\bfseries equal\+\_\+range} (const key\+\_\+type \&key)\hypertarget{classspp___1_1sparse__hashtable_a15e3d0d2ba05ac2006511ad5a82d8ed7}{}\label{classspp___1_1sparse__hashtable_a15e3d0d2ba05ac2006511ad5a82d8ed7}
+
+\item 
+std\+::pair$<$ \hyperlink{classspp___1_1_two__d__iterator}{const\+\_\+iterator}, \hyperlink{classspp___1_1_two__d__iterator}{const\+\_\+iterator} $>$ {\bfseries equal\+\_\+range} (const key\+\_\+type \&key) const \hypertarget{classspp___1_1sparse__hashtable_aeca6c1541db9b739c40cada295ddc1b4}{}\label{classspp___1_1sparse__hashtable_aeca6c1541db9b739c40cada295ddc1b4}
+
+\item 
+{\footnotesize template$<$class... Args$>$ }\\std\+::pair$<$ \hyperlink{classspp___1_1_two__d__iterator}{iterator}, bool $>$ {\bfseries emplace} (Args \&\&...args)\hypertarget{classspp___1_1sparse__hashtable_adcebe74ff1c1c7e29e326e9ef502e8b3}{}\label{classspp___1_1sparse__hashtable_adcebe74ff1c1c7e29e326e9ef502e8b3}
+
+\item 
+std\+::pair$<$ \hyperlink{classspp___1_1_two__d__iterator}{iterator}, bool $>$ {\bfseries insert} (const\+\_\+reference obj)\hypertarget{classspp___1_1sparse__hashtable_aff73de0b37ca2a857c28626f5fdb5469}{}\label{classspp___1_1sparse__hashtable_aff73de0b37ca2a857c28626f5fdb5469}
+
+\item 
+{\footnotesize template$<$class P $>$ }\\std\+::pair$<$ \hyperlink{classspp___1_1_two__d__iterator}{iterator}, bool $>$ {\bfseries insert} (P \&\&obj)\hypertarget{classspp___1_1sparse__hashtable_a06e2f5002d69417180a2a58206bbfc9f}{}\label{classspp___1_1sparse__hashtable_a06e2f5002d69417180a2a58206bbfc9f}
+
+\item 
+{\footnotesize template$<$class Input\+Iterator $>$ }\\void {\bfseries insert} (Input\+Iterator f, Input\+Iterator l)\hypertarget{classspp___1_1sparse__hashtable_af49d941c5340927d7c4abb539f7f934c}{}\label{classspp___1_1sparse__hashtable_af49d941c5340927d7c4abb539f7f934c}
+
+\item 
+{\footnotesize template$<$class Default\+Value $>$ }\\value\+\_\+type \& {\bfseries find\+\_\+or\+\_\+insert} (const key\+\_\+type \&key)\hypertarget{classspp___1_1sparse__hashtable_a3e0f2c2fc1657e24bb82a15eaf57507c}{}\label{classspp___1_1sparse__hashtable_a3e0f2c2fc1657e24bb82a15eaf57507c}
+
+\item 
+size\+\_\+type {\bfseries erase} (const key\+\_\+type \&key)\hypertarget{classspp___1_1sparse__hashtable_add65e2cb0ddfa77d0bb364405f5f0d67}{}\label{classspp___1_1sparse__hashtable_add65e2cb0ddfa77d0bb364405f5f0d67}
+
+\item 
+\hyperlink{classspp___1_1_two__d__iterator}{const\+\_\+iterator} {\bfseries erase} (\hyperlink{classspp___1_1_two__d__iterator}{const\+\_\+iterator} pos)\hypertarget{classspp___1_1sparse__hashtable_aaf39fab776b2b7b43c760e00db607007}{}\label{classspp___1_1sparse__hashtable_aaf39fab776b2b7b43c760e00db607007}
+
+\item 
+\hyperlink{classspp___1_1_two__d__iterator}{const\+\_\+iterator} {\bfseries erase} (\hyperlink{classspp___1_1_two__d__iterator}{const\+\_\+iterator} f, \hyperlink{classspp___1_1_two__d__iterator}{const\+\_\+iterator} l)\hypertarget{classspp___1_1sparse__hashtable_ad83d56fe80a12ac4eca9280d882725aa}{}\label{classspp___1_1sparse__hashtable_ad83d56fe80a12ac4eca9280d882725aa}
+
+\item 
+void {\bfseries set\+\_\+deleted\+\_\+key} (const key\+\_\+type \&)\hypertarget{classspp___1_1sparse__hashtable_a90153d7eb880cfef962b735d69eddd3d}{}\label{classspp___1_1sparse__hashtable_a90153d7eb880cfef962b735d69eddd3d}
+
+\item 
+void {\bfseries clear\+\_\+deleted\+\_\+key} ()\hypertarget{classspp___1_1sparse__hashtable_aa4c42d87647c78e663165d83588c79ed}{}\label{classspp___1_1sparse__hashtable_aa4c42d87647c78e663165d83588c79ed}
+
+\item 
+bool {\bfseries operator==} (const \hyperlink{classspp___1_1sparse__hashtable}{sparse\+\_\+hashtable} \&ht) const \hypertarget{classspp___1_1sparse__hashtable_a4c801a123ddddb30af9dd5f4da56f02e}{}\label{classspp___1_1sparse__hashtable_a4c801a123ddddb30af9dd5f4da56f02e}
+
+\item 
+bool {\bfseries operator!=} (const \hyperlink{classspp___1_1sparse__hashtable}{sparse\+\_\+hashtable} \&ht) const \hypertarget{classspp___1_1sparse__hashtable_a7571831cc80fa05efbe319116612e10b}{}\label{classspp___1_1sparse__hashtable_a7571831cc80fa05efbe319116612e10b}
+
+\item 
+{\footnotesize template$<$typename O\+U\+T\+P\+UT $>$ }\\bool {\bfseries write\+\_\+metadata} (O\+U\+T\+P\+UT $\ast$fp)\hypertarget{classspp___1_1sparse__hashtable_a1861b0d84da2e51a741708e0bca0609b}{}\label{classspp___1_1sparse__hashtable_a1861b0d84da2e51a741708e0bca0609b}
+
+\item 
+{\footnotesize template$<$typename I\+N\+P\+UT $>$ }\\bool {\bfseries read\+\_\+metadata} (I\+N\+P\+UT $\ast$fp)\hypertarget{classspp___1_1sparse__hashtable_a1f6405d1efa8f1e7ef050c7341d7a06e}{}\label{classspp___1_1sparse__hashtable_a1f6405d1efa8f1e7ef050c7341d7a06e}
+
+\item 
+{\footnotesize template$<$typename O\+U\+T\+P\+UT $>$ }\\bool {\bfseries write\+\_\+nopointer\+\_\+data} (O\+U\+T\+P\+UT $\ast$fp)\hypertarget{classspp___1_1sparse__hashtable_a93704d659c88f145cd2d4ad059c44242}{}\label{classspp___1_1sparse__hashtable_a93704d659c88f145cd2d4ad059c44242}
+
+\item 
+{\footnotesize template$<$typename I\+N\+P\+UT $>$ }\\bool {\bfseries read\+\_\+nopointer\+\_\+data} (I\+N\+P\+UT $\ast$fp)\hypertarget{classspp___1_1sparse__hashtable_ac3bee2c6f59b0abb5d667e7de9230138}{}\label{classspp___1_1sparse__hashtable_ac3bee2c6f59b0abb5d667e7de9230138}
+
+\item 
+{\footnotesize template$<$typename Value\+Serializer , typename O\+U\+T\+P\+UT $>$ }\\bool {\bfseries serialize} (Value\+Serializer serializer, O\+U\+T\+P\+UT $\ast$fp)\hypertarget{classspp___1_1sparse__hashtable_a5ae44879fc0a719017c4d850720d07b1}{}\label{classspp___1_1sparse__hashtable_a5ae44879fc0a719017c4d850720d07b1}
+
+\item 
+{\footnotesize template$<$typename Value\+Serializer , typename I\+N\+P\+UT $>$ }\\bool {\bfseries unserialize} (Value\+Serializer serializer, I\+N\+P\+UT $\ast$fp)\hypertarget{classspp___1_1sparse__hashtable_a1dcb031b78ab27a4d10e1819f73358b0}{}\label{classspp___1_1sparse__hashtable_a1dcb031b78ab27a4d10e1819f73358b0}
+
+\end{DoxyCompactItemize}
+\subsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static const int {\bfseries H\+T\+\_\+\+O\+C\+C\+U\+P\+A\+N\+C\+Y\+\_\+\+P\+CT} = 50\hypertarget{classspp___1_1sparse__hashtable_ac13ec6c4c2ef8ffff799e9086220d6c3}{}\label{classspp___1_1sparse__hashtable_ac13ec6c4c2ef8ffff799e9086220d6c3}
+
+\item 
+static const int {\bfseries H\+T\+\_\+\+E\+M\+P\+T\+Y\+\_\+\+P\+CT}
+\item 
+static const size\+\_\+type {\bfseries H\+T\+\_\+\+M\+I\+N\+\_\+\+B\+U\+C\+K\+E\+TS} = 4\hypertarget{classspp___1_1sparse__hashtable_a2d4214f38ddbe5f2ac97c910d916effd}{}\label{classspp___1_1sparse__hashtable_a2d4214f38ddbe5f2ac97c910d916effd}
+
+\item 
+static const size\+\_\+type {\bfseries H\+T\+\_\+\+D\+E\+F\+A\+U\+L\+T\+\_\+\+S\+T\+A\+R\+T\+I\+N\+G\+\_\+\+B\+U\+C\+K\+E\+TS} = 32\hypertarget{classspp___1_1sparse__hashtable_add003723127020bae7a9f2c62116c322}{}\label{classspp___1_1sparse__hashtable_add003723127020bae7a9f2c62116c322}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Member Data Documentation}
+\index{spp\+\_\+\+::sparse\+\_\+hashtable@{spp\+\_\+\+::sparse\+\_\+hashtable}!H\+T\+\_\+\+E\+M\+P\+T\+Y\+\_\+\+P\+CT@{H\+T\+\_\+\+E\+M\+P\+T\+Y\+\_\+\+P\+CT}}
+\index{H\+T\+\_\+\+E\+M\+P\+T\+Y\+\_\+\+P\+CT@{H\+T\+\_\+\+E\+M\+P\+T\+Y\+\_\+\+P\+CT}!spp\+\_\+\+::sparse\+\_\+hashtable@{spp\+\_\+\+::sparse\+\_\+hashtable}}
+\subsubsection[{\texorpdfstring{H\+T\+\_\+\+E\+M\+P\+T\+Y\+\_\+\+P\+CT}{HT_EMPTY_PCT}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class Value, class Key, class Hash\+Fcn, class Extract\+Key, class Set\+Key, class Equal\+Key, class Alloc$>$ const int {\bf spp\+\_\+\+::sparse\+\_\+hashtable}$<$ V, K, HF, ExK, SetK, EqK, A $>$\+::H\+T\+\_\+\+E\+M\+P\+T\+Y\+\_\+\+P\+CT\hspace{0.3cm}{\ttfamily [static]}}\hypertarget{classspp___1_1sparse__hashtable_a49f053c05fadf2da1767b4e6e48f6625}{}\label{classspp___1_1sparse__hashtable_a49f053c05fadf2da1767b4e6e48f6625}
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+= \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{int}\textcolor{keyword}{>}(0.4 *
+                   sparse\_hashtable<V,K,HF,ExK,SetK,EqK,A>::HT\_OCCUPANCY\_PCT)
+\end{DoxyCode}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/sparsepp/spp.\+h\end{DoxyCompactItemize}

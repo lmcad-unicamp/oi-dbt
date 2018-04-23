@@ -1,0 +1,73 @@
+\hypertarget{classclarg_1_1arg_string}{}\section{clarg\+:\+:arg\+String Class Reference}
+\label{classclarg_1_1arg_string}\index{clarg\+::arg\+String@{clarg\+::arg\+String}}
+
+
+{\ttfamily \#include $<$arglib.\+hpp$>$}
+
+
+
+Inheritance diagram for clarg\+:\+:arg\+String\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=185pt]{classclarg_1_1arg_string__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for clarg\+:\+:arg\+String\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=185pt]{classclarg_1_1arg_string__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries arg\+String} (const char $\ast$arg, const char $\ast$desc, string v)\hypertarget{classclarg_1_1arg_string_a8b6bad644226b839a2ec02c6c8c03eec}{}\label{classclarg_1_1arg_string_a8b6bad644226b839a2ec02c6c8c03eec}
+
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{classclarg_1_1arg_string_a06a724f38fc4df3732d9ab2072705c6c}{parse\+\_\+parameters} (int argc, char $\ast$argv\mbox{[}$\,$\mbox{]})
+\item 
+void \hyperlink{classclarg_1_1arg_string_ae336afebabd08c78b5323e1c6eba8ba7}{write\+\_\+parameters} (ostream \&os, bool def) const 
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Detailed Description}
+String argument class. 
+
+\subsection{Member Function Documentation}
+\index{clarg\+::arg\+String@{clarg\+::arg\+String}!parse\+\_\+parameters@{parse\+\_\+parameters}}
+\index{parse\+\_\+parameters@{parse\+\_\+parameters}!clarg\+::arg\+String@{clarg\+::arg\+String}}
+\subsubsection[{\texorpdfstring{parse\+\_\+parameters(int argc, char $\ast$argv[])}{parse_parameters(int argc, char *argv[])}}]{\setlength{\rightskip}{0pt plus 5cm}int clarg\+::arg\+String\+::parse\+\_\+parameters (
+\begin{DoxyParamCaption}
+\item[{int}]{argc, }
+\item[{char $\ast$}]{argv\mbox{[}$\,$\mbox{]}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}, {\ttfamily [virtual]}}\hypertarget{classclarg_1_1arg_string_a06a724f38fc4df3732d9ab2072705c6c}{}\label{classclarg_1_1arg_string_a06a724f38fc4df3732d9ab2072705c6c}
+Parse the argument parameters. Must be implemented by the specialized argument class. When parsing, make sure you copy the parsed parameters into the arg\+\_\+parameters array. Returns the number of parameters parsed if ok, -\/1 if an error occured. 
+
+Implements \hyperlink{classclarg_1_1arg__base_a4c0e6afc44de0d825334a41d4ef5b813}{clarg\+::arg\+\_\+base}.
+
+\index{clarg\+::arg\+String@{clarg\+::arg\+String}!write\+\_\+parameters@{write\+\_\+parameters}}
+\index{write\+\_\+parameters@{write\+\_\+parameters}!clarg\+::arg\+String@{clarg\+::arg\+String}}
+\subsubsection[{\texorpdfstring{write\+\_\+parameters(ostream \&os, bool def) const }{write_parameters(ostream &os, bool def) const }}]{\setlength{\rightskip}{0pt plus 5cm}void clarg\+::arg\+String\+::write\+\_\+parameters (
+\begin{DoxyParamCaption}
+\item[{ostream \&}]{os, }
+\item[{bool}]{def}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}, {\ttfamily [virtual]}}\hypertarget{classclarg_1_1arg_string_ae336afebabd08c78b5323e1c6eba8ba7}{}\label{classclarg_1_1arg_string_ae336afebabd08c78b5323e1c6eba8ba7}
+write the argument parameters into the output stream. 
+
+Implements \hyperlink{classclarg_1_1arg__base_a476be3712ecd028fee248cef14cc3cfb}{clarg\+::arg\+\_\+base}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/arglib/arglib.\+hpp\end{DoxyCompactItemize}

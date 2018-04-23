@@ -1,0 +1,43 @@
+.TH "ELFIO::relocation_section_accessor" 3 "Mon Apr 23 2018" "Version 0.0.1" "OpenISA Dynamic Binary Translator" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ELFIO::relocation_section_accessor \- 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBrelocation_section_accessor\fP (const \fBelfio\fP &elf_file_, \fBsection\fP *section_)"
+.br
+.ti -1c
+.RI "Elf_Xword \fBget_entries_num\fP () const "
+.br
+.ti -1c
+.RI "bool \fBget_entry\fP (Elf_Xword index, Elf64_Addr &offset, Elf_Word &symbol, Elf_Word &type, Elf_Sxword &addend) const "
+.br
+.ti -1c
+.RI "bool \fBget_entry\fP (Elf_Xword index, Elf64_Addr &offset, Elf64_Addr &symbolValue, std::string &symbolName, Elf_Word &type, Elf_Sxword &addend, Elf_Sxword &calcValue) const "
+.br
+.ti -1c
+.RI "void \fBadd_entry\fP (Elf64_Addr offset, Elf_Xword info)"
+.br
+.ti -1c
+.RI "void \fBadd_entry\fP (Elf64_Addr offset, Elf_Word symbol, unsigned char type)"
+.br
+.ti -1c
+.RI "void \fBadd_entry\fP (Elf64_Addr offset, Elf_Xword info, Elf_Sxword addend)"
+.br
+.ti -1c
+.RI "void \fBadd_entry\fP (Elf64_Addr offset, Elf_Word symbol, unsigned char type, Elf_Sxword addend)"
+.br
+.ti -1c
+.RI "void \fBadd_entry\fP (\fBstring_section_accessor\fP str_writer, const char *str, \fBsymbol_section_accessor\fP sym_writer, Elf64_Addr value, Elf_Word size, unsigned char sym_info, unsigned char other, Elf_Half shndx, Elf64_Addr offset, unsigned char type)"
+.br
+.in -1c
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for OpenISA Dynamic Binary Translator from the source code\&.

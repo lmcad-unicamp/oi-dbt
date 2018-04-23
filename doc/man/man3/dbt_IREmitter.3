@@ -1,0 +1,35 @@
+.TH "dbt::IREmitter" 3 "Mon Apr 23 2018" "Version 0.0.1" "OpenISA Dynamic Binary Translator" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+dbt::IREmitter \- 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "std::vector< uint32_t > \fBgetDirectTransitions\fP (uint32_t Addrs)"
+.br
+.ti -1c
+.RI "llvm::Module * \fBgenerateRegionIR\fP (uint32_t, const OIInstList &, uint32_t, spp::sparse_hash_map< uint32_t, uint32_t > &, llvm::TargetMachine &, volatile uint64_t *NativeRegions)"
+.br
+.ti -1c
+.RI "llvm::Module * \fBgenerateMergedRegions\fP (std::vector< OIInstList > &, uint32_t, spp::sparse_hash_map< uint32_t, uint32_t > &, llvm::TargetMachine &)"
+.br
+.in -1c
+.SS "Static Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "static size_t \fBdisassemble\fP (const void *func, std::ostream &buffer)"
+.br
+.ti -1c
+.RI "static size_t \fBregionDump\fP (const void *func, std::ostream &buffer, size_t size)"
+.br
+.in -1c
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for OpenISA Dynamic Binary Translator from the source code\&.

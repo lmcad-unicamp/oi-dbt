@@ -1,0 +1,88 @@
+\hypertarget{classspp___1_1table__iterator}{}\section{spp\+\_\+\+:\+:table\+\_\+iterator$<$ tabletype $>$ Class Template Reference}
+\label{classspp___1_1table__iterator}\index{spp\+\_\+\+::table\+\_\+iterator$<$ tabletype $>$@{spp\+\_\+\+::table\+\_\+iterator$<$ tabletype $>$}}
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+typedef \hyperlink{classspp___1_1table__iterator}{table\+\_\+iterator} {\bfseries iterator}\hypertarget{classspp___1_1table__iterator_a6228b7c4332f821c5e48d4b3bc85adff}{}\label{classspp___1_1table__iterator_a6228b7c4332f821c5e48d4b3bc85adff}
+
+\item 
+typedef std\+::random\+\_\+access\+\_\+iterator\+\_\+tag {\bfseries iterator\+\_\+category}\hypertarget{classspp___1_1table__iterator_a4f51a9d62777fb22ad3a01b0299823f7}{}\label{classspp___1_1table__iterator_a4f51a9d62777fb22ad3a01b0299823f7}
+
+\item 
+typedef tabletype\+::value\+\_\+type {\bfseries value\+\_\+type}\hypertarget{classspp___1_1table__iterator_adeebd421175bd6755021a8aeaaed539b}{}\label{classspp___1_1table__iterator_adeebd421175bd6755021a8aeaaed539b}
+
+\item 
+typedef tabletype\+::difference\+\_\+type {\bfseries difference\+\_\+type}\hypertarget{classspp___1_1table__iterator_a5aa133c2408abca941050bd87f8d2f2e}{}\label{classspp___1_1table__iterator_a5aa133c2408abca941050bd87f8d2f2e}
+
+\item 
+typedef tabletype\+::size\+\_\+type {\bfseries size\+\_\+type}\hypertarget{classspp___1_1table__iterator_a6fcc620278cd8529ba1f333c09acd86b}{}\label{classspp___1_1table__iterator_a6fcc620278cd8529ba1f333c09acd86b}
+
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries table\+\_\+iterator} (tabletype $\ast$tbl=0, size\+\_\+type p=0)\hypertarget{classspp___1_1table__iterator_a964ef3394a611878bed10d8faff2ddbc}{}\label{classspp___1_1table__iterator_a964ef3394a611878bed10d8faff2ddbc}
+
+\item 
+void {\bfseries check} () const \hypertarget{classspp___1_1table__iterator_a91ef45e150882de2b04a068cd501a2f0}{}\label{classspp___1_1table__iterator_a91ef45e150882de2b04a068cd501a2f0}
+
+\item 
+\hyperlink{classspp___1_1table__iterator}{iterator} \& {\bfseries operator+=} (size\+\_\+type t)\hypertarget{classspp___1_1table__iterator_a7d8577d4a818b79eee7f0a59f3e24fde}{}\label{classspp___1_1table__iterator_a7d8577d4a818b79eee7f0a59f3e24fde}
+
+\item 
+\hyperlink{classspp___1_1table__iterator}{iterator} \& {\bfseries operator-\/=} (size\+\_\+type t)\hypertarget{classspp___1_1table__iterator_a49e543a4ace91158bcb64622a5f010d0}{}\label{classspp___1_1table__iterator_a49e543a4ace91158bcb64622a5f010d0}
+
+\item 
+\hyperlink{classspp___1_1table__iterator}{iterator} \& {\bfseries operator++} ()\hypertarget{classspp___1_1table__iterator_ab1fc0aac1f432d3d0b50c1b7471b513c}{}\label{classspp___1_1table__iterator_ab1fc0aac1f432d3d0b50c1b7471b513c}
+
+\item 
+\hyperlink{classspp___1_1table__iterator}{iterator} \& {\bfseries operator-\/-\/} ()\hypertarget{classspp___1_1table__iterator_a568c33acee1598e89edfae720f20d6b9}{}\label{classspp___1_1table__iterator_a568c33acee1598e89edfae720f20d6b9}
+
+\item 
+\hyperlink{classspp___1_1table__iterator}{iterator} {\bfseries operator++} (int)\hypertarget{classspp___1_1table__iterator_a44ccd266034de9ffbe4a50323679319d}{}\label{classspp___1_1table__iterator_a44ccd266034de9ffbe4a50323679319d}
+
+\item 
+\hyperlink{classspp___1_1table__iterator}{iterator} {\bfseries operator-\/-\/} (int)\hypertarget{classspp___1_1table__iterator_a9222277380f2936386ef2c38076cfb13}{}\label{classspp___1_1table__iterator_a9222277380f2936386ef2c38076cfb13}
+
+\item 
+\hyperlink{classspp___1_1table__iterator}{iterator} {\bfseries operator+} (difference\+\_\+type i) const \hypertarget{classspp___1_1table__iterator_adad13e26e54d3c1f0487717dcf1abecd}{}\label{classspp___1_1table__iterator_adad13e26e54d3c1f0487717dcf1abecd}
+
+\item 
+\hyperlink{classspp___1_1table__iterator}{iterator} {\bfseries operator-\/} (difference\+\_\+type i) const \hypertarget{classspp___1_1table__iterator_a854767bc49f271750c20c4997ad16949}{}\label{classspp___1_1table__iterator_a854767bc49f271750c20c4997ad16949}
+
+\item 
+difference\+\_\+type {\bfseries operator-\/} (\hyperlink{classspp___1_1table__iterator}{iterator} it) const \hypertarget{classspp___1_1table__iterator_ad26aa960c589f6e922b14650ed1506cd}{}\label{classspp___1_1table__iterator_ad26aa960c589f6e922b14650ed1506cd}
+
+\item 
+bool {\bfseries operator==} (const \hyperlink{classspp___1_1table__iterator}{iterator} \&it) const \hypertarget{classspp___1_1table__iterator_ab5e38e5f0d1be9d26b13cf17d424b830}{}\label{classspp___1_1table__iterator_ab5e38e5f0d1be9d26b13cf17d424b830}
+
+\item 
+bool {\bfseries operator$<$} (const \hyperlink{classspp___1_1table__iterator}{iterator} \&it) const \hypertarget{classspp___1_1table__iterator_a071ab79ad848a19658e78b0a1a31a340}{}\label{classspp___1_1table__iterator_a071ab79ad848a19658e78b0a1a31a340}
+
+\item 
+bool {\bfseries operator!=} (const \hyperlink{classspp___1_1table__iterator}{iterator} \&it) const \hypertarget{classspp___1_1table__iterator_a42b9fb3c3c7c33a7e6e956db727ae5d9}{}\label{classspp___1_1table__iterator_a42b9fb3c3c7c33a7e6e956db727ae5d9}
+
+\item 
+bool {\bfseries operator$<$=} (const \hyperlink{classspp___1_1table__iterator}{iterator} \&it) const \hypertarget{classspp___1_1table__iterator_a2f4bb6ca23ec83886f390dd77adf446e}{}\label{classspp___1_1table__iterator_a2f4bb6ca23ec83886f390dd77adf446e}
+
+\item 
+bool {\bfseries operator$>$} (const \hyperlink{classspp___1_1table__iterator}{iterator} \&it) const \hypertarget{classspp___1_1table__iterator_af231ab992797dfbed597ca10526ade45}{}\label{classspp___1_1table__iterator_af231ab992797dfbed597ca10526ade45}
+
+\item 
+bool {\bfseries operator$>$=} (const \hyperlink{classspp___1_1table__iterator}{iterator} \&it) const \hypertarget{classspp___1_1table__iterator_a6607f69525388772ef47aefc864105a3}{}\label{classspp___1_1table__iterator_a6607f69525388772ef47aefc864105a3}
+
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+tabletype $\ast$ {\bfseries table}\hypertarget{classspp___1_1table__iterator_aa63d910274f8710ce07e99bb913b8b43}{}\label{classspp___1_1table__iterator_aa63d910274f8710ce07e99bb913b8b43}
+
+\item 
+size\+\_\+type {\bfseries pos}\hypertarget{classspp___1_1table__iterator_ac071a94a47d4b32b261a0596d80a2aae}{}\label{classspp___1_1table__iterator_ac071a94a47d4b32b261a0596d80a2aae}
+
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/sparsepp/spp.\+h\end{DoxyCompactItemize}

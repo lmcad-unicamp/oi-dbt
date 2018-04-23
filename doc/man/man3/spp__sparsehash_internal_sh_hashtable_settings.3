@@ -1,0 +1,88 @@
+.TH "spp_::sparsehash_internal::sh_hashtable_settings< Key, HashFunc, SizeType, HT_MIN_BUCKETS >" 3 "Mon Apr 23 2018" "Version 0.0.1" "OpenISA Dynamic Binary Translator" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+spp_::sparsehash_internal::sh_hashtable_settings< Key, HashFunc, SizeType, HT_MIN_BUCKETS > \- 
+.SH SYNOPSIS
+.br
+.PP
+.PP
+Inherits HashFunc\&.
+.SS "Public Types"
+
+.in +1c
+.ti -1c
+.RI "typedef Key \fBkey_type\fP"
+.br
+.ti -1c
+.RI "typedef HashFunc \fBhasher\fP"
+.br
+.ti -1c
+.RI "typedef SizeType \fBsize_type\fP"
+.br
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBsh_hashtable_settings\fP (const hasher &hf, const float ht_occupancy_flt, const float ht_empty_flt)"
+.br
+.ti -1c
+.RI "size_t \fBhash\fP (const key_type &v) const "
+.br
+.ti -1c
+.RI "float \fBenlarge_factor\fP () const "
+.br
+.ti -1c
+.RI "void \fBset_enlarge_factor\fP (float f)"
+.br
+.ti -1c
+.RI "float \fBshrink_factor\fP () const "
+.br
+.ti -1c
+.RI "void \fBset_shrink_factor\fP (float f)"
+.br
+.ti -1c
+.RI "size_type \fBenlarge_threshold\fP () const "
+.br
+.ti -1c
+.RI "void \fBset_enlarge_threshold\fP (size_type t)"
+.br
+.ti -1c
+.RI "size_type \fBshrink_threshold\fP () const "
+.br
+.ti -1c
+.RI "void \fBset_shrink_threshold\fP (size_type t)"
+.br
+.ti -1c
+.RI "size_type \fBenlarge_size\fP (size_type x) const "
+.br
+.ti -1c
+.RI "size_type \fBshrink_size\fP (size_type x) const "
+.br
+.ti -1c
+.RI "bool \fBconsider_shrink\fP () const "
+.br
+.ti -1c
+.RI "void \fBset_consider_shrink\fP (bool t)"
+.br
+.ti -1c
+.RI "unsigned int \fBnum_ht_copies\fP () const "
+.br
+.ti -1c
+.RI "void \fBinc_num_ht_copies\fP ()"
+.br
+.ti -1c
+.RI "void \fBreset_thresholds\fP (size_type num_buckets)"
+.br
+.ti -1c
+.RI "void \fBset_resizing_parameters\fP (float shrink, float grow)"
+.br
+.ti -1c
+.RI "size_type \fBmin_buckets\fP (size_type num_elts, size_type min_buckets_wanted)"
+.br
+.in -1c
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for OpenISA Dynamic Binary Translator from the source code\&.

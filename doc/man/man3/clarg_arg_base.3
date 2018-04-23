@@ -1,0 +1,86 @@
+.TH "clarg::arg_base" 3 "Mon Apr 23 2018" "Version 0.0.1" "OpenISA Dynamic Binary Translator" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+clarg::arg_base \- 
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <arglib\&.hpp>\fP
+.PP
+Inherited by \fBclarg::argT< bool >\fP, \fBclarg::argT< double >\fP, \fBclarg::argT< int >\fP, \fBclarg::argT< string >\fP, and \fBclarg::argT< T >\fP\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBarg_base\fP (const char *name, const char *desc)"
+.br
+.ti -1c
+.RI "const string & \fBget_name\fP () const "
+.br
+.ti -1c
+.RI "const string & \fBget_desc\fP () const "
+.br
+.ti -1c
+.RI "bool \fBwas_set\fP () const "
+.br
+.ti -1c
+.RI "void \fBmark_set\fP (bool m)"
+.br
+.in -1c
+.SS "Protected Member Functions"
+
+.in +1c
+.ti -1c
+.RI "virtual int \fBparse_parameters\fP (int argc, char *argv[])=0"
+.br
+.ti -1c
+.RI "virtual void \fBwrite_parameters\fP (ostream &os, bool def=false) const =0"
+.br
+.in -1c
+.SS "Protected Attributes"
+
+.in +1c
+.ti -1c
+.RI "bool \fBarg_set\fP"
+.br
+.ti -1c
+.RI "string \fBarg_name\fP"
+.br
+.ti -1c
+.RI "string \fBarg_desc\fP"
+.br
+.in -1c
+.SS "Friends"
+
+.in +1c
+.ti -1c
+.RI "class \fBargs_container\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+The base argument class\&. Manages arguments names and descriptions\&. 
+.SH "Member Function Documentation"
+.PP 
+.SS "virtual int clarg::arg_base::parse_parameters (int argc, char * argv[])\fC [protected]\fP, \fC [pure virtual]\fP"
+Parse the argument parameters\&. Must be implemented by the specialized argument class\&. When parsing, make sure you copy the parsed parameters into the arg_parameters array\&. Returns the number of parameters parsed if ok, -1 if an error occured\&. 
+.PP
+Implemented in \fBclarg::argBool\fP, \fBclarg::argDouble\fP, \fBclarg::argInt\fP, and \fBclarg::argString\fP\&.
+.SS "virtual void clarg::arg_base::write_parameters (ostream & os, bool def = \fCfalse\fP) const\fC [protected]\fP, \fC [pure virtual]\fP"
+write the argument parameters into the output stream\&. 
+.PP
+Implemented in \fBclarg::argBool\fP, \fBclarg::argDouble\fP, \fBclarg::argInt\fP, and \fBclarg::argString\fP\&.
+.SH "Member Data Documentation"
+.PP 
+.SS "string clarg::arg_base::arg_desc\fC [protected]\fP"
+The argument description\&. 
+.SS "string clarg::arg_base::arg_name\fC [protected]\fP"
+The argument name\&. 
+.SS "bool clarg::arg_base::arg_set\fC [protected]\fP"
+True if the argument was set 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for OpenISA Dynamic Binary Translator from the source code\&.

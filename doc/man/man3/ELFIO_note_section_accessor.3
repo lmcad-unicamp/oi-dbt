@@ -1,0 +1,28 @@
+.TH "ELFIO::note_section_accessor" 3 "Mon Apr 23 2018" "Version 0.0.1" "OpenISA Dynamic Binary Translator" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ELFIO::note_section_accessor \- 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBnote_section_accessor\fP (const \fBelfio\fP &elf_file_, \fBsection\fP *section_)"
+.br
+.ti -1c
+.RI "Elf_Word \fBget_notes_num\fP () const "
+.br
+.ti -1c
+.RI "bool \fBget_note\fP (Elf_Word index, Elf_Word &type, std::string &name, void *&desc, Elf_Word &descSize) const "
+.br
+.ti -1c
+.RI "void \fBadd_note\fP (Elf_Word type, const std::string &name, const void *desc, Elf_Word descSize)"
+.br
+.in -1c
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for OpenISA Dynamic Binary Translator from the source code\&.

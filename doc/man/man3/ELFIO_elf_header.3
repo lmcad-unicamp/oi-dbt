@@ -1,0 +1,78 @@
+.TH "ELFIO::elf_header" 3 "Mon Apr 23 2018" "Version 0.0.1" "OpenISA Dynamic Binary Translator" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ELFIO::elf_header \- 
+.SH SYNOPSIS
+.br
+.PP
+.PP
+Inherited by \fBELFIO::elf_header_impl< T >\fP\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "virtual bool \fBload\fP (std::istream &stream)=0"
+.br
+.ti -1c
+.RI "virtual bool \fBsave\fP (std::ostream &stream) const =0"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_ACCESS_DECL\fP (unsigned char, class)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_ACCESS_DECL\fP (unsigned char, elf_version)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_ACCESS_DECL\fP (unsigned char, encoding)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_ACCESS_DECL\fP (Elf_Word, version)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_ACCESS_DECL\fP (Elf_Half, header_size)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_ACCESS_DECL\fP (Elf_Half, section_entry_size)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_ACCESS_DECL\fP (Elf_Half, segment_entry_size)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS_DECL\fP (unsigned char, os_abi)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS_DECL\fP (unsigned char, abi_version)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS_DECL\fP (Elf_Half, type)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS_DECL\fP (Elf_Half, machine)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS_DECL\fP (Elf_Word, flags)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS_DECL\fP (Elf64_Addr, entry)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS_DECL\fP (Elf_Half, sections_num)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS_DECL\fP (Elf64_Off, sections_offset)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS_DECL\fP (Elf_Half, segments_num)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS_DECL\fP (Elf64_Off, segments_offset)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS_DECL\fP (Elf_Half, section_name_str_index)"
+.br
+.in -1c
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for OpenISA Dynamic Binary Translator from the source code\&.

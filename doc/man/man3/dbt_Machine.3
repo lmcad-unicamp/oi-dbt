@@ -1,0 +1,148 @@
+.TH "dbt::Machine" 3 "Mon Apr 23 2018" "Version 0.0.1" "OpenISA Dynamic Binary Translator" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+dbt::Machine \- 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBreset\fP ()"
+.br
+.ti -1c
+.RI "void \fBallocDataMemory\fP (uint32_t, uint32_t)"
+.br
+.ti -1c
+.RI "void \fBsetCodeMemory\fP (uint32_t, uint32_t, const char *)"
+.br
+.ti -1c
+.RI "void \fBaddDataMemory\fP (uint32_t, uint32_t, const char *)"
+.br
+.ti -1c
+.RI "bool \fBisPreheating\fP (void)"
+.br
+.ti -1c
+.RI "void \fBsetPreheating\fP (bool state)"
+.br
+.ti -1c
+.RI "int \fBsetCommandLineArguments\fP (std::string)"
+.br
+.ti -1c
+.RI "uint32_t \fBgetLastPC\fP ()"
+.br
+.ti -1c
+.RI "uint32_t \fBgetPC\fP ()"
+.br
+.ti -1c
+.RI "void \fBsetPC\fP (uint32_t)"
+.br
+.ti -1c
+.RI "void \fBincPC\fP ()"
+.br
+.ti -1c
+.RI "void \fBsetStackSize\fP (uint32_t size)"
+.br
+.ti -1c
+.RI "void \fBsetHeapSize\fP (uint32_t size)"
+.br
+.ti -1c
+.RI "\fBWord\fP \fBgetInstAt\fP (uint32_t)"
+.br
+.ti -1c
+.RI "\fBWord\fP \fBgetInstAtPC\fP ()"
+.br
+.ti -1c
+.RI "\fBWord\fP \fBgetNextInst\fP ()"
+.br
+.ti -1c
+.RI "void \fBsetMemByteAt\fP (uint32_t, uint8_t)"
+.br
+.ti -1c
+.RI "uint8_t \fBgetMemByteAt\fP (uint32_t)"
+.br
+.ti -1c
+.RI "uint16_t \fBgetMemHalfAt\fP (uint32_t)"
+.br
+.ti -1c
+.RI "\fBWord\fP \fBgetMemValueAt\fP (uint32_t)"
+.br
+.ti -1c
+.RI "void \fBsetMemValueAt\fP (uint32_t, uint32_t)"
+.br
+.ti -1c
+.RI "int32_t * \fBgetRegisterPtr\fP ()"
+.br
+.ti -1c
+.RI "uint32_t * \fBgetMemoryPtr\fP ()"
+.br
+.ti -1c
+.RI "char * \fBgetByteMemoryPtr\fP ()"
+.br
+.ti -1c
+.RI "uint32_t \fBgetNumInst\fP ()"
+.br
+.ti -1c
+.RI "uint32_t \fBgetCodeStartAddrs\fP ()"
+.br
+.ti -1c
+.RI "uint32_t \fBgetCodeEndAddrs\fP ()"
+.br
+.ti -1c
+.RI "uint32_t \fBgetDataMemOffset\fP ()"
+.br
+.ti -1c
+.RI "int32_t \fBgetRegister\fP (uint16_t)"
+.br
+.ti -1c
+.RI "float \fBgetFloatRegister\fP (uint16_t)"
+.br
+.ti -1c
+.RI "double \fBgetDoubleRegister\fP (uint16_t)"
+.br
+.ti -1c
+.RI "void \fBsetRegister\fP (uint16_t, int32_t)"
+.br
+.ti -1c
+.RI "void \fBsetFloatRegister\fP (uint16_t, float)"
+.br
+.ti -1c
+.RI "void \fBsetDoubleRegister\fP (uint16_t, double)"
+.br
+.ti -1c
+.RI "uint32_t \fBgetRegionBeingExecuted\fP ()"
+.br
+.ti -1c
+.RI "bool \fBisOnNativeExecution\fP ()"
+.br
+.ti -1c
+.RI "void \fBsetOffNativeExecution\fP ()"
+.br
+.ti -1c
+.RI "void \fBsetOnNativeExecution\fP (uint32_t)"
+.br
+.ti -1c
+.RI "bool \fBisMethodEntry\fP (uint32_t)"
+.br
+.ti -1c
+.RI "uint32_t \fBgetMethodEnd\fP (uint32_t)"
+.br
+.ti -1c
+.RI "std::string \fBgetMethodName\fP (uint32_t)"
+.br
+.ti -1c
+.RI "std::vector< uint32_t > \fBgetVectorOfMethodEntries\fP ()"
+.br
+.ti -1c
+.RI "int \fBloadELF\fP (const std::string)"
+.br
+.ti -1c
+.RI "void \fBdumpRegisters\fP (void)"
+.br
+.in -1c
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for OpenISA Dynamic Binary Translator from the source code\&.
