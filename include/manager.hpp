@@ -14,6 +14,7 @@
 #include "llvm/Support/TargetSelect.h"
 
 #define OIInstList std::vector<std::array<uint32_t,2>>
+#define NATIVE_REGION_SIZE 1000000
 
 namespace dbt {
   class Machine;
@@ -29,7 +30,7 @@ namespace dbt {
       std::unordered_map<uint32_t, OIInstList> CompiledOIRegions;
       spp::sparse_hash_map<uint32_t, llvm::Module*> IRRegions;
       std::vector<uint32_t> RegionAddresses;
-      volatile uint64_t NativeRegions[1000000];
+      volatile uint64_t NativeRegions[NATIVE_REGION_SIZE];
 
       mutable std::shared_mutex OIRegionsMtx, IRRegionsMtx, NativeRegionsMtx, CompiledOIRegionsMtx;
 
@@ -54,7 +55,7 @@ namespace dbt {
       float AvgOptCodeSize = 0;
 
       bool VerboseOutput = false;
-      
+
       void runPipeline();
 
     public:
@@ -82,21 +83,27 @@ namespace dbt {
         return AvgOptCodeSize;
       }
 
-      Manager(unsigned T, OptPolitic O, uint32_t DMO, bool VO = false) : NumOfThreads(T), OptMode(O), 
-            DataMemOffset(DMO), isRunning(true), isFinished(false), Thr(&Manager::runPipeline, this), VerboseOutput(VO) {
-        for (int I = 0; I < 100000; I++)                                    
-          NativeRegions[I] = 0;
+      Manager(unsigned T, OptPolitic O, uint32_t DMO, bool VO = false) : NumOfThreads(T), OptMode(O),
+            DataMemOffset(DMO), isRunning(true), isFinished(false), VerboseOutput(VO) {
+
+        memset((void*) NativeRegions, 0, sizeof(NativeRegions));
+
+        if(T)
+          Thr = std::thread(&Manager::runPipeline, this);
       }
 
       ~Manager() {
         // Alert threads to stop
         isRunning = false;
-        
-        // Waits the thread finish
-        while (!isFinished) {}
 
-        if (Thr.joinable())
-          Thr.join();
+        // Waits the thread finish
+        if(NumOfThreads)
+        {
+          while (!isFinished) {}
+
+          if (Thr.joinable())
+            Thr.join();
+        }
 
         std::cerr << "Compiled Regions: " << std::dec << CompiledRegions << "\n";
         std::cerr << "Avg Code Size Reduction: ";
@@ -117,18 +124,22 @@ namespace dbt {
       }
 
       bool isNativeRegionEntry(uint32_t EntryAddress) {
-        return (NativeRegions[EntryAddress] != 0); 
+        return (NativeRegions[EntryAddress] != 0);
       }
 
       size_t getNumOfOIRegions() {
         return OIRegions.size();
       }
 
+      unsigned int getNumOfThreads(void){
+        return NumOfThreads;
+      }
+
       float getAvgRegionsSize() {
         uint64_t total;
-        for (auto Region : OIRegions) 
+        for (auto Region : OIRegions)
           total += Region.second.size();
-        return (float)total / getNumOfOIRegions(); 
+        return (float)total / getNumOfOIRegions();
       }
 
       bool inCodeCache(uint32_t Addrs) {

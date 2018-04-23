@@ -21,6 +21,11 @@
 #include <vector>
 #include <functional>
 
+//#define DUMP_REGISTER_JUMP
+//#define PRINTINST
+//#define COLOR
+//#define PRINTREG
+
 #define uptr std::unique_ptr
 
 #define STACK_SIZE 128 * 1024 * 1024 /*8mb*/
@@ -46,6 +51,7 @@ namespace dbt {
   private:
     uint32_t stackSize = STACK_SIZE;
     uint32_t heapSize = HEAP_SIZE;
+    bool preheating = false;
 
     // Int Regs     0   -  63
     // LDI          64
@@ -69,7 +75,7 @@ namespace dbt {
     uint32_t PC;
 
     bool OnNativeExecution = false;
-    uint32_t RegionBeingExecuted; 
+    uint32_t RegionBeingExecuted;
 
     std::string BinPath;
 
@@ -83,6 +89,9 @@ namespace dbt {
     void setCodeMemory(uint32_t, uint32_t, const char*);
     void addDataMemory(uint32_t, uint32_t, const char*);
 
+    bool isPreheating (void) { return this->preheating; };
+    void setPreheating (bool state) { this->preheating = state; };
+
     int setCommandLineArguments(std::string);
 
     uint32_t getLastPC();
@@ -92,7 +101,6 @@ namespace dbt {
 
     void setStackSize(uint32_t size) { stackSize = size; };
     void setHeapSize(uint32_t size)  { heapSize = size;  };
-
 
     Word getInstAt(uint32_t);
     Word getInstAtPC();
@@ -121,17 +129,21 @@ namespace dbt {
     void setFloatRegister(uint16_t, float);
     void setDoubleRegister(uint16_t, double);
 
-    uint32_t getRegionBeingExecuted(); 
-    bool isOnNativeExecution(); 
-    void setOffNativeExecution(); 
-    void setOnNativeExecution(uint32_t); 
+    uint32_t getRegionBeingExecuted();
+    bool isOnNativeExecution();
+    void setOffNativeExecution();
+    void setOnNativeExecution(uint32_t);
 
-    bool isMethodEntry(uint32_t); 
-    uint32_t getMethodEnd(uint32_t); 
-    std::string getMethodName(uint32_t); 
+    bool isMethodEntry(uint32_t);
+    uint32_t getMethodEnd(uint32_t);
+    std::string getMethodName(uint32_t);
     std::vector<uint32_t> getVectorOfMethodEntries();
 
     int loadELF(const std::string);
+
+    //#ifdef DEBUG
+    void dumpRegisters(void);
+    //#endif
   };
 }
 

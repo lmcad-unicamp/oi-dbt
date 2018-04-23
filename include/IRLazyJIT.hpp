@@ -165,7 +165,7 @@ private:
     // ObjectLayer.set
     // std::unique_ptr<ObjectFile> objFile(std::move(object.get()));
     // auto ownObject = OwningBinary<ObjectFile>(std::move(objFile), std::move(buffer.get()));
-    
+
     // ObjectLayer.addObject(ownObject, nullptr);
   }
 

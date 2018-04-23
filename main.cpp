@@ -21,8 +21,9 @@ clarg::argBool   HelpFlag("-h",  "display the help message");
 clarg::argInt    RegionLimitSize("-l", "region size limit", 0);
 clarg::argString ToCompileFlag("-tc", "Functions to compile", "");
 clarg::argString ArgumentsFlag("-args", "Pass Parameters to binary file (as string)", "");
-clarg::argInt	 stackSizeFlag("-stack", "Set new stack size. (Default: 128mb)" , STACK_SIZE);
-clarg::argInt	 heapSizeFlag ("-heap", "Set new heap size (Default: 128mb)", HEAP_SIZE);
+clarg::argInt	   stackSizeFlag("-stack", "Set new stack size. (Default: 128mb)" , STACK_SIZE);
+clarg::argInt	   heapSizeFlag ("-heap", "Set new heap size (Default: 128mb)", HEAP_SIZE);
+clarg::argBool   singleThreadFlag("-single-thread", "Use one thread only (for compilation and running)");
 #ifdef DEBUG
 clarg::argInt debugFlag ("-d", "Set Debug Level. This value can be 1 or 2 (1 - Less verbosive; 2 - More Verbosive)", 1);
 #endif
@@ -30,10 +31,10 @@ clarg::argInt debugFlag ("-d", "Set Debug Level. This value can be 1 or 2 (1 - L
 void usage(char* PrgName) {
   cout << "Version: 0.0.1 (09-04-2018)";
   #ifdef DEBUG
-  cout << " (Debug Build) ";  
+  cout << " (Debug Build) ";
   #endif
   cout << "\n\n";
-  cout << "Usage: " << PrgName << 
+  cout << "Usage: " << PrgName <<
     " [-rft {net, mret2, lef, lei, netplus, mb}] [-interpret] -bin PathToBinary\n\n";
 
   cout << "DESCRIPTION:\n";
@@ -62,11 +63,11 @@ std::unique_ptr<dbt::RFT> RftChosen;
 dbt::Machine M;
 
 void  sigHandler(int sig) {
-  if (VerboseFlag.was_set())
-    RftChosen->printRegions();
+  //if (VerboseFlag.was_set())
+    //RftChosen->printRegions();
 
   if (M.isOnNativeExecution()) {
-    std::cerr << "Error while executing region " << std::hex << M.getRegionBeingExecuted() << "\n"; 
+    std::cerr << "Error while executing region " << std::hex << M.getRegionBeingExecuted() << "\n";
   } else {
     std::cerr << "Error while executing the interpreter.\n";
     if (M.getRegionBeingExecuted() != 0)
@@ -77,6 +78,10 @@ void  sigHandler(int sig) {
     std::cerr << "SIGABRT (" << sig << ") while emulating at PC: " << std::hex << M.getPC() << std::dec << "\n";
   else
     std::cerr << "SIGSEGV (" << sig << ") while emulating at PC: " << std::hex << M.getPC() << std::dec << "\n";
+
+  std::cerr << "Last Machine state:";
+  M.dumpRegisters();
+
   exit(1);
 }
 
@@ -84,7 +89,7 @@ int main(int argc, char** argv) {
   signal(SIGSEGV, sigHandler);
   signal(SIGABRT, sigHandler);
 
-  dbt::Timer GlobalTimer; 
+  dbt::Timer GlobalTimer;
 
   // Parse the arguments
   if (clarg::parse_arguments(argc, argv)) {
@@ -102,7 +107,7 @@ int main(int argc, char** argv) {
 
   if (stackSizeFlag.was_set()) {
     std::cerr << "Stack size was set to " << stackSizeFlag.get_value() << std::endl;
-    M.setStackSize(stackSizeFlag.get_value()); 
+    M.setStackSize(stackSizeFlag.get_value());
   }
 
   if (heapSizeFlag.was_set()) {
@@ -113,12 +118,14 @@ int main(int argc, char** argv) {
 
   int loadStatus = M.loadELF(BinaryFlag.get_value());
 
+  //M.dumpRegisters();
+
   if (!loadStatus) {
     std::cerr << "Can't find or process ELF file " << argv[1] << std::endl;
     return 2;
   }
 
-  dbt::Manager TheManager(1, dbt::Manager::OptPolitic::Normal, M.getDataMemOffset(), VerboseFlag.was_set());
+  dbt::Manager TheManager(singleThreadFlag.was_set()? 1 : 0, dbt::Manager::OptPolitic::Normal, M.getDataMemOffset(), VerboseFlag.was_set());
 
   if (InterpreterFlag.was_set()) {
     RftChosen = std::make_unique<dbt::NullRFT>(TheManager);
@@ -142,7 +149,7 @@ int main(int argc, char** argv) {
       std::cerr << "MethodBased rft selected\n";
       if (ToCompileFlag.was_set())
         RftChosen = std::make_unique<dbt::MethodBased>(TheManager, ToCompileFlag.get_value());
-      else 
+      else
         RftChosen = std::make_unique<dbt::MethodBased>(TheManager);
     } else {
       std::cerr << "You should select a valid RFT!\n";
@@ -155,7 +162,7 @@ int main(int argc, char** argv) {
     RftChosen->setHotnessThreshold(HotnessFlag.get_value());
   }
 
-  if (RegionLimitSize.was_set()) 
+  if (RegionLimitSize.was_set())
     RftChosen->setRegionLimitSize(RegionLimitSize.get_value());
 
   std::unique_ptr<dbt::SyscallManager> SyscallM;
@@ -166,29 +173,30 @@ int main(int argc, char** argv) {
     if(M.setCommandLineArguments(ArgumentsFlag.get_value()) < 0)
       exit(1);
 
+    M.setPreheating(true);
     std::cerr << "Preheating...\n";
 
     GlobalTimer.startClock();
-    
     dbt::ITDInterpreter I(*SyscallM.get(), *RftChosen.get());
     I.executeAll(M);
-    std::cerr << "done\n";
+    GlobalTimer.stopClock();
 
+    std::cerr << "done\n";
     std::cerr << "Cleaning VM... ";
     M.reset();
     std::cerr << "done\n";
 
     RftChosen = std::make_unique<dbt::PreheatRFT>(TheManager);
-
-    GlobalTimer.stopClock();
     GlobalTimer.printReport("Preheat");
+
+    M.setPreheating(false);
   }
 
 
   if(ArgumentsFlag.was_set())
     if(M.setCommandLineArguments(ArgumentsFlag.get_value()) < 0)
       exit(1);
-  
+
   GlobalTimer.startClock();
   dbt::ITDInterpreter I(*SyscallM.get(), *RftChosen.get());
   std::cerr << "Starting execution:\n";
@@ -202,9 +210,9 @@ int main(int argc, char** argv) {
     report.open(ReportFileFlag.get_value());
 
     if(report.is_open()) {
-      report << "No. Compiled Regions | " 
+      report << "No. Compiled Regions | "
         << "Avg Code Size Reduction | "
-        << "No. OI Instructions Compiled | " 
+        << "No. OI Instructions Compiled | "
         << "No. LLVM compiled | "
         << "No. of Native Instructions Executed | "
         << "Total Cycles | "

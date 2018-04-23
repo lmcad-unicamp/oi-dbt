@@ -5,6 +5,7 @@
 
 namespace dbt {
   class Interpreter {
+
   protected:
     SyscallManager& SyscallM;
 

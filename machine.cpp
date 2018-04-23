@@ -2,7 +2,6 @@
 #include <machine.hpp>
 
 #include <cstring>
-//#define PRINTREG
 
 using namespace dbt;
 
@@ -58,7 +57,7 @@ int Machine::setCommandLineArguments(std::string parameters) {
     totalSize += argument.length()+1;
 
   offset = DataMemTotalSize-totalSize-1;
-  setMemValueAt(sp, (uint32_t) argv.size());                          
+  setMemValueAt(sp, (uint32_t) argv.size());
 
   #ifdef DEBUG
   //std::cout << "Argc: " << argv.size() << "\n";
@@ -94,6 +93,9 @@ void Machine::incPC() {
 void Machine::setPC(uint32_t NewPC) {
   LastPC = PC;
   PC = NewPC;
+  #ifdef PRINTREG
+  std::cerr << "LastPC= " << LastPC << "; NewPC= " << PC << ";  ";
+  #endif
 }
 
 Word Machine::getInstAt(uint32_t Addr) {
@@ -113,7 +115,7 @@ void Machine::setMemByteAt(uint32_t Addr, uint8_t Value) {
   uint32_t CorrectAddr = Addr - DataMemOffset;
   CORRECT_ASSERT();
   #ifdef PRINTREG
-  std::cerr << "MEM[" << std::hex << CorrectAddr << "]=" << Value << "; (uint8_t);  "; 
+  std::cerr << "MEM[" << std::hex << CorrectAddr << "]=" << (uint32_t) Value << "; (uint8_t);  ";
   #endif
   DataMemory[CorrectAddr] = Value;
 }
@@ -136,7 +138,7 @@ Word Machine::getMemValueAt(uint32_t Addr) {
   //assert((Addr % 4) == 0 && "Address not aligned!");
   Word Bytes;
   CORRECT_ASSERT();
-  Bytes.asI_ = *((uint32_t*)(DataMemory.get() + CorrectAddr)); 
+  Bytes.asI_ = *((uint32_t*)(DataMemory.get() + CorrectAddr));
   return Bytes;
 }
 
@@ -145,7 +147,7 @@ void Machine::setMemValueAt(uint32_t Addr, uint32_t Value) {
   //assert((Addr % 4) == 0 && "Address not aligned!");
   CORRECT_ASSERT();
   #ifdef PRINTREG
-  std::cerr << "MEM[" << std::hex << CorrectAddr << "]=" << Value << "; (uint32_t);  "; 
+  std::cerr << "MEM[" << std::hex << CorrectAddr << "]=" << Value << "; (uint32_t);  ";
   #endif
   *((uint32_t*)(DataMemory.get() + CorrectAddr)) = Value;
 }
@@ -169,7 +171,7 @@ uint32_t Machine::getDataMemOffset() {
 int32_t Machine::getRegister(uint16_t R) {
   #ifdef PRINTREG
   std::cerr << "GET R[" << std::dec << R << "]: " << std::hex << Register[R] << ";  ";
-  #endif 
+  #endif
   return Register[R];
 }
 
@@ -188,7 +190,7 @@ double Machine::getDoubleRegister(uint16_t R) {
 void Machine::setRegister(uint16_t R, int32_t V) {
     #ifdef PRINTREG
     std::cerr << "R[" << std::dec << R << "] = " << std::hex << V << ";  ";
-    #endif 
+    #endif
     Register[R] = V;
 }
 
@@ -226,11 +228,12 @@ uint32_t Machine::getRegionBeingExecuted() {
 
 void Machine::setOnNativeExecution(uint32_t EntryRegionAddrs) {
   OnNativeExecution   = true;
-  RegionBeingExecuted = EntryRegionAddrs; 
+  RegionBeingExecuted = EntryRegionAddrs;
 }
 
 void Machine::setOffNativeExecution() {
   OnNativeExecution   = false;
+
 }
 
 bool Machine::isMethodEntry(uint32_t Addr) {
@@ -268,7 +271,7 @@ int Machine::loadELF(const std::string ElfPath) {
 
   Elf_Half sec_num = reader.sections.size();
 
-  uint32_t TotalDataSize = 0; 
+  uint32_t TotalDataSize = 0;
   uint32_t AddressOffset = 0;
   bool Started = false;
   bool First = false;
@@ -283,7 +286,7 @@ int Machine::loadELF(const std::string ElfPath) {
       }
     }
 
-    if (psec->get_name() == ".text") 
+    if (psec->get_name() == ".text")
       Started = true;
   }
 
@@ -299,7 +302,7 @@ int Machine::loadELF(const std::string ElfPath) {
       addDataMemory(psec->get_address(), psec->get_size(), psec->get_data());
     }
 
-    if (psec->get_name() == ".text") { 
+    if (psec->get_name() == ".text") {
       setCodeMemory(psec->get_address(), psec->get_size(),  psec->get_data());
       SymbolStartAddresses.insert(psec->get_address() + psec->get_size());
       Started = true;
@@ -316,7 +319,7 @@ int Machine::loadELF(const std::string ElfPath) {
       unsigned char other;
       for ( unsigned int j = 0; j < symbols.get_symbols_num(); ++j ) {
         symbols.get_symbol( j, name, value, size, bind, type, section_index, other );
-        if (type == 0 && name != "" && value != 0 && value < CodeMemLimit) { 
+        if (type == 0 && name != "" && value != 0 && value < CodeMemLimit) {
           SymbolStartAddresses.insert(value);
           SymbolNames[value] = name;
         }
@@ -324,17 +327,32 @@ int Machine::loadELF(const std::string ElfPath) {
     }
   }
 
-  for (auto I = SymbolStartAddresses.begin(); I != SymbolStartAddresses.end(); ++I) 
+  for (auto I = SymbolStartAddresses.begin(); I != SymbolStartAddresses.end(); ++I)
     Symbolls[*I] = {SymbolNames[*I], *SymbolStartAddresses.upper_bound(*I)};
 
-  for (int i = 0; i < 258; i++) 
+  for (int i = 0; i < 258; i++)
     Register[i] = 0;
 
   uint32_t StackAddr = DataMemLimit-stackSize/4;
   setRegister(29, StackAddr + (4 - StackAddr%4)); //StackPointer
   setRegister(30, StackAddr + (4 - StackAddr%4)); //StackPointer
-  
+
   setPC(reader.get_entry());
 
   return 1;
 }
+
+//#ifdef DEBUG
+void Machine::dumpRegisters(void)
+{
+  std::cerr << std::endl << "PC: " << std::hex << PC << "; \n";
+  std::cerr << "(int32_t [258]) = {" << std::endl;
+
+  for (int i = 0; i<258; ++i)
+  {
+    std::cerr << "  [" << std::dec << i << "] = " << "0x" << std::setw(8) << std::setfill('0') << std::hex <<  Register[i] << std::endl;
+  }
+
+  std::cerr << "}" << std::endl;
+}
+//#endif
