@@ -88,7 +88,7 @@ namespace dbt {
 
         memset((void*) NativeRegions, 0, sizeof(NativeRegions));
 
-        if(T)
+        if (T)
           Thr = std::thread(&Manager::runPipeline, this);
       }
 

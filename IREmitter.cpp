@@ -1113,7 +1113,8 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         Value* IjmpReg2 = Builder->CreateAnd(IjmpReg, 0xFFFFF000);
         Value* IjmpReg3 = Builder->CreateOr(IjmpReg2, Inst.Imm & 0xFFF);
         genStoreRegister(IJMP_REG, IjmpReg3, Func);
-        Value* Target   = Builder->CreateLoad(genDataWordVecPtr(IjmpReg3, Func));
+        Value* IPointer = Builder->CreateAdd(IjmpReg3, genLoadRegister(Inst.RT, Func));
+        Value* Target   = Builder->CreateLoad(genDataWordVecPtr(IPointer, Func));
         IRIBranchMap[GuestAddr] = Builder->CreateRet(Target);
         BasicBlock* BB = BasicBlock::Create(TheContext, "", Func);
         Builder->SetInsertPoint(BB);
@@ -1235,7 +1236,6 @@ Module* dbt::IREmitter::generateRegionIR(uint32_t EntryAddress, const OIInstList
   F->addAttribute(1, Attribute::NoCapture);
   F->addAttribute(2, Attribute::NoAlias);
   F->addAttribute(2, Attribute::NoCapture);
-  //F->setName("Module_" + std::to_string(id) + "_entry_" + std::to_string((unsigned int) EntryAddress));
 
   // Entry block to function must not have predecessors!
   BasicBlock *Entry = BasicBlock::Create(TheContext, "entry", F);
@@ -1253,9 +1253,7 @@ Module* dbt::IREmitter::generateRegionIR(uint32_t EntryAddress, const OIInstList
 
   processBranchesTargets(OIRegion);
 
-  //#ifdef DEBUG
   verifyModule(*TheModule);
-  //#endif
 
   id++;
   return TheModule;
@@ -1272,7 +1270,6 @@ Module* dbt::IREmitter::generateMergedRegions(std::vector<OIInstList>& OIRegions
 
   BrTargets = BT;
   DataMemOffset     = MemOffset;
-  // //CurrentEntryAddrs = EntryAddress;
   const auto initial = OIRegions.front().front();
   std::array<Type*, 3> ArgsType = {Type::getInt32PtrTy(TheContext), Type::getInt32PtrTy(TheContext), Type::getInt64PtrTy(TheContext)};
   FunctionType *FT = FunctionType::get(Type::getInt32Ty(TheContext), ArgsType, false);
@@ -1283,9 +1280,8 @@ Module* dbt::IREmitter::generateMergedRegions(std::vector<OIInstList>& OIRegions
   F->addAttribute(1, Attribute::NoCapture);
   F->addAttribute(2, Attribute::NoAlias);
   F->addAttribute(2, Attribute::NoCapture);
-  //F->setName("Module_" + std::to_string(id) + "_entry_" + std::to_string((unsigned int) EntryAddress));
 
-  // // Entry block to function must not have predecessors!
+  // Entry block to function must not have predecessors!
   BasicBlock *Entry = BasicBlock::Create(TheContext, "entry" + std::to_string(initial[0]), F);
   Builder->SetInsertPoint(Entry);
 
@@ -1324,7 +1320,6 @@ Module* dbt::IREmitter::generateMergedRegions(std::vector<OIInstList>& OIRegions
       generateInstIR(Pair[0], Inst);
     }
 
-    //Insert Compare if yes then:
     if (i > 0) {
       LastRes = Builder->CreateICmpEQ(genImm(OIRegions[i-1].back()[0]+4), genImm(region.front()[0]));
     } else {

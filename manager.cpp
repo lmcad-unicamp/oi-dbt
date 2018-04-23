@@ -39,14 +39,15 @@ void Manager::runPipeline() {
     CompiledOIRegions[EntryAddress] = OIRegion;
     CompiledOIRegionsMtx.unlock();
 
-    //if (VerboseOutput)
+    if (VerboseOutput)
       std::cerr << "Trying to compile: " << std::hex <<  EntryAddress  << "...";
 
     OICompiled += OIRegion.size();
 
     auto Module = IRE->generateRegionIR(EntryAddress, OIRegion, DataMemOffset, BrTargets, IRJIT->getTargetMachine(), NativeRegions);
 
-    std::cerr << "OK" << std::endl;
+    if (VerboseOutput)
+      std::cerr << "OK" << std::endl;
 
 /*    if (VerboseOutput)
       Module->print(llvm::errs(), nullptr);*/

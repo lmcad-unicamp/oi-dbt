@@ -7,7 +7,9 @@ using namespace dbt;
 // Run perf record
 // then perf report --stdio | sed '/^#/d' | awk '{print $1,$3,$5}' | sed '/^\s*$/d' | grep "a.out" | sed 's/%//g'
 
+unsigned NumOfInsts = 0;
 void MethodBased::addFunctionToCompile(uint32_t PC, Machine &M) {
+  if (NumOfInsts > RegionLimitSize) return;
   if (M.isMethodEntry(PC)) {
     std::vector<uint32_t> PossibleEntries;
     PossibleEntries.push_back(PC);
@@ -20,14 +22,16 @@ void MethodBased::addFunctionToCompile(uint32_t PC, Machine &M) {
     for (auto PossibleEntry : PossibleEntries) {
       startRegionFormation(PossibleEntry);
 
-      for (uint32_t Addr = PossibleEntry; Addr < M.getMethodEnd(PC); Addr += 4)
+      for (uint32_t Addr = PossibleEntry; Addr < M.getMethodEnd(PC); Addr += 4) {
+        if (NumOfInsts > RegionLimitSize) break;
         insertInstruction(Addr, M.getInstAt(Addr).asI_);
+        NumOfInsts++;
+      }
 
       bool Inserted = finishRegionFormation();
 
-      if (Inserted) {
+      if (Inserted)
         while (!TheManager.isNativeRegionEntry(PossibleEntry)) {}
-      }
     }
 
     for (uint32_t Addr = PC + 4; Addr < M.getMethodEnd(PC); Addr += 4) {
@@ -42,15 +46,11 @@ void MethodBased::addFunctionToCompile(uint32_t PC, Machine &M) {
 }
 
 void MethodBased::onBranch(Machine &M) {
-  //Compile first
-  //if(M.getPC() == 0x2430)
-  //{
-    if (!TheManager.isNativeRegionEntry(M.getPC()))
-      addFunctionToCompile(M.getPC(), M);
+  if (!TheManager.isNativeRegionEntry(M.getPC()))
+    addFunctionToCompile(M.getPC(), M);
 
-    if (!M.isPreheating() && TheManager.isNativeRegionEntry(M.getPC())) {
-        auto Next = TheManager.jumpToRegion(M.getPC(), M);
-        M.setPC(Next);
-    }
-  //}
+  if (!M.isPreheating() && TheManager.isNativeRegionEntry(M.getPC())) {
+    auto Next = TheManager.jumpToRegion(M.getPC(), M);
+    M.setPC(Next);
+  }
 }

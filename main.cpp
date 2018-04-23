@@ -125,7 +125,7 @@ int main(int argc, char** argv) {
     return 2;
   }
 
-  dbt::Manager TheManager(singleThreadFlag.was_set()? 1 : 0, dbt::Manager::OptPolitic::Normal, M.getDataMemOffset(), VerboseFlag.was_set());
+  dbt::Manager TheManager(1, dbt::Manager::OptPolitic::Normal, M.getDataMemOffset(), VerboseFlag.was_set());
 
   if (InterpreterFlag.was_set()) {
     RftChosen = std::make_unique<dbt::NullRFT>(TheManager);
