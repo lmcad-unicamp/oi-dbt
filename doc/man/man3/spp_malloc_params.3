@@ -1,0 +1,56 @@
+.TH "spp::malloc_params" 3 "Mon Apr 23 2018" "Version 0.0.1" "OpenISA Dynamic Binary Translator" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+spp::malloc_params \- 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBensure_initialization\fP ()"
+.br
+.ti -1c
+.RI "SPP_IMPL int \fBchange\fP (int param_number, int value)"
+.br
+.ti -1c
+.RI "size_t \fBpage_align\fP (size_t sz)"
+.br
+.ti -1c
+.RI "size_t \fBgranularity_align\fP (size_t sz)"
+.br
+.ti -1c
+.RI "bool \fBis_page_aligned\fP (char *S)"
+.br
+.ti -1c
+.RI "SPP_IMPL int \fB_init\fP ()"
+.br
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "size_t \fB_magic\fP"
+.br
+.ti -1c
+.RI "size_t \fB_page_size\fP"
+.br
+.ti -1c
+.RI "size_t \fB_granularity\fP"
+.br
+.ti -1c
+.RI "size_t \fB_mmap_threshold\fP"
+.br
+.ti -1c
+.RI "size_t \fB_trim_threshold\fP"
+.br
+.ti -1c
+.RI "flag_t \fB_default_mflags\fP"
+.br
+.in -1c
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for OpenISA Dynamic Binary Translator from the source code\&.

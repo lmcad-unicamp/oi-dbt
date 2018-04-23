@@ -1,0 +1,61 @@
+.TH "ELFIO::dump" 3 "Mon Apr 23 2018" "Version 0.0.1" "OpenISA Dynamic Binary Translator" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ELFIO::dump \- 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Static Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "static void \fBheader\fP (std::ostream &out, const \fBelfio\fP &reader)"
+.br
+.ti -1c
+.RI "static void \fBsection_headers\fP (std::ostream &out, const \fBelfio\fP &reader)"
+.br
+.ti -1c
+.RI "static void \fBsection_header\fP (std::ostream &out, Elf_Half no, const \fBsection\fP *sec, unsigned char elf_class)"
+.br
+.ti -1c
+.RI "static void \fBsegment_headers\fP (std::ostream &out, const \fBelfio\fP &reader)"
+.br
+.ti -1c
+.RI "static void \fBsegment_header\fP (std::ostream &out, Elf_Half no, const \fBsegment\fP *seg, unsigned int elf_class)"
+.br
+.ti -1c
+.RI "static void \fBsymbol_tables\fP (std::ostream &out, const \fBelfio\fP &reader)"
+.br
+.ti -1c
+.RI "static void \fBsymbol_table\fP (std::ostream &out, Elf_Half no, std::string &name, Elf64_Addr value, Elf_Xword size, unsigned char bind, unsigned char type, Elf_Half \fBsection\fP, unsigned int elf_class)"
+.br
+.ti -1c
+.RI "static void \fBnotes\fP (std::ostream &out, const \fBelfio\fP &reader)"
+.br
+.ti -1c
+.RI "static void \fBnote\fP (std::ostream &out, int no, Elf_Word type, const std::string &name)"
+.br
+.ti -1c
+.RI "static void \fBdynamic_tags\fP (std::ostream &out, const \fBelfio\fP &reader)"
+.br
+.ti -1c
+.RI "static void \fBdynamic_tag\fP (std::ostream &out, int no, Elf_Xword tag, Elf_Xword value, std::string str, unsigned int)"
+.br
+.ti -1c
+.RI "static void \fBsection_data\fP (std::ostream &out, const \fBsection\fP *sec)"
+.br
+.ti -1c
+.RI "static void \fBsection_datas\fP (std::ostream &out, const \fBelfio\fP &reader)"
+.br
+.ti -1c
+.RI "static void \fBsegment_data\fP (std::ostream &out, Elf_Half no, const \fBsegment\fP *seg)"
+.br
+.ti -1c
+.RI "static void \fBsegment_datas\fP (std::ostream &out, const \fBelfio\fP &reader)"
+.br
+.in -1c
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for OpenISA Dynamic Binary Translator from the source code\&.

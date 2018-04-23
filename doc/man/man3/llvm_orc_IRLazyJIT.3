@@ -1,0 +1,41 @@
+.TH "llvm::orc::IRLazyJIT" 3 "Mon Apr 23 2018" "Version 0.0.1" "OpenISA Dynamic Binary Translator" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+llvm::orc::IRLazyJIT \- 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Public Types"
+
+.in +1c
+.ti -1c
+.RI "using \fBObjLayerT\fP = RTDyldObjectLinkingLayer"
+.br
+.ti -1c
+.RI "using \fBCompileLayerT\fP = IRCompileLayer< ObjLayerT, SimpleCompiler >"
+.br
+.ti -1c
+.RI "using \fBModuleHandleT\fP = CompileLayerT::ModuleHandleT"
+.br
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "TargetMachine & \fBgetTargetMachine\fP ()"
+.br
+.ti -1c
+.RI "ModuleHandleT \fBaddModule\fP (std::unique_ptr< Module > M)"
+.br
+.ti -1c
+.RI "void \fBremoveModule\fP (ModuleHandleT H)"
+.br
+.ti -1c
+.RI "JITSymbol \fBfindSymbol\fP (const std::string Name)"
+.br
+.in -1c
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for OpenISA Dynamic Binary Translator from the source code\&.

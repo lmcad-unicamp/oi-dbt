@@ -1,0 +1,94 @@
+.TH "ELFIO::section_impl< T >" 3 "Mon Apr 23 2018" "Version 0.0.1" "OpenISA Dynamic Binary Translator" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ELFIO::section_impl< T > \- 
+.SH SYNOPSIS
+.br
+.PP
+.PP
+Inherits \fBELFIO::section\fP\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBsection_impl\fP (const \fBendianess_convertor\fP *convertor_)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS\fP (Elf_Word, type, header\&.sh_type)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS\fP (Elf_Xword, flags, header\&.sh_flags)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS\fP (Elf_Xword, size, header\&.sh_size)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS\fP (Elf_Word, link, header\&.sh_link)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS\fP (Elf_Word, info, header\&.sh_info)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS\fP (Elf_Xword, addr_align, header\&.sh_addralign)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS\fP (Elf_Xword, entry_size, header\&.sh_entsize)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS\fP (Elf_Word, name_string_offset, header\&.sh_name)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_ACCESS\fP (Elf64_Addr, address, header\&.sh_addr)"
+.br
+.ti -1c
+.RI "Elf_Half \fBget_index\fP () const "
+.br
+.ti -1c
+.RI "std::string \fBget_name\fP () const "
+.br
+.ti -1c
+.RI "void \fBset_name\fP (std::string name_)"
+.br
+.ti -1c
+.RI "void \fBset_address\fP (Elf64_Addr value)"
+.br
+.ti -1c
+.RI "bool \fBis_address_initialized\fP () const "
+.br
+.ti -1c
+.RI "const char * \fBget_data\fP () const "
+.br
+.ti -1c
+.RI "void \fBset_data\fP (const char *raw_data, Elf_Word size)"
+.br
+.ti -1c
+.RI "void \fBset_data\fP (const std::string &str_data)"
+.br
+.ti -1c
+.RI "void \fBappend_data\fP (const char *raw_data, Elf_Word size)"
+.br
+.ti -1c
+.RI "void \fBappend_data\fP (const std::string &str_data)"
+.br
+.in -1c
+.SS "Protected Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS\fP (Elf64_Off, offset, header\&.sh_offset)"
+.br
+.ti -1c
+.RI "void \fBset_index\fP (Elf_Half value)"
+.br
+.ti -1c
+.RI "void \fBload\fP (std::istream &stream, std::streampos header_offset)"
+.br
+.ti -1c
+.RI "void \fBsave\fP (std::ostream &f, std::streampos header_offset, std::streampos data_offset)"
+.br
+.in -1c
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for OpenISA Dynamic Binary Translator from the source code\&.

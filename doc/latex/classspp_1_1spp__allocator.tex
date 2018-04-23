@@ -1,0 +1,63 @@
+\hypertarget{classspp_1_1spp__allocator}{}\section{spp\+:\+:spp\+\_\+allocator$<$ T $>$ Class Template Reference}
+\label{classspp_1_1spp__allocator}\index{spp\+::spp\+\_\+allocator$<$ T $>$@{spp\+::spp\+\_\+allocator$<$ T $>$}}
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structspp_1_1spp__allocator_1_1rebind}{rebind}
+\end{DoxyCompactItemize}
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+typedef T {\bfseries value\+\_\+type}\hypertarget{classspp_1_1spp__allocator_ab155e1727fe6af8be7f5a27b6364c6e4}{}\label{classspp_1_1spp__allocator_ab155e1727fe6af8be7f5a27b6364c6e4}
+
+\item 
+typedef T $\ast$ {\bfseries pointer}\hypertarget{classspp_1_1spp__allocator_a922646557e3c1fff6fcf460bd0aa7f04}{}\label{classspp_1_1spp__allocator_a922646557e3c1fff6fcf460bd0aa7f04}
+
+\item 
+typedef ptrdiff\+\_\+t {\bfseries difference\+\_\+type}\hypertarget{classspp_1_1spp__allocator_a91c8764966868ec110c6f271b1f17101}{}\label{classspp_1_1spp__allocator_a91c8764966868ec110c6f271b1f17101}
+
+\item 
+typedef const T $\ast$ {\bfseries const\+\_\+pointer}\hypertarget{classspp_1_1spp__allocator_a984f2a6c28de33f5eb0387478cdbc044}{}\label{classspp_1_1spp__allocator_a984f2a6c28de33f5eb0387478cdbc044}
+
+\item 
+typedef size\+\_\+t {\bfseries size\+\_\+type}\hypertarget{classspp_1_1spp__allocator_a1555b3db67175037711aa249b14e4e34}{}\label{classspp_1_1spp__allocator_a1555b3db67175037711aa249b14e4e34}
+
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void {\bfseries swap} (\hyperlink{classspp_1_1spp__allocator}{spp\+\_\+allocator} \&o)\hypertarget{classspp_1_1spp__allocator_aaff92a3bea73cc12f4dfb8584b01735a}{}\label{classspp_1_1spp__allocator_aaff92a3bea73cc12f4dfb8584b01735a}
+
+\item 
+pointer {\bfseries allocate} (size\+\_\+t n, const\+\_\+pointer=0)\hypertarget{classspp_1_1spp__allocator_adf48575cf452ef23c813d61079a46df8}{}\label{classspp_1_1spp__allocator_adf48575cf452ef23c813d61079a46df8}
+
+\item 
+void {\bfseries deallocate} (pointer p, size\+\_\+t)\hypertarget{classspp_1_1spp__allocator_adc09ea2a328ff056f80431da0f368eba}{}\label{classspp_1_1spp__allocator_adc09ea2a328ff056f80431da0f368eba}
+
+\item 
+pointer {\bfseries reallocate} (pointer p, size\+\_\+t new\+\_\+size)\hypertarget{classspp_1_1spp__allocator_aadc82769b68b3261f1f11c6d88f402a6}{}\label{classspp_1_1spp__allocator_aadc82769b68b3261f1f11c6d88f402a6}
+
+\item 
+size\+\_\+type {\bfseries max\+\_\+size} () const \hypertarget{classspp_1_1spp__allocator_a914455121ca077ec3e0c5a52e54aa9ca}{}\label{classspp_1_1spp__allocator_a914455121ca077ec3e0c5a52e54aa9ca}
+
+\item 
+void {\bfseries construct} (pointer p, const value\+\_\+type \&val)\hypertarget{classspp_1_1spp__allocator_a2c6e3dc552c681541a23d13f28ac3651}{}\label{classspp_1_1spp__allocator_a2c6e3dc552c681541a23d13f28ac3651}
+
+\item 
+void {\bfseries destroy} (pointer p)\hypertarget{classspp_1_1spp__allocator_a085c81a02dfd2a82e8f38b727f65d592}{}\label{classspp_1_1spp__allocator_a085c81a02dfd2a82e8f38b727f65d592}
+
+\item 
+mspace {\bfseries space} () const \hypertarget{classspp_1_1spp__allocator_ab73f9981b8a019786bad7f9fecc411e0}{}\label{classspp_1_1spp__allocator_ab73f9981b8a019786bad7f9fecc411e0}
+
+\item 
+bool {\bfseries can\+\_\+clear} ()\hypertarget{classspp_1_1spp__allocator_af12ef026712e33c220249910cd635899}{}\label{classspp_1_1spp__allocator_af12ef026712e33c220249910cd635899}
+
+\item 
+void {\bfseries clear} ()\hypertarget{classspp_1_1spp__allocator_ac9c759007ae751afa9973a5e894411a3}{}\label{classspp_1_1spp__allocator_ac9c759007ae751afa9973a5e894411a3}
+
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/sparsepp/spp\+\_\+dlalloc.\+h\end{DoxyCompactItemize}

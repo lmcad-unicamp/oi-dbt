@@ -1,0 +1,73 @@
+\hypertarget{classclarg_1_1arg_bool}{}\section{clarg\+:\+:arg\+Bool Class Reference}
+\label{classclarg_1_1arg_bool}\index{clarg\+::arg\+Bool@{clarg\+::arg\+Bool}}
+
+
+{\ttfamily \#include $<$arglib.\+hpp$>$}
+
+
+
+Inheritance diagram for clarg\+:\+:arg\+Bool\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=179pt]{classclarg_1_1arg_bool__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for clarg\+:\+:arg\+Bool\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=179pt]{classclarg_1_1arg_bool__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries arg\+Bool} (const char $\ast$arg, const char $\ast$desc, bool v=false)\hypertarget{classclarg_1_1arg_bool_a9fcf0dd302882e22d36ee41547ad04ec}{}\label{classclarg_1_1arg_bool_a9fcf0dd302882e22d36ee41547ad04ec}
+
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{classclarg_1_1arg_bool_a4e75d91370d7a99c8ec56eee6e112eef}{parse\+\_\+parameters} (int, char $\ast$\mbox{[}$\,$\mbox{]})
+\item 
+void \hyperlink{classclarg_1_1arg_bool_ae254f2a52551c3c811ad08c248d6b4a9}{write\+\_\+parameters} (ostream \&, bool) const 
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Detailed Description}
+Boolean argument class. 
+
+\subsection{Member Function Documentation}
+\index{clarg\+::arg\+Bool@{clarg\+::arg\+Bool}!parse\+\_\+parameters@{parse\+\_\+parameters}}
+\index{parse\+\_\+parameters@{parse\+\_\+parameters}!clarg\+::arg\+Bool@{clarg\+::arg\+Bool}}
+\subsubsection[{\texorpdfstring{parse\+\_\+parameters(int, char $\ast$[])}{parse_parameters(int, char *[])}}]{\setlength{\rightskip}{0pt plus 5cm}int clarg\+::arg\+Bool\+::parse\+\_\+parameters (
+\begin{DoxyParamCaption}
+\item[{int}]{argc, }
+\item[{char $\ast$}]{argv\mbox{[}$\,$\mbox{]}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}, {\ttfamily [virtual]}}\hypertarget{classclarg_1_1arg_bool_a4e75d91370d7a99c8ec56eee6e112eef}{}\label{classclarg_1_1arg_bool_a4e75d91370d7a99c8ec56eee6e112eef}
+Parse the argument parameters. Must be implemented by the specialized argument class. When parsing, make sure you copy the parsed parameters into the arg\+\_\+parameters array. Returns the number of parameters parsed if ok, -\/1 if an error occured. 
+
+Implements \hyperlink{classclarg_1_1arg__base_a4c0e6afc44de0d825334a41d4ef5b813}{clarg\+::arg\+\_\+base}.
+
+\index{clarg\+::arg\+Bool@{clarg\+::arg\+Bool}!write\+\_\+parameters@{write\+\_\+parameters}}
+\index{write\+\_\+parameters@{write\+\_\+parameters}!clarg\+::arg\+Bool@{clarg\+::arg\+Bool}}
+\subsubsection[{\texorpdfstring{write\+\_\+parameters(ostream \&, bool) const }{write_parameters(ostream &, bool) const }}]{\setlength{\rightskip}{0pt plus 5cm}void clarg\+::arg\+Bool\+::write\+\_\+parameters (
+\begin{DoxyParamCaption}
+\item[{ostream \&}]{os, }
+\item[{bool}]{def}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}, {\ttfamily [virtual]}}\hypertarget{classclarg_1_1arg_bool_ae254f2a52551c3c811ad08c248d6b4a9}{}\label{classclarg_1_1arg_bool_ae254f2a52551c3c811ad08c248d6b4a9}
+write the argument parameters into the output stream. 
+
+Implements \hyperlink{classclarg_1_1arg__base_a476be3712ecd028fee248cef14cc3cfb}{clarg\+::arg\+\_\+base}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/arglib/arglib.\+hpp\end{DoxyCompactItemize}

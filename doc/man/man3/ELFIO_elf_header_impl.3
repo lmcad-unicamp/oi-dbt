@@ -1,0 +1,81 @@
+.TH "ELFIO::elf_header_impl< T >" 3 "Mon Apr 23 2018" "Version 0.0.1" "OpenISA Dynamic Binary Translator" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ELFIO::elf_header_impl< T > \- 
+.SH SYNOPSIS
+.br
+.PP
+.PP
+Inherits \fBELFIO::elf_header\fP\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBelf_header_impl\fP (\fBendianess_convertor\fP *convertor_, unsigned char encoding)"
+.br
+.ti -1c
+.RI "bool \fBload\fP (std::istream &stream)"
+.br
+.ti -1c
+.RI "bool \fBsave\fP (std::ostream &stream) const "
+.br
+.ti -1c
+.RI "\fBELFIO_GET_ACCESS\fP (unsigned char, class, header\&.e_ident[EI_CLASS])"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_ACCESS\fP (unsigned char, elf_version, header\&.e_ident[EI_VERSION])"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_ACCESS\fP (unsigned char, encoding, header\&.e_ident[EI_DATA])"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_ACCESS\fP (Elf_Word, version, header\&.e_version)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_ACCESS\fP (Elf_Half, header_size, header\&.e_ehsize)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_ACCESS\fP (Elf_Half, section_entry_size, header\&.e_shentsize)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_ACCESS\fP (Elf_Half, segment_entry_size, header\&.e_phentsize)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS\fP (unsigned char, os_abi, header\&.e_ident[EI_OSABI])"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS\fP (unsigned char, abi_version, header\&.e_ident[EI_ABIVERSION])"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS\fP (Elf_Half, type, header\&.e_type)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS\fP (Elf_Half, machine, header\&.e_machine)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS\fP (Elf_Word, flags, header\&.e_flags)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS\fP (Elf_Half, section_name_str_index, header\&.e_shstrndx)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS\fP (Elf64_Addr, entry, header\&.e_entry)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS\fP (Elf_Half, sections_num, header\&.e_shnum)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS\fP (Elf64_Off, sections_offset, header\&.e_shoff)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS\fP (Elf_Half, segments_num, header\&.e_phnum)"
+.br
+.ti -1c
+.RI "\fBELFIO_GET_SET_ACCESS\fP (Elf64_Off, segments_offset, header\&.e_phoff)"
+.br
+.in -1c
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for OpenISA Dynamic Binary Translator from the source code\&.

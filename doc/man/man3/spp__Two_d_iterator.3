@@ -1,0 +1,83 @@
+.TH "spp_::Two_d_iterator< T, row_it, col_it, iter_type >" 3 "Mon Apr 23 2018" "Version 0.0.1" "OpenISA Dynamic Binary Translator" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+spp_::Two_d_iterator< T, row_it, col_it, iter_type > \- 
+.SH SYNOPSIS
+.br
+.PP
+.PP
+Inherits iterator< iter_type, T >\&.
+.PP
+Inherited by \fBspp_::Two_d_destructive_iterator< T, row_it, col_it, iter_type, Alloc >\fP\&.
+.SS "Public Types"
+
+.in +1c
+.ti -1c
+.RI "typedef \fBTwo_d_iterator\fP \fBiterator\fP"
+.br
+.ti -1c
+.RI "typedef T \fBvalue_type\fP"
+.br
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBTwo_d_iterator\fP (row_it curr)"
+.br
+.ti -1c
+.RI "\fBTwo_d_iterator\fP (row_it curr, col_it col)"
+.br
+.ti -1c
+.RI "template<class T2 , class row_it2 , class col_it2 , class iter_type2 > \fBTwo_d_iterator\fP (const \fBTwo_d_iterator\fP< T2, row_it2, col_it2, iter_type2 > &it)"
+.br
+.ti -1c
+.RI "value_type & \fBoperator*\fP () const "
+.br
+.ti -1c
+.RI "value_type * \fBoperator\->\fP () const "
+.br
+.ti -1c
+.RI "void \fBadvance_past_end\fP ()"
+.br
+.ti -1c
+.RI "\fBiterator\fP & \fBoperator++\fP ()"
+.br
+.ti -1c
+.RI "\fBiterator\fP & \fBoperator\-\-\fP ()"
+.br
+.ti -1c
+.RI "\fBiterator\fP \fBoperator++\fP (int)"
+.br
+.ti -1c
+.RI "\fBiterator\fP \fBoperator\-\-\fP (int)"
+.br
+.ti -1c
+.RI "bool \fBoperator==\fP (const \fBiterator\fP &it) const "
+.br
+.ti -1c
+.RI "bool \fBoperator!=\fP (const \fBiterator\fP &it) const "
+.br
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "row_it \fBrow_current\fP"
+.br
+.ti -1c
+.RI "col_it \fBcol_current\fP"
+.br
+.in -1c
+.SS "Friends"
+
+.in +1c
+.ti -1c
+.RI "size_t \fBoperator\-\fP (\fBiterator\fP l, \fBiterator\fP f)"
+.br
+.in -1c
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for OpenISA Dynamic Binary Translator from the source code\&.

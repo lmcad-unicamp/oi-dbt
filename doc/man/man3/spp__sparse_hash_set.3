@@ -1,0 +1,284 @@
+.TH "spp_::sparse_hash_set< Value, HashFcn, EqualKey, Alloc >" 3 "Mon Apr 23 2018" "Version 0.0.1" "OpenISA Dynamic Binary Translator" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+spp_::sparse_hash_set< Value, HashFcn, EqualKey, Alloc > \- 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Public Types"
+
+.in +1c
+.ti -1c
+.RI "typedef ht::key_type \fBkey_type\fP"
+.br
+.ti -1c
+.RI "typedef ht::value_type \fBvalue_type\fP"
+.br
+.ti -1c
+.RI "typedef ht::hasher \fBhasher\fP"
+.br
+.ti -1c
+.RI "typedef ht::key_equal \fBkey_equal\fP"
+.br
+.ti -1c
+.RI "typedef Alloc \fBallocator_type\fP"
+.br
+.ti -1c
+.RI "typedef ht::size_type \fBsize_type\fP"
+.br
+.ti -1c
+.RI "typedef ht::difference_type \fBdifference_type\fP"
+.br
+.ti -1c
+.RI "typedef ht::const_pointer \fBpointer\fP"
+.br
+.ti -1c
+.RI "typedef ht::const_pointer \fBconst_pointer\fP"
+.br
+.ti -1c
+.RI "typedef ht::const_reference \fBreference\fP"
+.br
+.ti -1c
+.RI "typedef ht::const_reference \fBconst_reference\fP"
+.br
+.ti -1c
+.RI "typedef \fBht::const_iterator\fP \fBiterator\fP"
+.br
+.ti -1c
+.RI "typedef \fBht::const_iterator\fP \fBconst_iterator\fP"
+.br
+.ti -1c
+.RI "typedef \fBht::const_local_iterator\fP \fBlocal_iterator\fP"
+.br
+.ti -1c
+.RI "typedef \fBht::const_local_iterator\fP \fBconst_local_iterator\fP"
+.br
+.ti -1c
+.RI "typedef \fBht::NopointerSerializer\fP \fBNopointerSerializer\fP"
+.br
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBiterator\fP \fBbegin\fP () const "
+.br
+.ti -1c
+.RI "\fBiterator\fP \fBend\fP () const "
+.br
+.ti -1c
+.RI "\fBconst_iterator\fP \fBcbegin\fP () const "
+.br
+.ti -1c
+.RI "\fBconst_iterator\fP \fBcend\fP () const "
+.br
+.ti -1c
+.RI "\fBlocal_iterator\fP \fBbegin\fP (size_type i) const "
+.br
+.ti -1c
+.RI "\fBlocal_iterator\fP \fBend\fP (size_type i) const "
+.br
+.ti -1c
+.RI "\fBlocal_iterator\fP \fBcbegin\fP (size_type i) const "
+.br
+.ti -1c
+.RI "\fBlocal_iterator\fP \fBcend\fP (size_type i) const "
+.br
+.ti -1c
+.RI "allocator_type \fBget_allocator\fP () const "
+.br
+.ti -1c
+.RI "hasher \fBhash_funct\fP () const "
+.br
+.ti -1c
+.RI "hasher \fBhash_function\fP () const "
+.br
+.ti -1c
+.RI "key_equal \fBkey_eq\fP () const "
+.br
+.ti -1c
+.RI "\fBsparse_hash_set\fP (size_type n=0, const hasher &hf=hasher(), const key_equal &eql=key_equal(), const allocator_type &alloc=allocator_type())"
+.br
+.ti -1c
+.RI "\fBsparse_hash_set\fP (const allocator_type &alloc)"
+.br
+.ti -1c
+.RI "\fBsparse_hash_set\fP (size_type n, const allocator_type &alloc)"
+.br
+.ti -1c
+.RI "\fBsparse_hash_set\fP (size_type n, const hasher &hf, const allocator_type &alloc)"
+.br
+.ti -1c
+.RI "template<class InputIterator > \fBsparse_hash_set\fP (InputIterator f, InputIterator l, size_type n=0, const hasher &hf=hasher(), const key_equal &eql=key_equal(), const allocator_type &alloc=allocator_type())"
+.br
+.ti -1c
+.RI "template<class InputIterator > \fBsparse_hash_set\fP (InputIterator f, InputIterator l, size_type n, const allocator_type &alloc)"
+.br
+.ti -1c
+.RI "template<class InputIterator > \fBsparse_hash_set\fP (InputIterator f, InputIterator l, size_type n, const hasher &hf, const allocator_type &alloc)"
+.br
+.ti -1c
+.RI "\fBsparse_hash_set\fP (const \fBsparse_hash_set\fP &o)"
+.br
+.ti -1c
+.RI "\fBsparse_hash_set\fP (const \fBsparse_hash_set\fP &o, const allocator_type &alloc)"
+.br
+.ti -1c
+.RI "\fBsparse_hash_set\fP (\fBsparse_hash_set\fP &&o)"
+.br
+.ti -1c
+.RI "\fBsparse_hash_set\fP (\fBsparse_hash_set\fP &&o, const allocator_type &alloc)"
+.br
+.ti -1c
+.RI "\fBsparse_hash_set\fP (std::initializer_list< value_type > init, size_type n=0, const hasher &hf=hasher(), const key_equal &eql=key_equal(), const allocator_type &alloc=allocator_type())"
+.br
+.ti -1c
+.RI "\fBsparse_hash_set\fP (std::initializer_list< value_type > init, size_type n, const allocator_type &alloc)"
+.br
+.ti -1c
+.RI "\fBsparse_hash_set\fP (std::initializer_list< value_type > init, size_type n, const hasher &hf, const allocator_type &alloc)"
+.br
+.ti -1c
+.RI "\fBsparse_hash_set\fP & \fBoperator=\fP (std::initializer_list< value_type > init)"
+.br
+.ti -1c
+.RI "void \fBinsert\fP (std::initializer_list< value_type > init)"
+.br
+.ti -1c
+.RI "\fBsparse_hash_set\fP & \fBoperator=\fP (const \fBsparse_hash_set\fP &o)"
+.br
+.ti -1c
+.RI "void \fBclear\fP ()"
+.br
+.ti -1c
+.RI "void \fBswap\fP (\fBsparse_hash_set\fP &hs)"
+.br
+.ti -1c
+.RI "size_type \fBsize\fP () const "
+.br
+.ti -1c
+.RI "size_type \fBmax_size\fP () const "
+.br
+.ti -1c
+.RI "bool \fBempty\fP () const "
+.br
+.ti -1c
+.RI "size_type \fBbucket_count\fP () const "
+.br
+.ti -1c
+.RI "size_type \fBmax_bucket_count\fP () const "
+.br
+.ti -1c
+.RI "size_type \fBbucket_size\fP (size_type i) const "
+.br
+.ti -1c
+.RI "size_type \fBbucket\fP (const key_type &key) const "
+.br
+.ti -1c
+.RI "float \fBload_factor\fP () const "
+.br
+.ti -1c
+.RI "float \fBmax_load_factor\fP () const "
+.br
+.ti -1c
+.RI "void \fBmax_load_factor\fP (float grow)"
+.br
+.ti -1c
+.RI "float \fBmin_load_factor\fP () const "
+.br
+.ti -1c
+.RI "void \fBmin_load_factor\fP (float shrink)"
+.br
+.ti -1c
+.RI "void \fBset_resizing_parameters\fP (float shrink, float grow)"
+.br
+.ti -1c
+.RI "void \fBresize\fP (size_type cnt)"
+.br
+.ti -1c
+.RI "void \fBrehash\fP (size_type cnt)"
+.br
+.ti -1c
+.RI "void \fBreserve\fP (size_type cnt)"
+.br
+.ti -1c
+.RI "\fBiterator\fP \fBfind\fP (const key_type &key) const "
+.br
+.ti -1c
+.RI "bool \fBcontains\fP (const key_type &key) const "
+.br
+.ti -1c
+.RI "size_type \fBcount\fP (const key_type &key) const "
+.br
+.ti -1c
+.RI "std::pair< \fBiterator\fP, \fBiterator\fP > \fBequal_range\fP (const key_type &key) const "
+.br
+.ti -1c
+.RI "template<class\&.\&.\&. Args> std::pair< \fBiterator\fP, bool > \fBemplace\fP (Args &&\&.\&.\&.args)"
+.br
+.ti -1c
+.RI "template<class\&.\&.\&. Args> \fBiterator\fP \fBemplace_hint\fP (\fBconst_iterator\fP, Args &&\&.\&.\&.args)"
+.br
+.ti -1c
+.RI "std::pair< \fBiterator\fP, bool > \fBinsert\fP (const value_type &obj)"
+.br
+.ti -1c
+.RI "template<class P > std::pair< \fBiterator\fP, bool > \fBinsert\fP (P &&obj)"
+.br
+.ti -1c
+.RI "template<class InputIterator > void \fBinsert\fP (InputIterator f, InputIterator l)"
+.br
+.ti -1c
+.RI "void \fBinsert\fP (\fBconst_iterator\fP f, \fBconst_iterator\fP l)"
+.br
+.ti -1c
+.RI "\fBiterator\fP \fBinsert\fP (\fBiterator\fP, const value_type &obj)"
+.br
+.ti -1c
+.RI "void \fBset_deleted_key\fP (const key_type &key)"
+.br
+.ti -1c
+.RI "void \fBclear_deleted_key\fP ()"
+.br
+.ti -1c
+.RI "key_type \fBdeleted_key\fP () const "
+.br
+.ti -1c
+.RI "size_type \fBerase\fP (const key_type &key)"
+.br
+.ti -1c
+.RI "\fBiterator\fP \fBerase\fP (\fBiterator\fP it)"
+.br
+.ti -1c
+.RI "\fBiterator\fP \fBerase\fP (\fBiterator\fP f, \fBiterator\fP l)"
+.br
+.ti -1c
+.RI "bool \fBoperator==\fP (const \fBsparse_hash_set\fP &hs) const "
+.br
+.ti -1c
+.RI "bool \fBoperator!=\fP (const \fBsparse_hash_set\fP &hs) const "
+.br
+.ti -1c
+.RI "template<typename ValueSerializer , typename OUTPUT > bool \fBserialize\fP (ValueSerializer serializer, OUTPUT *fp)"
+.br
+.ti -1c
+.RI "template<typename ValueSerializer , typename INPUT > bool \fBunserialize\fP (ValueSerializer serializer, INPUT *fp)"
+.br
+.ti -1c
+.RI "template<typename OUTPUT > bool \fBwrite_metadata\fP (OUTPUT *fp)"
+.br
+.ti -1c
+.RI "template<typename INPUT > bool \fBread_metadata\fP (INPUT *fp)"
+.br
+.ti -1c
+.RI "template<typename OUTPUT > bool \fBwrite_nopointer_data\fP (OUTPUT *fp)"
+.br
+.ti -1c
+.RI "template<typename INPUT > bool \fBread_nopointer_data\fP (INPUT *fp)"
+.br
+.in -1c
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for OpenISA Dynamic Binary Translator from the source code\&.

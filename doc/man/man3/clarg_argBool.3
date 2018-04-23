@@ -1,0 +1,47 @@
+.TH "clarg::argBool" 3 "Mon Apr 23 2018" "Version 0.0.1" "OpenISA Dynamic Binary Translator" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+clarg::argBool \- 
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <arglib\&.hpp>\fP
+.PP
+Inherits \fBclarg::argT< bool >\fP\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBargBool\fP (const char *arg, const char *desc, bool v=false)"
+.br
+.in -1c
+.SS "Protected Member Functions"
+
+.in +1c
+.ti -1c
+.RI "int \fBparse_parameters\fP (int, char *[])"
+.br
+.ti -1c
+.RI "void \fBwrite_parameters\fP (ostream &, bool) const "
+.br
+.in -1c
+.SS "Additional Inherited Members"
+.SH "Detailed Description"
+.PP 
+Boolean argument class\&. 
+.SH "Member Function Documentation"
+.PP 
+.SS "int clarg::argBool::parse_parameters (int argc, char * argv[])\fC [inline]\fP, \fC [protected]\fP, \fC [virtual]\fP"
+Parse the argument parameters\&. Must be implemented by the specialized argument class\&. When parsing, make sure you copy the parsed parameters into the arg_parameters array\&. Returns the number of parameters parsed if ok, -1 if an error occured\&. 
+.PP
+Implements \fBclarg::arg_base\fP\&.
+.SS "void clarg::argBool::write_parameters (ostream & os, bool def) const\fC [inline]\fP, \fC [protected]\fP, \fC [virtual]\fP"
+write the argument parameters into the output stream\&. 
+.PP
+Implements \fBclarg::arg_base\fP\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for OpenISA Dynamic Binary Translator from the source code\&.

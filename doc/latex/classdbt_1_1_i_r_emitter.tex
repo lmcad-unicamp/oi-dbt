@@ -1,0 +1,30 @@
+\hypertarget{classdbt_1_1_i_r_emitter}{}\section{dbt\+:\+:I\+R\+Emitter Class Reference}
+\label{classdbt_1_1_i_r_emitter}\index{dbt\+::\+I\+R\+Emitter@{dbt\+::\+I\+R\+Emitter}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+std\+::vector$<$ uint32\+\_\+t $>$ {\bfseries get\+Direct\+Transitions} (uint32\+\_\+t Addrs)\hypertarget{classdbt_1_1_i_r_emitter_a5ef6352dfc402795674f6f159035c385}{}\label{classdbt_1_1_i_r_emitter_a5ef6352dfc402795674f6f159035c385}
+
+\item 
+llvm\+::\+Module $\ast$ {\bfseries generate\+Region\+IR} (uint32\+\_\+t, const O\+I\+Inst\+List \&, uint32\+\_\+t, spp\+::sparse\+\_\+hash\+\_\+map$<$ uint32\+\_\+t, uint32\+\_\+t $>$ \&, llvm\+::\+Target\+Machine \&, volatile uint64\+\_\+t $\ast$Native\+Regions)\hypertarget{classdbt_1_1_i_r_emitter_aa7ba17ebd138f6d47887b07da68c55bb}{}\label{classdbt_1_1_i_r_emitter_aa7ba17ebd138f6d47887b07da68c55bb}
+
+\item 
+llvm\+::\+Module $\ast$ {\bfseries generate\+Merged\+Regions} (std\+::vector$<$ O\+I\+Inst\+List $>$ \&, uint32\+\_\+t, spp\+::sparse\+\_\+hash\+\_\+map$<$ uint32\+\_\+t, uint32\+\_\+t $>$ \&, llvm\+::\+Target\+Machine \&)\hypertarget{classdbt_1_1_i_r_emitter_a3d8a68fc7fb73739ea2de082419e4bf8}{}\label{classdbt_1_1_i_r_emitter_a3d8a68fc7fb73739ea2de082419e4bf8}
+
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static size\+\_\+t {\bfseries disassemble} (const void $\ast$func, std\+::ostream \&buffer)\hypertarget{classdbt_1_1_i_r_emitter_a90567800f6b634500ab95097ab717aea}{}\label{classdbt_1_1_i_r_emitter_a90567800f6b634500ab95097ab717aea}
+
+\item 
+static size\+\_\+t {\bfseries region\+Dump} (const void $\ast$func, std\+::ostream \&buffer, size\+\_\+t size)\hypertarget{classdbt_1_1_i_r_emitter_ae37ff1644a96df74589e490694ee6641}{}\label{classdbt_1_1_i_r_emitter_ae37ff1644a96df74589e490694ee6641}
+
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+include/I\+R\+Emitter.\+hpp\item 
+I\+R\+Emitter.\+cpp\item 
+I\+R\+Utils.\+cpp\end{DoxyCompactItemize}

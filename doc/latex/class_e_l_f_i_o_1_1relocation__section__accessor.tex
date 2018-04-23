@@ -1,0 +1,37 @@
+\hypertarget{class_e_l_f_i_o_1_1relocation__section__accessor}{}\section{E\+L\+F\+IO\+:\+:relocation\+\_\+section\+\_\+accessor Class Reference}
+\label{class_e_l_f_i_o_1_1relocation__section__accessor}\index{E\+L\+F\+I\+O\+::relocation\+\_\+section\+\_\+accessor@{E\+L\+F\+I\+O\+::relocation\+\_\+section\+\_\+accessor}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries relocation\+\_\+section\+\_\+accessor} (const \hyperlink{class_e_l_f_i_o_1_1elfio}{elfio} \&elf\+\_\+file\+\_\+, \hyperlink{class_e_l_f_i_o_1_1section}{section} $\ast$section\+\_\+)\hypertarget{class_e_l_f_i_o_1_1relocation__section__accessor_a91dec931c559e173d4a0a6397b5f81b7}{}\label{class_e_l_f_i_o_1_1relocation__section__accessor_a91dec931c559e173d4a0a6397b5f81b7}
+
+\item 
+Elf\+\_\+\+Xword {\bfseries get\+\_\+entries\+\_\+num} () const \hypertarget{class_e_l_f_i_o_1_1relocation__section__accessor_a43b7a8c1b819e5acd21c6c2e563488c3}{}\label{class_e_l_f_i_o_1_1relocation__section__accessor_a43b7a8c1b819e5acd21c6c2e563488c3}
+
+\item 
+bool {\bfseries get\+\_\+entry} (Elf\+\_\+\+Xword index, Elf64\+\_\+\+Addr \&offset, Elf\+\_\+\+Word \&symbol, Elf\+\_\+\+Word \&type, Elf\+\_\+\+Sxword \&addend) const \hypertarget{class_e_l_f_i_o_1_1relocation__section__accessor_a408e4dcd30b53e95a83b8e7a661eed19}{}\label{class_e_l_f_i_o_1_1relocation__section__accessor_a408e4dcd30b53e95a83b8e7a661eed19}
+
+\item 
+bool {\bfseries get\+\_\+entry} (Elf\+\_\+\+Xword index, Elf64\+\_\+\+Addr \&offset, Elf64\+\_\+\+Addr \&symbol\+Value, std\+::string \&symbol\+Name, Elf\+\_\+\+Word \&type, Elf\+\_\+\+Sxword \&addend, Elf\+\_\+\+Sxword \&calc\+Value) const \hypertarget{class_e_l_f_i_o_1_1relocation__section__accessor_a38035eaff67c9bb20671b6e7dde690bf}{}\label{class_e_l_f_i_o_1_1relocation__section__accessor_a38035eaff67c9bb20671b6e7dde690bf}
+
+\item 
+void {\bfseries add\+\_\+entry} (Elf64\+\_\+\+Addr offset, Elf\+\_\+\+Xword info)\hypertarget{class_e_l_f_i_o_1_1relocation__section__accessor_a8a08d1189caf893710c7b2ebb8485aa4}{}\label{class_e_l_f_i_o_1_1relocation__section__accessor_a8a08d1189caf893710c7b2ebb8485aa4}
+
+\item 
+void {\bfseries add\+\_\+entry} (Elf64\+\_\+\+Addr offset, Elf\+\_\+\+Word symbol, unsigned char type)\hypertarget{class_e_l_f_i_o_1_1relocation__section__accessor_ab2bf5c541c631c072e41db878379cdb4}{}\label{class_e_l_f_i_o_1_1relocation__section__accessor_ab2bf5c541c631c072e41db878379cdb4}
+
+\item 
+void {\bfseries add\+\_\+entry} (Elf64\+\_\+\+Addr offset, Elf\+\_\+\+Xword info, Elf\+\_\+\+Sxword addend)\hypertarget{class_e_l_f_i_o_1_1relocation__section__accessor_ac1da3c815494de4e5e81bdfcc3213430}{}\label{class_e_l_f_i_o_1_1relocation__section__accessor_ac1da3c815494de4e5e81bdfcc3213430}
+
+\item 
+void {\bfseries add\+\_\+entry} (Elf64\+\_\+\+Addr offset, Elf\+\_\+\+Word symbol, unsigned char type, Elf\+\_\+\+Sxword addend)\hypertarget{class_e_l_f_i_o_1_1relocation__section__accessor_a7a7e37f0e23555a2d789b05d778fea3b}{}\label{class_e_l_f_i_o_1_1relocation__section__accessor_a7a7e37f0e23555a2d789b05d778fea3b}
+
+\item 
+void {\bfseries add\+\_\+entry} (\hyperlink{class_e_l_f_i_o_1_1string__section__accessor}{string\+\_\+section\+\_\+accessor} str\+\_\+writer, const char $\ast$str, \hyperlink{class_e_l_f_i_o_1_1symbol__section__accessor}{symbol\+\_\+section\+\_\+accessor} sym\+\_\+writer, Elf64\+\_\+\+Addr value, Elf\+\_\+\+Word size, unsigned char sym\+\_\+info, unsigned char other, Elf\+\_\+\+Half shndx, Elf64\+\_\+\+Addr offset, unsigned char type)\hypertarget{class_e_l_f_i_o_1_1relocation__section__accessor_a28378f46b0a5fcf3aa17f229bd9b3cdd}{}\label{class_e_l_f_i_o_1_1relocation__section__accessor_a28378f46b0a5fcf3aa17f229bd9b3cdd}
+
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/elfio/elfio\+\_\+relocation.\+hpp\end{DoxyCompactItemize}

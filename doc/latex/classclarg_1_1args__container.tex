@@ -1,0 +1,46 @@
+\hypertarget{classclarg_1_1args__container}{}\section{clarg\+:\+:args\+\_\+container Class Reference}
+\label{classclarg_1_1args__container}\index{clarg\+::args\+\_\+container@{clarg\+::args\+\_\+container}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void {\bfseries register\+\_\+argument} (\hyperlink{classclarg_1_1arg__base}{arg\+\_\+base} $\ast$arg)\hypertarget{classclarg_1_1args__container_a24df956afe76b8f3377dbf622bcad957}{}\label{classclarg_1_1args__container_a24df956afe76b8f3377dbf622bcad957}
+
+\item 
+void {\bfseries arguments\+\_\+descriptions} (ostream \&os, string prefix, string suffix)\hypertarget{classclarg_1_1args__container_a0f081963267f4b66924633e29255dc3d}{}\label{classclarg_1_1args__container_a0f081963267f4b66924633e29255dc3d}
+
+\item 
+void {\bfseries list\+\_\+arguments} (ostream \&os, bool defined\+\_\+only)\hypertarget{classclarg_1_1args__container_ae2f55011dcec5e394b4fc7b5ce18ef4a}{}\label{classclarg_1_1args__container_ae2f55011dcec5e394b4fc7b5ce18ef4a}
+
+\item 
+int \hyperlink{classclarg_1_1args__container_a0d6feb51358dec2f5ba941ed837d1c1a}{parse\+\_\+arguments\+\_\+from\+\_\+file} ()
+\item 
+int {\bfseries parse\+\_\+arguments} (int argc, char $\ast$argv\mbox{[}$\,$\mbox{]})\hypertarget{classclarg_1_1args__container_a9bc7411d20a2b8fcfc0f720ddd8d401a}{}\label{classclarg_1_1args__container_a9bc7411d20a2b8fcfc0f720ddd8d401a}
+
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+M\+AP$<$ string, \hyperlink{classclarg_1_1arg__base}{arg\+\_\+base} $\ast$ $>$ {\bfseries args}\hypertarget{classclarg_1_1args__container_ad194851fa063d34987575e0ee13d1c87}{}\label{classclarg_1_1args__container_ad194851fa063d34987575e0ee13d1c87}
+
+\item 
+string {\bfseries prog\+\_\+name}\hypertarget{classclarg_1_1args__container_a98f0ec6ac0e5fb595c6e0ec04a9770c8}{}\label{classclarg_1_1args__container_a98f0ec6ac0e5fb595c6e0ec04a9770c8}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Arguments container. All the arguments are added into this object. 
+
+\subsection{Member Function Documentation}
+\index{clarg\+::args\+\_\+container@{clarg\+::args\+\_\+container}!parse\+\_\+arguments\+\_\+from\+\_\+file@{parse\+\_\+arguments\+\_\+from\+\_\+file}}
+\index{parse\+\_\+arguments\+\_\+from\+\_\+file@{parse\+\_\+arguments\+\_\+from\+\_\+file}!clarg\+::args\+\_\+container@{clarg\+::args\+\_\+container}}
+\subsubsection[{\texorpdfstring{parse\+\_\+arguments\+\_\+from\+\_\+file()}{parse_arguments_from_file()}}]{\setlength{\rightskip}{0pt plus 5cm}int clarg\+::args\+\_\+container\+::parse\+\_\+arguments\+\_\+from\+\_\+file (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{classclarg_1_1args__container_a0d6feb51358dec2f5ba941ed837d1c1a}{}\label{classclarg_1_1args__container_a0d6feb51358dec2f5ba941ed837d1c1a}
+Read the arguments from file. Returns 0 if ok, != 0 otherwise. T\+O\+DO\+: this is not implemented yet. The goal of this method is to parser all the arguments from an argument file. In this way, you may dump all the arguments used in a given run and re-\/use them by parsing from the file. To do so, you may infoke this method. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+arglib/arglib.\+cpp\end{DoxyCompactItemize}

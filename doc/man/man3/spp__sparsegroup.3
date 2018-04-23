@@ -1,0 +1,186 @@
+.TH "spp_::sparsegroup< T, Alloc >" 3 "Mon Apr 23 2018" "Version 0.0.1" "OpenISA Dynamic Binary Translator" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+spp_::sparsegroup< T, Alloc > \- 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Public Types"
+
+.in +1c
+.ti -1c
+.RI "typedef T \fBvalue_type\fP"
+.br
+.ti -1c
+.RI "typedef Alloc \fBallocator_type\fP"
+.br
+.ti -1c
+.RI "typedef value_type & \fBreference\fP"
+.br
+.ti -1c
+.RI "typedef const value_type & \fBconst_reference\fP"
+.br
+.ti -1c
+.RI "typedef value_type * \fBpointer\fP"
+.br
+.ti -1c
+.RI "typedef const value_type * \fBconst_pointer\fP"
+.br
+.ti -1c
+.RI "typedef uint8_t \fBsize_type\fP"
+.br
+.ti -1c
+.RI "typedef pointer \fBne_iterator\fP"
+.br
+.ti -1c
+.RI "typedef const_pointer \fBconst_ne_iterator\fP"
+.br
+.ti -1c
+.RI "typedef std::reverse_iterator< ne_iterator > \fBreverse_ne_iterator\fP"
+.br
+.ti -1c
+.RI "typedef std::reverse_iterator< const_ne_iterator > \fBconst_reverse_ne_iterator\fP"
+.br
+.ti -1c
+.RI "typedef std::pair< pointer, bool > \fBSetResult\fP"
+.br
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "ne_iterator \fBne_begin\fP ()"
+.br
+.ti -1c
+.RI "const_ne_iterator \fBne_begin\fP () const "
+.br
+.ti -1c
+.RI "const_ne_iterator \fBne_cbegin\fP () const "
+.br
+.ti -1c
+.RI "ne_iterator \fBne_end\fP ()"
+.br
+.ti -1c
+.RI "const_ne_iterator \fBne_end\fP () const "
+.br
+.ti -1c
+.RI "const_ne_iterator \fBne_cend\fP () const "
+.br
+.ti -1c
+.RI "reverse_ne_iterator \fBne_rbegin\fP ()"
+.br
+.ti -1c
+.RI "const_reverse_ne_iterator \fBne_rbegin\fP () const "
+.br
+.ti -1c
+.RI "const_reverse_ne_iterator \fBne_crbegin\fP () const "
+.br
+.ti -1c
+.RI "reverse_ne_iterator \fBne_rend\fP ()"
+.br
+.ti -1c
+.RI "const_reverse_ne_iterator \fBne_rend\fP () const "
+.br
+.ti -1c
+.RI "const_reverse_ne_iterator \fBne_crend\fP () const "
+.br
+.ti -1c
+.RI "size_type \fBpos_to_offset\fP (size_type pos) const "
+.br
+.ti -1c
+.RI "size_type \fBoffset_to_pos\fP (size_type offset) const "
+.br
+.ti -1c
+.RI "\fBsparsegroup\fP (const \fBsparsegroup\fP &x)"
+.br
+.ti -1c
+.RI "\fBsparsegroup\fP (const \fBsparsegroup\fP &x, allocator_type &a)"
+.br
+.ti -1c
+.RI "void \fBdestruct\fP (allocator_type &a)"
+.br
+.ti -1c
+.RI "void \fBswap\fP (\fBsparsegroup\fP &x)"
+.br
+.ti -1c
+.RI "void \fBclear\fP (allocator_type &alloc, bool erased)"
+.br
+.ti -1c
+.RI "size_type \fBsize\fP () const "
+.br
+.ti -1c
+.RI "size_type \fBmax_size\fP () const "
+.br
+.ti -1c
+.RI "bool \fBempty\fP () const "
+.br
+.ti -1c
+.RI "size_type \fBnum_nonempty\fP () const "
+.br
+.ti -1c
+.RI "reference \fBunsafe_get\fP (size_type i) const "
+.br
+.ti -1c
+.RI "template<class Val > pointer \fBset\fP (allocator_type &alloc, size_type i, Val &val)"
+.br
+.ti -1c
+.RI "bool \fBtest\fP (size_type i) const "
+.br
+.ti -1c
+.RI "bool \fBtest_strict\fP (size_type i) const "
+.br
+.ti -1c
+.RI "template<class twod_iter > bool \fBerase_ne\fP (allocator_type &alloc, twod_iter &it)"
+.br
+.ti -1c
+.RI "void \fBerase\fP (allocator_type &alloc, size_type i)"
+.br
+.ti -1c
+.RI "template<typename OUTPUT > bool \fBwrite_metadata\fP (OUTPUT *fp) const "
+.br
+.ti -1c
+.RI "template<typename INPUT > bool \fBread_metadata\fP (allocator_type &alloc, INPUT *fp)"
+.br
+.ti -1c
+.RI "template<typename INPUT > bool \fBread_nopointer_data\fP (INPUT *fp)"
+.br
+.ti -1c
+.RI "template<typename OUTPUT > bool \fBwrite_nopointer_data\fP (OUTPUT *fp) const "
+.br
+.ti -1c
+.RI "bool \fBoperator==\fP (const \fBsparsegroup\fP &x) const "
+.br
+.ti -1c
+.RI "bool \fBoperator<\fP (const \fBsparsegroup\fP &x) const "
+.br
+.ti -1c
+.RI "bool \fBoperator!=\fP (const \fBsparsegroup\fP &x) const "
+.br
+.ti -1c
+.RI "bool \fBoperator<=\fP (const \fBsparsegroup\fP &x) const "
+.br
+.ti -1c
+.RI "bool \fBoperator>\fP (const \fBsparsegroup\fP &x) const "
+.br
+.ti -1c
+.RI "bool \fBoperator>=\fP (const \fBsparsegroup\fP &x) const "
+.br
+.ti -1c
+.RI "void \fBmark\fP ()"
+.br
+.ti -1c
+.RI "bool \fBis_marked\fP () const "
+.br
+.in -1c
+.SS "Static Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "static size_type \fBoffset_to_pos\fP (group_bm_type bm, size_type offset)"
+.br
+.in -1c
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for OpenISA Dynamic Binary Translator from the source code\&.

@@ -1,0 +1,40 @@
+.TH "ELFIO::symbol_section_accessor" 3 "Mon Apr 23 2018" "Version 0.0.1" "OpenISA Dynamic Binary Translator" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ELFIO::symbol_section_accessor \- 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBsymbol_section_accessor\fP (const \fBelfio\fP &elf_file_, \fBsection\fP *symbol_section_)"
+.br
+.ti -1c
+.RI "Elf_Xword \fBget_symbols_num\fP () const "
+.br
+.ti -1c
+.RI "bool \fBget_symbol\fP (Elf_Xword index, std::string &name, Elf64_Addr &value, Elf_Xword &size, unsigned char &bind, unsigned char &type, Elf_Half &section_index, unsigned char &other) const "
+.br
+.ti -1c
+.RI "bool \fBget_symbol\fP (const std::string &name, Elf64_Addr &value, Elf_Xword &size, unsigned char &bind, unsigned char &type, Elf_Half &section_index, unsigned char &other) const "
+.br
+.ti -1c
+.RI "Elf_Word \fBadd_symbol\fP (Elf_Word name, Elf64_Addr value, Elf_Xword size, unsigned char info, unsigned char other, Elf_Half shndx)"
+.br
+.ti -1c
+.RI "Elf_Word \fBadd_symbol\fP (Elf_Word name, Elf64_Addr value, Elf_Xword size, unsigned char bind, unsigned char type, unsigned char other, Elf_Half shndx)"
+.br
+.ti -1c
+.RI "Elf_Word \fBadd_symbol\fP (\fBstring_section_accessor\fP &pStrWriter, const char *str, Elf64_Addr value, Elf_Xword size, unsigned char info, unsigned char other, Elf_Half shndx)"
+.br
+.ti -1c
+.RI "Elf_Word \fBadd_symbol\fP (\fBstring_section_accessor\fP &pStrWriter, const char *str, Elf64_Addr value, Elf_Xword size, unsigned char bind, unsigned char type, unsigned char other, Elf_Half shndx)"
+.br
+.in -1c
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for OpenISA Dynamic Binary Translator from the source code\&.

@@ -1,0 +1,155 @@
+.TH "spp" 3 "Mon Apr 23 2018" "Version 0.0.1" "OpenISA Dynamic Binary Translator" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+spp \- 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "struct \fBmalloc_chunk\fP"
+.br
+.ti -1c
+.RI "struct \fBmalloc_chunk_header\fP"
+.br
+.ti -1c
+.RI "struct \fBmalloc_params\fP"
+.br
+.ti -1c
+.RI "struct \fBmalloc_segment\fP"
+.br
+.ti -1c
+.RI "class \fBmalloc_state\fP"
+.br
+.ti -1c
+.RI "struct \fBmalloc_tree_chunk\fP"
+.br
+.ti -1c
+.RI "class \fBspp_allocator\fP"
+.br
+.ti -1c
+.RI "class \fBTimer\fP"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef void * \fBmspace\fP"
+.br
+.ti -1c
+.RI "typedef \fBmalloc_chunk\fP \fBmchunk\fP"
+.br
+.ti -1c
+.RI "typedef \fBmalloc_chunk\fP * \fBmchunkptr\fP"
+.br
+.ti -1c
+.RI "typedef \fBmalloc_chunk_header\fP * \fBhchunkptr\fP"
+.br
+.ti -1c
+.RI "typedef \fBmalloc_chunk\fP * \fBsbinptr\fP"
+.br
+.ti -1c
+.RI "typedef unsigned int \fBbindex_t\fP"
+.br
+.ti -1c
+.RI "typedef unsigned int \fBbinmap_t\fP"
+.br
+.ti -1c
+.RI "typedef unsigned int \fBflag_t\fP"
+.br
+.ti -1c
+.RI "typedef \fBmalloc_tree_chunk\fP \fBtchunk\fP"
+.br
+.ti -1c
+.RI "typedef \fBmalloc_tree_chunk\fP * \fBtchunkptr\fP"
+.br
+.ti -1c
+.RI "typedef \fBmalloc_tree_chunk\fP * \fBtbinptr\fP"
+.br
+.ti -1c
+.RI "typedef \fBmalloc_segment\fP \fBmsegment\fP"
+.br
+.ti -1c
+.RI "typedef \fBmalloc_segment\fP * \fBmsegmentptr\fP"
+.br
+.ti -1c
+.RI "typedef \fBmalloc_state\fP * \fBmstate\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "SPP_API mspace \fBcreate_mspace\fP (size_t capacity, int locked)"
+.br
+.ti -1c
+.RI "SPP_API size_t \fBdestroy_mspace\fP (mspace msp)"
+.br
+.ti -1c
+.RI "SPP_API void * \fBmspace_malloc\fP (mspace msp, size_t bytes)"
+.br
+.ti -1c
+.RI "SPP_API void \fBmspace_free\fP (mspace msp, void *mem)"
+.br
+.ti -1c
+.RI "SPP_API void * \fBmspace_realloc\fP (mspace msp, void *mem, size_t newsize)"
+.br
+.ti -1c
+.RI "void \fBSPP_MMAP_DEFAULT\fP (size_t s)"
+.br
+.ti -1c
+.RI "SPP_API void * \fBmspace_calloc\fP (mspace msp, size_t n_elements, size_t elem_size)"
+.br
+.ti -1c
+.RI "SPP_API size_t \fBmspace_bulk_free\fP (mspace msp, void *array[], size_t nelem)"
+.br
+.ti -1c
+.RI "SPP_API int \fBmspace_trim\fP (mspace msp, size_t pad)"
+.br
+.ti -1c
+.RI "SPP_API size_t \fBmspace_footprint\fP (mspace msp)"
+.br
+.ti -1c
+.RI "SPP_API size_t \fBmspace_max_footprint\fP (mspace msp)"
+.br
+.ti -1c
+.RI "SPP_API size_t \fBmspace_footprint_limit\fP (mspace msp)"
+.br
+.ti -1c
+.RI "SPP_API size_t \fBmspace_set_footprint_limit\fP (mspace msp, size_t bytes)"
+.br
+.ti -1c
+.RI "SPP_API size_t \fBmspace_usable_size\fP (const void *mem)"
+.br
+.ti -1c
+.RI "SPP_API int \fBmspace_mallopt\fP (int param_number, int value)"
+.br
+.ti -1c
+.RI "uint64_t \fBGetSystemMemory\fP ()"
+.br
+.ti -1c
+.RI "uint64_t \fBGetTotalMemoryUsed\fP ()"
+.br
+.ti -1c
+.RI "uint64_t \fBGetProcessMemoryUsed\fP ()"
+.br
+.ti -1c
+.RI "uint64_t \fBGetPhysicalMemory\fP ()"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Copyright (c) 2016 Mariano Gonzalez
+.PP
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+.PP
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software\&.
+.PP
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT\&. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE\&. 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for OpenISA Dynamic Binary Translator from the source code\&.

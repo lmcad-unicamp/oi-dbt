@@ -1,0 +1,77 @@
+\hypertarget{classdbt_1_1_manager}{}\section{dbt\+:\+:Manager Class Reference}
+\label{classdbt_1_1_manager}\index{dbt\+::\+Manager@{dbt\+::\+Manager}}
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum {\bfseries Opt\+Politic} \{ {\bfseries None}, 
+{\bfseries Normal}, 
+{\bfseries Aggressive}
+ \}\hypertarget{classdbt_1_1_manager_aa2de495fbd2337a0f6514fb81b5b3ca6}{}\label{classdbt_1_1_manager_aa2de495fbd2337a0f6514fb81b5b3ca6}
+
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+unsigned {\bfseries get\+Compiled\+Regions} (void)\hypertarget{classdbt_1_1_manager_a02b0c49e1ef8198f9a79c5f67800001c}{}\label{classdbt_1_1_manager_a02b0c49e1ef8198f9a79c5f67800001c}
+
+\item 
+unsigned {\bfseries get\+O\+I\+Compiled} (void)\hypertarget{classdbt_1_1_manager_a030b27ab968b08de952fae2e7d22d174}{}\label{classdbt_1_1_manager_a030b27ab968b08de952fae2e7d22d174}
+
+\item 
+bool {\bfseries get\+Region\+Recording} (void)\hypertarget{classdbt_1_1_manager_a3ab02f4c343d355196699bf40384a341}{}\label{classdbt_1_1_manager_a3ab02f4c343d355196699bf40384a341}
+
+\item 
+void {\bfseries set\+Region\+Recorging} (bool value)\hypertarget{classdbt_1_1_manager_a119e33aa5f55216cfb1b499267d896f5}{}\label{classdbt_1_1_manager_a119e33aa5f55216cfb1b499267d896f5}
+
+\item 
+unsigned {\bfseries get\+L\+L\+V\+M\+Compiled} (void)\hypertarget{classdbt_1_1_manager_a3cf205ecdf7e4c5fc8f093f19a5d6df0}{}\label{classdbt_1_1_manager_a3cf205ecdf7e4c5fc8f093f19a5d6df0}
+
+\item 
+float {\bfseries get\+Avg\+Opt\+Code\+Size} (void)\hypertarget{classdbt_1_1_manager_aaa9d11a4aad3d516990c43bed79bf89b}{}\label{classdbt_1_1_manager_aaa9d11a4aad3d516990c43bed79bf89b}
+
+\item 
+{\bfseries Manager} (unsigned T, Opt\+Politic O, uint32\+\_\+t D\+MO, bool VO=false)\hypertarget{classdbt_1_1_manager_a8da7c7aedea57f0eb0423a13ca88857e}{}\label{classdbt_1_1_manager_a8da7c7aedea57f0eb0423a13ca88857e}
+
+\item 
+bool {\bfseries add\+O\+I\+Region} (uint32\+\_\+t, O\+I\+Inst\+List, spp\+::sparse\+\_\+hash\+\_\+map$<$ uint32\+\_\+t, uint32\+\_\+t $>$)\hypertarget{classdbt_1_1_manager_a1df1e85b4961d798c3a6349bedca6476}{}\label{classdbt_1_1_manager_a1df1e85b4961d798c3a6349bedca6476}
+
+\item 
+int32\+\_\+t {\bfseries jump\+To\+Region} (uint32\+\_\+t, \hyperlink{classdbt_1_1_machine}{dbt\+::\+Machine} \&)\hypertarget{classdbt_1_1_manager_af2e8e3d36f2e2d26389d1e174f0ae22e}{}\label{classdbt_1_1_manager_af2e8e3d36f2e2d26389d1e174f0ae22e}
+
+\item 
+bool {\bfseries is\+Region\+Entry} (uint32\+\_\+t Entry\+Address)\hypertarget{classdbt_1_1_manager_a4d242f39ec628913a6d98690bbacd385}{}\label{classdbt_1_1_manager_a4d242f39ec628913a6d98690bbacd385}
+
+\item 
+bool {\bfseries is\+Native\+Region\+Entry} (uint32\+\_\+t Entry\+Address)\hypertarget{classdbt_1_1_manager_ae65f7a5f6de52f561c212d426c275bdb}{}\label{classdbt_1_1_manager_ae65f7a5f6de52f561c212d426c275bdb}
+
+\item 
+size\+\_\+t {\bfseries get\+Num\+Of\+O\+I\+Regions} ()\hypertarget{classdbt_1_1_manager_aefb12ae46a7a7a8c244d9c19b961345f}{}\label{classdbt_1_1_manager_aefb12ae46a7a7a8c244d9c19b961345f}
+
+\item 
+unsigned int {\bfseries get\+Num\+Of\+Threads} (void)\hypertarget{classdbt_1_1_manager_abfb897878f4e3df8e726c7b131d4853d}{}\label{classdbt_1_1_manager_abfb897878f4e3df8e726c7b131d4853d}
+
+\item 
+float {\bfseries get\+Avg\+Regions\+Size} ()\hypertarget{classdbt_1_1_manager_ac8e3910a1f66330e64057f4ed956360c}{}\label{classdbt_1_1_manager_ac8e3910a1f66330e64057f4ed956360c}
+
+\item 
+bool {\bfseries in\+Code\+Cache} (uint32\+\_\+t Addrs)\hypertarget{classdbt_1_1_manager_a7f3ce92185f40d836012461b36dc53e6}{}\label{classdbt_1_1_manager_a7f3ce92185f40d836012461b36dc53e6}
+
+\item 
+std\+::vector$<$ uint32\+\_\+t $>$ {\bfseries get\+Direct\+Transitions} (uint32\+\_\+t Entry\+Addrs)\hypertarget{classdbt_1_1_manager_a25b04e3b86d130fe532e528a43f05f6a}{}\label{classdbt_1_1_manager_a25b04e3b86d130fe532e528a43f05f6a}
+
+\item 
+O\+I\+Inst\+List {\bfseries get\+Compiled\+O\+I\+Region} (uint32\+\_\+t Entry\+Addrs)\hypertarget{classdbt_1_1_manager_a22896dec9889a46438f2b77bdafc132a}{}\label{classdbt_1_1_manager_a22896dec9889a46438f2b77bdafc132a}
+
+\item 
+std\+::unordered\+\_\+map$<$ uint32\+\_\+t, O\+I\+Inst\+List $>$\+::iterator {\bfseries oiregions\+\_\+begin} ()\hypertarget{classdbt_1_1_manager_a0c2cf3bccc4dde0ae5ab1ef2c2a9408a}{}\label{classdbt_1_1_manager_a0c2cf3bccc4dde0ae5ab1ef2c2a9408a}
+
+\item 
+std\+::unordered\+\_\+map$<$ uint32\+\_\+t, O\+I\+Inst\+List $>$\+::iterator {\bfseries oiregions\+\_\+end} ()\hypertarget{classdbt_1_1_manager_a76e01c2319ced6943e7c448395da952d}{}\label{classdbt_1_1_manager_a76e01c2319ced6943e7c448395da952d}
+
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+include/manager.\+hpp\item 
+manager.\+cpp\end{DoxyCompactItemize}
