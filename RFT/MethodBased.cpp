@@ -23,6 +23,10 @@ void MethodBased::addFunctionToCompile(uint32_t PC, Machine &M) {
       startRegionFormation(PossibleEntry);
 
       for (uint32_t Addr = PossibleEntry; Addr < M.getMethodEnd(PC); Addr += 4) {
+        if (NumOfInsts == RegionLimitSize + 1) {
+          NumOfInsts++;
+        }
+
         if (NumOfInsts > RegionLimitSize) break;
         insertInstruction(Addr, M.getInstAt(Addr).asI_);
         NumOfInsts++;

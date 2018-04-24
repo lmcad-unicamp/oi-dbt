@@ -29,7 +29,7 @@ void dbt::IREmitter::addFirstInstToMap(uint32_t GuestAddrs) {
 }
 
 void dbt::IREmitter::setIfNotTheFirstInstGen(Value *Inst) {
-  if (FirstInstGen == nullptr)
+  if (FirstInstGen == nullptr && dyn_cast<Instruction>(Inst))
     FirstInstGen = Inst;
 }
 

@@ -49,8 +49,8 @@ void Manager::runPipeline() {
     if (VerboseOutput)
       std::cerr << "OK" << std::endl;
 
-/*    if (VerboseOutput)
-      Module->print(llvm::errs(), nullptr);*/
+    if (VerboseOutput)
+      Module->print(llvm::errs(), nullptr);
 
     if (VerboseOutput) {
       std::cout << "---------------------- Printing OIRegion (OpenISA instr.) --------------------" << std::endl;
