@@ -128,7 +128,10 @@ namespace dbt {
       }
 
       size_t getNumOfOIRegions() {
-        return OIRegions.size();
+        OIRegionsMtx.lock();
+        size_t R = OIRegions.size();
+        OIRegionsMtx.unlock();
+        return R;
       }
 
       unsigned int getNumOfThreads(void){

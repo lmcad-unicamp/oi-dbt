@@ -1,4 +1,5 @@
 #include <RFT.hpp>
+#include <OIPrinter.hpp>
 
 #include <memory>
 
@@ -17,6 +18,7 @@ void NET::onBranch(Machine &M) {
         finishRegionFormation(); 
         break;
       }
+
       if (TotalInst < RegionLimitSize) {
         if (hasRecordedAddrs(I)) {
           finishRegionFormation(); 
@@ -25,6 +27,13 @@ void NET::onBranch(Machine &M) {
 
         insertInstruction(I, M.getInstAt(I).asI_);
         TotalInst++;
+      } else if (TotalInst == RegionLimitSize) {
+        for (auto I : OIRegion) {
+          std::cerr << std::hex << I[0] << ":\t" << dbt::OIPrinter::getString(OIDecoder::decode(I[1])) << "\n";
+        }
+        std::cerr <<"BLAH: " << I << "\n";
+        TotalInst++;
+        finishRegionFormation(); 
       }
     }
 

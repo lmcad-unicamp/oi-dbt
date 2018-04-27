@@ -39,7 +39,6 @@ namespace dbt {
       uint32_t Addrs;
     } OIInst;
 
-
     constexpr uint8_t getCount(Word W) {
       return (W.asI_) & 0xFF;
     }

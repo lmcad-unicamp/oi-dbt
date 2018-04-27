@@ -34,8 +34,9 @@ void MethodBased::addFunctionToCompile(uint32_t PC, Machine &M) {
 
       bool Inserted = finishRegionFormation();
 
-      if (Inserted)
-        while (!TheManager.isNativeRegionEntry(PossibleEntry)) {}
+      if (Inserted) {
+        while (TheManager.getNumOfOIRegions() != 0) {}//isNativeRegionEntry(PossibleEntry)) {}
+      }
     }
 
     for (uint32_t Addr = PC + 4; Addr < M.getMethodEnd(PC); Addr += 4) {

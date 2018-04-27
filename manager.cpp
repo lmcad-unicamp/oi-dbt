@@ -32,8 +32,7 @@ void Manager::runPipeline() {
       OIRegionsMtx.unlock_shared();
     }
 
-    if (OIRegion.size() == 0)
-      continue;
+    if (OIRegion.size() == 0) continue;
 
     CompiledOIRegionsMtx.lock();
     CompiledOIRegions[EntryAddress] = OIRegion;
@@ -53,12 +52,12 @@ void Manager::runPipeline() {
       Module->print(llvm::errs(), nullptr);
 
     if (VerboseOutput) {
-      std::cout << "---------------------- Printing OIRegion (OpenISA instr.) --------------------" << std::endl;
+      std::cerr << "---------------------- Printing OIRegion (OpenISA instr.) --------------------" << std::endl;
 
       for (auto Pair : OIRegion)
-        std::cout << std::hex << Pair[0] << ":\t" << dbt::OIPrinter::getString(OIDecoder::decode(Pair[1])) << "\n";
+        std::cerr << std::hex << Pair[0] << ":\t" << dbt::OIPrinter::getString(OIDecoder::decode(Pair[1])) << "\n";
 
-      std::cout << "\n" << std::endl;
+      std::cerr << "\n" << std::endl;
     }
 
     unsigned Size = 1;
@@ -73,46 +72,53 @@ void Manager::runPipeline() {
       for (auto& BB : F)
         OSize += BB.size();
 
-    if (VerboseOutput)
-      Module->print(llvm::errs(), nullptr);
+    // Remove a region if the first instruction is a return <- can cause infinity loops
+    llvm::Function* LLVMRegion = Module->getFunction("r"+std::to_string(EntryAddress));
+    if (LLVMRegion->getEntryBlock().getFirstNonPHI()->getOpcode() != llvm::Instruction::Ret) {
+      if (VerboseOutput)
+        Module->print(llvm::errs(), nullptr);
 
-    IRJIT->addModule(std::unique_ptr<llvm::Module>(Module));
+      IRJIT->addModule(std::unique_ptr<llvm::Module>(Module));
 
-    if (VerboseOutput)
-      llvm::errs() << ".. we've compiled (" << (float) OSize/Size << ")\n";
+      if (VerboseOutput)
+        llvm::errs() << ".. we've compiled (" << (float) OSize/Size << ")\n";
 
-    CompiledRegions += 1;
-    LLVMCompiled += OSize;
-    AvgOptCodeSize += (float) OSize/Size;
+      CompiledRegions += 1;
+      LLVMCompiled += OSize;
+      AvgOptCodeSize += (float) OSize/Size;
 
-    NativeRegionsMtx.lock();
+      NativeRegionsMtx.lock();
 
-    auto Addr = IRJIT->findSymbol("r"+std::to_string(EntryAddress)).getAddress();
+      auto Addr = IRJIT->findSymbol("r"+std::to_string(EntryAddress)).getAddress();
 
-    if (Addr)
-      NativeRegions[EntryAddress] = static_cast<intptr_t>(*Addr);
-    else
-      std::cerr << EntryAddress << " was not successfully compiled!\n";
+      if (Addr)
+        NativeRegions[EntryAddress] = static_cast<intptr_t>(*Addr);
+      else
+        std::cerr << EntryAddress << " was not successfully compiled!\n";
 
-    if (VerboseOutput) {
-      std::cerr << "Disassembly of Region: " << EntryAddress << ":" << std::endl;
-      std::ostringstream buffer;
-      size_t t = IREmitter::disassemble((const void*) *Addr, buffer);
-      std::cerr << buffer.str().c_str() << std::endl;
+      if (VerboseOutput) {
+        std::cerr << "Disassembly of Region: " << EntryAddress << ":" << std::endl;
+        std::ostringstream buffer;
+        size_t t = IREmitter::disassemble((const void*) *Addr, buffer);
+        std::cerr << buffer.str().c_str() << std::endl;
 
-      buffer.clear();
-      buffer.str("");
+        buffer.clear();
+        buffer.str("");
 
-      std::cerr << "Dumping Region: " << EntryAddress << ":" << std::endl;
-      IREmitter::regionDump((const void*) *Addr, buffer, t);
-      std::cerr << buffer.str().c_str() << std::endl;
+        std::cerr << "Dumping Region: " << EntryAddress << ":" << std::endl;
+        IREmitter::regionDump((const void*) *Addr, buffer, t);
+        std::cerr << buffer.str().c_str() << std::endl;
+      }
+
+      NativeRegionsMtx.unlock();
+    } else if (VerboseOutput) {
+        std::cerr << "Giving up " << std::hex << EntryAddress << " compilation as it starts with a return!\n";
     }
-
-    NativeRegionsMtx.unlock();
 
     OIRegionsMtx.lock();
     OIRegions.erase(EntryAddress);
     OIRegionsMtx.unlock();
+
   }
   isFinished = true;
 }
@@ -145,10 +151,10 @@ int32_t Manager::jumpToRegion(uint32_t EntryAddress, dbt::Machine& M) {
     //M.dumpRegisters();
 
     /*auto Addr = IRJIT->findSymbol("r"+std::to_string(JumpTo)).getAddress();
-    std::cerr << "Disassembly of Region: " << JumpTo << ":" << std::endl;
-    std::ostringstream buffer;
-    size_t t = IREmitter::disassemble((const void*) *Addr, buffer);
-    std::cerr << buffer.str().c_str() << std::endl;*/
+      std::cerr << "Disassembly of Region: " << JumpTo << ":" << std::endl;
+      std::ostringstream buffer;
+      size_t t = IREmitter::disassemble((const void*) *Addr, buffer);
+      std::cerr << buffer.str().c_str() << std::endl;*/
 
 
     M.setOnNativeExecution(JumpTo);
