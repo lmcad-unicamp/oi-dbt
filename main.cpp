@@ -63,9 +63,6 @@ std::unique_ptr<dbt::RFT> RftChosen;
 dbt::Machine M;
 
 void  sigHandler(int sig) {
-  //if (VerboseFlag.was_set())
-    //RftChosen->printRegions();
-
   if (M.isOnNativeExecution()) {
     std::cerr << "Error while executing region " << std::hex << M.getRegionBeingExecuted() << "\n";
   } else {

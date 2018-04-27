@@ -1,11 +1,9 @@
 #include <RFT.hpp>
-#include <OIPrinter.hpp>
 
 #include <memory>
 
 using namespace dbt;
 
-unsigned TotalInst = 0;
 void NET::onBranch(Machine &M) {
   if (Recording) { 
     if (OIDecoder::isIndirectBranch(OIDecoder::decode(M.getInstAt(M.getLastPC()).asI_)))
@@ -19,27 +17,13 @@ void NET::onBranch(Machine &M) {
         break;
       }
 
-      if (TotalInst < RegionLimitSize) {
-        if (hasRecordedAddrs(I)) {
-          finishRegionFormation(); 
-          break;
-        }
-
-        insertInstruction(I, M.getInstAt(I).asI_);
-        TotalInst++;
-      } else if (TotalInst == RegionLimitSize) {
-        for (auto I : OIRegion) {
-          std::cerr << std::hex << I[0] << ":\t" << dbt::OIPrinter::getString(OIDecoder::decode(I[1])) << "\n";
-        }
-        std::cerr <<"BLAH: " << I << "\n";
-        TotalInst++;
+      if (hasRecordedAddrs(I)) {
         finishRegionFormation(); 
+        break;
       }
-    }
 
-    /*if (M.getPC() < M.getLastPC()) {
-      finishRegionFormation(); 
-    }*/
+      insertInstruction(I, M.getInstAt(I).asI_);
+    }
   } else if (M.getPC() < M.getLastPC()) {
     ++ExecFreq[M.getPC()];
     if (!TheManager.isRegionEntry(M.getPC()) && ExecFreq[M.getPC()] > HotnessThreshold) 

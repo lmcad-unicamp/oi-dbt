@@ -1,4 +1,5 @@
 #include <RFT.hpp>
+#include <OIPrinter.hpp>
 
 #include <queue>
 #include <set>
@@ -8,6 +9,8 @@
 using namespace dbt;
 
 #define InstPair std::array<uint32_t, 2>
+
+unsigned TotalInst = 0;
 
 bool isControlFlowInst(uint32_t Opcode) {
   OIDecoder::OIInst Inst = OIDecoder::decode(Opcode);
@@ -21,8 +24,19 @@ std::array<uint32_t, 2> getPossibleNextAddrs(InstPair Branch) {
 
 void NETPlus::addNewPath(OIInstList NewPath) {
   std::reverse(NewPath.begin(), NewPath.end());
-  for (auto NewInst : NewPath) 
-    insertInstruction(NewInst[0], NewInst[1]);
+  for (auto NewInst : NewPath) {
+    if (TotalInst < RegionLimitSize) {
+      insertInstruction(NewInst[0], NewInst[1]);
+      TotalInst++;
+    } else if (TotalInst == RegionLimitSize) {
+      for (auto I : OIRegion) {
+        std::cerr << std::hex << I[0] << ":\t" << dbt::OIPrinter::getString(OIDecoder::decode(I[1])) << "\n";
+      }
+      std::cerr <<"BLAH: " << OIRegion[0][0] << "\n";
+      TotalInst++;
+      finishRegionFormation(); 
+    }
+  }
 }
 
 void NETPlus::expand(unsigned Deepness, Machine& M) {
@@ -57,7 +71,7 @@ void NETPlus::expand(unsigned Deepness, Machine& M) {
     if (Distance[Current[0]] < Deepness) {
 
       for (auto Target : getPossibleNextAddrs(Current)) {
-        if (Parent.count(Target) != 0) continue;
+        if (Target == 0 || Parent.count(Target) != 0) continue;
 
         Parent[Target] = Current;
         // Iterate over all instructions between the target and the next branch
@@ -127,7 +141,17 @@ void NETPlus::onBranch(Machine& M) {
         break;
       }
 
-      OIRegion.push_back({I, M.getInstAt(I).asI_});
+      if (TotalInst < RegionLimitSize) {
+        OIRegion.push_back({I, M.getInstAt(I).asI_});
+        TotalInst++;
+      } else if (TotalInst == RegionLimitSize) {
+        for (auto I : OIRegion) {
+          std::cerr << std::hex << I[0] << ":\t" << dbt::OIPrinter::getString(OIDecoder::decode(I[1])) << "\n";
+        }
+        std::cerr <<"BLAH: " << I << "\n";
+        TotalInst++;
+        finishRegionFormation(); 
+      }
     }
   } else if (M.getPC() < M.getLastPC()) {
     ++ExecFreq[M.getPC()];
@@ -139,11 +163,9 @@ void NETPlus::onBranch(Machine& M) {
     if (Recording) 
       expandAndFinish(M);
 
-  
     ++regionFrequency;
-    #define REGION_THRESHOLD 100
-    if(regionFrequency > REGION_THRESHOLD)
-    {
+#define REGION_THRESHOLD 100
+    if(regionFrequency > REGION_THRESHOLD) {
       TheManager.setRegionRecorging(true);
       regionFrequency=0;
     }

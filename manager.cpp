@@ -156,7 +156,6 @@ int32_t Manager::jumpToRegion(uint32_t EntryAddress, dbt::Machine& M) {
       size_t t = IREmitter::disassemble((const void*) *Addr, buffer);
       std::cerr << buffer.str().c_str() << std::endl;*/
 
-
     M.setOnNativeExecution(JumpTo);
     uint32_t (*FP)(int32_t*, uint32_t*, volatile uint64_t*) = (uint32_t (*)(int32_t*, uint32_t*, volatile uint64_t*)) NativeRegions[JumpTo];
     //assert(FP != NULL && "Error... Not compiled!");

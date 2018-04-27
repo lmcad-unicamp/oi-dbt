@@ -45,6 +45,7 @@ namespace dbt {
 
     uint32_t DataMemOffset;
     uint32_t CurrentEntryAddrs;
+    uint32_t LastEmittedAddrs;
 
     llvm::Value* FirstInstGen = nullptr;
     void addFirstInstToMap(uint32_t);
@@ -93,8 +94,6 @@ namespace dbt {
 
     llvm::Module* generateRegionIR(uint32_t, const OIInstList&, uint32_t, spp::sparse_hash_map<uint32_t, uint32_t>&,
         llvm::TargetMachine&, volatile uint64_t* NativeRegions);
-
-//    llvm::Module* generateMergedRegions(std::vector<OIInstList>&, uint32_t, spp::sparse_hash_map<uint32_t, uint32_t>&, llvm::TargetMachine&);
 
     static size_t disassemble(const void* func, std::ostream &buffer) {
       char outline[1024];

@@ -30,6 +30,13 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
   int instructions = 10;
   auto lastFuncInst = inst_end(Func);
 
+  // If the address is not continuos and the last inst was not a jump, split the BB
+  if (LastEmittedAddrs != 0 && abs(LastEmittedAddrs-GuestAddr) > 4 && Builder->GetInsertBlock()->size() != 0) {
+    Builder->CreateRet(genImm(LastEmittedAddrs+4));
+    BasicBlock* BB = BasicBlock::Create(TheContext, "", Func);
+    Builder->SetInsertPoint(BB);
+  }
+
   switch (Inst.Type) {
     case dbt::OIDecoder::Nop: {
         Function *fun = Intrinsic::getDeclaration(Func->getParent(), Intrinsic::donothing);
@@ -1166,6 +1173,7 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
   }
 
   addFirstInstToMap(GuestAddr);
+  LastEmittedAddrs = GuestAddr;
 }
 
 void dbt::IREmitter::updateBranchTarget(uint32_t GuestAddr, std::array<uint32_t, 2> Tgts) {
