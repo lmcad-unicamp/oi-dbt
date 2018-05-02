@@ -555,14 +555,14 @@ namespace dbt {
         case dbt::OIDecoder::Call:
           return {(PC & 0xF0000000) | (Inst.Addrs << 2), 0};
         default:
-          return {PC, PC};
+          return {PC+4, PC+4};
       }
-      return {PC, PC};
+      return {PC+4, PC+4};
     }
 
     static bool isControlFlowInst(OIInst Inst) {
       auto T = getPossibleTargets(1, Inst);
-      if (T[0] == 1 && T[1] == 1) 
+      if (T[0] == 5 && T[1] == 5) 
         return false;
       return true;
     }

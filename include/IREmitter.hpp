@@ -45,6 +45,7 @@ namespace dbt {
 
     uint32_t DataMemOffset;
     uint32_t CurrentEntryAddrs;
+    dbt::OIDecoder::OIInst   LastEmittedInst;
     uint32_t LastEmittedAddrs;
 
     llvm::Value* FirstInstGen = nullptr;

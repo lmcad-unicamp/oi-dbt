@@ -31,7 +31,8 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
   auto lastFuncInst = inst_end(Func);
 
   // If the address is not continuos and the last inst was not a jump, split the BB
-  if (LastEmittedAddrs != 0 && abs(LastEmittedAddrs-GuestAddr) > 4 && Builder->GetInsertBlock()->size() != 0) {
+  std::array<uint32_t, 2> Targets = getPossibleTargets(LastEmittedAddrs, LastEmittedInst);
+  if (LastEmittedAddrs != 0 && Targets[0] != GuestAddr && Targets[1] != GuestAddr) {
     Builder->CreateRet(genImm(LastEmittedAddrs+4));
     BasicBlock* BB = BasicBlock::Create(TheContext, "", Func);
     Builder->SetInsertPoint(BB);
@@ -1160,7 +1161,7 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
       }
 
     default: {
-        std::cout << "Mother of God! We don't have support to emit inst at: " << std::hex << GuestAddr << " (" <<
+        std::cerr << "Mother of God! We don't have support to emit inst at: " << std::hex << GuestAddr << " (" <<
           dbt::OIPrinter::getString(Inst) << ")\n";
         exit(1);
       }
@@ -1174,6 +1175,7 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
 
   addFirstInstToMap(GuestAddr);
   LastEmittedAddrs = GuestAddr;
+  LastEmittedInst  = Inst;
 }
 
 void dbt::IREmitter::updateBranchTarget(uint32_t GuestAddr, std::array<uint32_t, 2> Tgts) {

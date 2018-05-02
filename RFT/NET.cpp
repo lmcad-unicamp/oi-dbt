@@ -1,9 +1,11 @@
 #include <RFT.hpp>
+#include <OIPrinter.hpp>
 
 #include <memory>
 
 using namespace dbt;
 
+unsigned TotalInst1;
 void NET::onBranch(Machine &M) {
   if (Recording) { 
     if (OIDecoder::isIndirectBranch(OIDecoder::decode(M.getInstAt(M.getLastPC()).asI_)))
@@ -22,7 +24,18 @@ void NET::onBranch(Machine &M) {
         break;
       }
 
-      insertInstruction(I, M.getInstAt(I).asI_);
+      if (TotalInst1 < RegionLimitSize) {
+        insertInstruction(I, M.getInstAt(I).asI_);
+        TotalInst1++;
+      } else if (TotalInst1 == RegionLimitSize) {
+        for (auto I : OIRegion) {
+          std::cerr << std::hex << I[0] << ":\t" << dbt::OIPrinter::getString(OIDecoder::decode(I[1])) << "\n";
+        }
+        std::cerr <<"BLAH: " << I << "\n";
+        TotalInst1++;
+        finishRegionFormation(); 
+      }
+
     }
   } else if (M.getPC() < M.getLastPC()) {
     ++ExecFreq[M.getPC()];
