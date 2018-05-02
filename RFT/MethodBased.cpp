@@ -21,7 +21,7 @@ void MethodBased::addFunctionToCompile(uint32_t PC, Machine &M) {
     PossibleEntries.push_back(PC);
     for (uint32_t Addr = PC; Addr < M.getMethodEnd(PC); Addr += 4) {
       auto I  = OIDecoder::decode(M.getInstAt(Addr).asI_);
-      if (I.Type == OIDecoder::OIInstType::Call || I.Type == OIDecoder::OIInstType::Syscall || I.Type == OIDecoder::OIInstType::Callr || I.Type == OIDecoder::OIInstType::Ijmp || I.Type == OIDecoder::OIInstType::Bc1f || I.Type == OIDecoder::OIInstType::Bc1t)
+      if (I.Type == OIDecoder::OIInstType::Call || I.Type == OIDecoder::OIInstType::Syscall || I.Type == OIDecoder::OIInstType::Callr || I.Type == OIDecoder::OIInstType::Ijmp)
         PossibleEntries.push_back(Addr+4);
     }
 

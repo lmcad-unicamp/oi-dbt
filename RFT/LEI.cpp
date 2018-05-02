@@ -78,6 +78,8 @@ void LEI::onBranch(Machine& M) {
         // recycle counter associated with tgt
         ExecFreq[tgt] = 0;
 
+        while (TheManager.getNumOfOIRegions() != 0) {}
+
         // jump newT
         if (TheManager.isNativeRegionEntry(tgt)) 
           M.setPC(TheManager.jumpToRegion(tgt, M)); 
