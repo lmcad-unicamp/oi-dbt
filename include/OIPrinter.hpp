@@ -210,6 +210,9 @@ namespace dbt {
         case Ceqs:
           Out << "c.eq.s";
           break;
+        case Cueqd:
+          Out << "c.ueq.d";
+          break;
         case Ceqd:
           Out << "c.eq.d";
           break;
@@ -236,6 +239,9 @@ namespace dbt {
           break;
         case Movtd:
           Out << "movt.d";
+          break;
+        case Movts:
+          Out << "movt.s";
           break;
         case Movfd:
           Out << "movf.d";

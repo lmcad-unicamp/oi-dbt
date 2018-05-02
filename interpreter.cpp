@@ -180,7 +180,7 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
       SET_DISPACH(Addrs, Movd,    &&movd);
       SET_DISPACH(Addrs, Movf,    &&movf);
       SET_DISPACH(Addrs, Movt,    &&movt);
-      SET_DISPACH(Addrs, Movts,    &&movts);
+      SET_DISPACH(Addrs, Movts,   &&movts);
       SET_DISPACH(Addrs, Movs,    &&movs);
       SET_DISPACH(Addrs, Movzd,   &&movzd);
       SET_DISPACH(Addrs, Movzs,   &&movzs);
