@@ -1061,8 +1061,7 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
     case dbt::OIDecoder::Jgez: {
         BasicBlock* BB = BasicBlock::Create(TheContext, "", Func);
         Value* Res1 = Builder->CreateAnd(genLoadRegister(Inst.RT, Func), 0x80000000);
-        Value* Res2 = Builder->CreateNot(Res1);
-        Value* Res  = Builder->CreateICmpNE(Res2, genImm(0));
+        Value* Res  = Builder->CreateICmpEQ(Res1, genImm(0));
         BranchInst* Br = Builder->CreateCondBr(Res, BB, BB);
         Builder->SetInsertPoint(BB);
         IRBranchMap[GuestAddr] = Br;
@@ -1324,15 +1323,9 @@ Module* dbt::IREmitter::generateRegionIR(uint32_t EntryAddress, const OIInstList
     OIDecoder::OIInst Inst = OIDecoder::decode(Pair[1]);
     generateInstIR(Pair[0], Inst);
   }
+  insertDirectExit(OIRegion.back()[0]+4);
 
   processBranchesTargets(OIRegion);
-
-  for (auto& BB : *F) {
-    if (BB.getTerminator() == nullptr) {
-      Builder->SetInsertPoint(&BB);
-      insertDirectExit(OIRegion.back()[0]+4);
-    }
-  }
 
   id++;
   return TheModule;

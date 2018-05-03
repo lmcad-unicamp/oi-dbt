@@ -32,9 +32,10 @@ void dbt::RFT::startRegionFormation(uint32_t PC) {
 }
 
 bool dbt::RFT::hasRecordedAddrs(uint32_t Addrs) {
-  for (auto I : OIRegion)
-    if (I[0] == Addrs)
+  for (auto I : OIRegion){
+    if (I[0] == Addrs) 
       return true;
+  }
   return false;
 }
 

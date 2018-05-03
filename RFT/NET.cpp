@@ -8,37 +8,43 @@ using namespace dbt;
 //#define LIMITED
 
 #ifdef LIMITED
-unsigned TotalInst1;
+unsigned TotalInst1 = 0;
 #endif
 
 void NET::onBranch(Machine &M) {
   if (Recording) { 
-    if (OIDecoder::isIndirectBranch(OIDecoder::decode(M.getInstAt(M.getLastPC()).asI_)))
-      setBranchTarget(M.getLastPC(), M.getPC());
+#ifdef LIMITED
+    if (TotalInst1 <= RegionLimitSize) {
+#endif
+      if (OIDecoder::isIndirectBranch(OIDecoder::decode(M.getInstAt(M.getLastPC()).asI_)))
+        setBranchTarget(M.getLastPC(), M.getPC());
 
-    for (uint32_t I = LastTarget; I <= M.getLastPC(); I += 4) {
-      if (TheManager.isRegionEntry(I) || OIRegion.size() > RegionMaxSize || (IsRelaxed && hasRecordedAddrs(I))
-          || (!IsRelaxed && (M.getPC() < M.getLastPC()))) { 
-        finishRegionFormation(); 
-        break;
-      }
+      for (uint32_t I = LastTarget; I <= M.getLastPC(); I += 4) {
+        if (TheManager.isRegionEntry(I) || OIRegion.size() > RegionMaxSize || (IsRelaxed && hasRecordedAddrs(I))
+            || (!IsRelaxed && (M.getPC() < M.getLastPC()))) { 
+          finishRegionFormation(); 
+          break;
+        }
 
 #ifdef LIMITED      
-      if (TotalInst1 < RegionLimitSize) {
-        insertInstruction(I, M.getInstAt(I).asI_);
-        TotalInst1++;
-      } else if (TotalInst1 == RegionLimitSize) {
-        for (auto I : OIRegion) {
-          std::cerr << std::hex << I[0] << ":\t" << dbt::OIPrinter::getString(OIDecoder::decode(I[1])) << "\n";
+        if (TotalInst1 < RegionLimitSize) {
+          insertInstruction(I, M.getInstAt(I).asI_);
+          TotalInst1++;
+        } else if (TotalInst1 == RegionLimitSize) {
+          for (auto I : OIRegion) {
+            std::cerr << std::hex << I[0] << ":\t" << dbt::OIPrinter::getString(OIDecoder::decode(I[1])) << "\n";
+          }
+          std::cerr <<"BLAH: " << I << "\n";
+          TotalInst1++;
+          finishRegionFormation(); 
         }
-        std::cerr <<"BLAH: " << I << "\n";
-        TotalInst1++;
-        finishRegionFormation(); 
-      }
 #else
-      insertInstruction(I, M.getInstAt(I).asI_);
+        insertInstruction(I, M.getInstAt(I).asI_);
 #endif      
+      }
+#ifdef LIMITED
     }
+#endif
   } else if (M.getPC() < M.getLastPC()) {
     ++ExecFreq[M.getPC()];
     if (!TheManager.isRegionEntry(M.getPC()) && ExecFreq[M.getPC()] > HotnessThreshold) 

@@ -21,12 +21,12 @@ void MethodBased::addFunctionToCompile(uint32_t PC, Machine &M) {
     PossibleEntries.push_back(PC);
     for (uint32_t Addr = PC; Addr < M.getMethodEnd(PC); Addr += 4) {
       auto I  = OIDecoder::decode(M.getInstAt(Addr).asI_);
-      if (I.Type == OIDecoder::OIInstType::Call || I.Type == OIDecoder::OIInstType::Syscall || I.Type == OIDecoder::OIInstType::Callr || I.Type == OIDecoder::OIInstType::Ijmp)
-        PossibleEntries.push_back(Addr+4);
+      if (I.Type == OIDecoder::OIInstType::Call || I.Type == OIDecoder::OIInstType::Syscall || I.Type == OIDecoder::OIInstType::Callr || I.Type == OIDecoder::OIInstType::Ijmp) 
+        if (AlreadyCompiled.count(Addr+4) == 0) 
+          PossibleEntries.push_back(Addr+4);
     }
 
     for (auto PossibleEntry : PossibleEntries) {
-      if (AlreadyCompiled.count(PossibleEntry) == 0) {
         startRegionFormation(PossibleEntry);
 
         for (uint32_t Addr = PossibleEntry; Addr < M.getMethodEnd(PC); Addr += 4) {
@@ -49,10 +49,6 @@ void MethodBased::addFunctionToCompile(uint32_t PC, Machine &M) {
 
         bool Inserted = finishRegionFormation();
         AlreadyCompiled.insert(PossibleEntry);
-        if (Inserted) {
-          while (TheManager.getNumOfOIRegions() != 0) {}//isNativeRegionEntry(PossibleEntry)) {}
-        }
-      }
     }
 
     for (uint32_t Addr = PC + 4; Addr < M.getMethodEnd(PC); Addr += 4) {
@@ -64,11 +60,14 @@ void MethodBased::addFunctionToCompile(uint32_t PC, Machine &M) {
       }
     }
   }
+
 }
 
 void MethodBased::onBranch(Machine &M) {
-  if (!TheManager.isNativeRegionEntry(M.getPC()))
+  if (!TheManager.isNativeRegionEntry(M.getPC())) {
     addFunctionToCompile(M.getPC(), M);
+    while (TheManager.getNumOfOIRegions() != 0) {}//isNativeRegionEntry(PossibleEntry)) {}
+  }
 
   if (!M.isPreheating() && TheManager.isNativeRegionEntry(M.getPC())) {
     auto Next = TheManager.jumpToRegion(M.getPC(), M);

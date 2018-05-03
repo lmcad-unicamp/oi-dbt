@@ -146,31 +146,12 @@ int32_t Manager::jumpToRegion(uint32_t EntryAddress, dbt::Machine& M) {
     if(isRegionRecorging)
       RegionAddresses.push_back(LastTo);
 
-    //std::cerr << "\nStarting native execution on Address: " << std::hex << JumpTo << std::endl;
-    //std::cerr << "State before entering region...";
-    //M.dumpRegisters();
-
-    /*auto Addr = IRJIT->findSymbol("r"+std::to_string(JumpTo)).getAddress();
-      std::cerr << "Disassembly of Region: " << JumpTo << ":" << std::endl;
-      std::ostringstream buffer;
-      size_t t = IREmitter::disassemble((const void*) *Addr, buffer);
-      std::cerr << buffer.str().c_str() << std::endl;*/
-
     M.setOnNativeExecution(JumpTo);
     uint32_t (*FP)(int32_t*, uint32_t*, volatile uint64_t*) = (uint32_t (*)(int32_t*, uint32_t*, volatile uint64_t*)) NativeRegions[JumpTo];
-    //assert(FP != NULL && "Error... Not compiled!");
     JumpTo = FP(M.getRegisterPtr(), M.getMemoryPtr(), NativeRegions);
-
-    //std::cerr << "Back to interpreter! Ret Address: " << std::hex << JumpTo << std::endl;
-    //std::cerr << "State after exiting region...\n";
-    //M.dumpRegisters();
-    //M.setPC(JumpTo);
-    //break;
   }
 
   M.setOffNativeExecution();
-
-  //std::cerr << "Ending native execution. Ret Address: " << std::hex << JumpTo << std::endl;
 
   return JumpTo;
 }
