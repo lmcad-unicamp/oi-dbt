@@ -18,9 +18,6 @@ using namespace llvm;
 
 void dbt::IREmitter::insertDirectExit(uint32_t ExitAddrs) {
   Builder->CreateRet(genImm(ExitAddrs));
-  if (DirectTransitions.count(ExitAddrs) == 0)
-    DirectTransitions[ExitAddrs];
-  DirectTransitions[ExitAddrs].push_back(CurrentEntryAddrs);
 }
 
 void dbt::IREmitter::addFirstInstToMap(uint32_t GuestAddrs) {

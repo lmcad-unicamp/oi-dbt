@@ -30,6 +30,7 @@ namespace dbt {
     uint32_t LastTarget;
 
     unsigned RegionLimitSize = -1;
+    unsigned RegionMaxSize = 100;
     
     Manager& TheManager;
 
@@ -58,8 +59,9 @@ namespace dbt {
   };
 
   class NET : public RFT {
+    bool IsRelaxed;
   public:
-    NET(Manager& M) : RFT(M) {};
+    NET(Manager& M, bool Relaxed = false) : RFT(M), IsRelaxed(Relaxed) {};
 
     void onBranch(dbt::Machine&);
   };
@@ -89,7 +91,6 @@ namespace dbt {
   };
 
   class MRET2 : public RFT {
-  private:
     OIInstList RecordingBufferTmp1, RecordingBufferTmp2;
 
     uint32_t header;
@@ -97,8 +98,10 @@ namespace dbt {
 
     unsigned stored_index = 0;
     OIInstList stored[1000];
+
+    bool IsRelaxed;
   public:
-    MRET2(Manager& M) : RFT(M) {};
+    MRET2(Manager& M, bool Relaxed = false) : RFT(M), IsRelaxed(Relaxed) {};
 
     uint32_t getStoredIndex(uint32_t);
     uint32_t getPhase(uint32_t);
@@ -113,8 +116,10 @@ namespace dbt {
     void addNewPath(OIInstList);
     void expand(unsigned, Machine&);
     void expandAndFinish(Machine&);
+
+    bool IsExtendedRelaxed;
   public:
-    NETPlus(Manager& M) : RFT(M) {};
+    NETPlus(Manager& M, bool ExtRelaxed = false) : RFT(M), IsExtendedRelaxed(ExtRelaxed) {};
 
     void onBranch(dbt::Machine&);
   };

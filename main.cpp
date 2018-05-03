@@ -35,7 +35,7 @@ void usage(char* PrgName) {
   #endif
   cout << "\n\n";
   cout << "Usage: " << PrgName <<
-    " [-rft {net, mret2, lef, lei, netplus, mb}] [-interpret] -bin PathToBinary\n\n";
+    " [-rft {net, net-r, mret2, lef, lei, netplus, netplus-e-r, mb}] [-interpret] -bin PathToBinary\n\n";
 
   cout << "DESCRIPTION:\n";
   cout << "This program implements the OpenISA DBT (Dynamic Binary Translator)\n" <<
@@ -133,13 +133,19 @@ int main(int argc, char** argv) {
     if (RFTName == "net") {
       std::cerr << "NET RFT Selected\n";
       RftChosen = std::make_unique<dbt::NET>(TheManager);
+    } else if (RFTName == "net-r") {
+      std::cerr << "NET-R RFT Selected\n";
+      RftChosen = std::make_unique<dbt::NET>(TheManager, true);
     } else if (RFTName == "mret2") {
       std::cerr << "MRET2 RFT Selected\n";
       RftChosen = std::make_unique<dbt::MRET2>(TheManager);
     } else if (RFTName == "netplus") {
       std::cerr << "NETPlus RFT Selected\n";
       RftChosen = std::make_unique<dbt::NETPlus>(TheManager);
-    } else if (RFTName == "lei") {
+    } else if (RFTName == "netplus-e-r") {
+      std::cerr << "NETPlus-e-r RFT Selected\n";
+      RftChosen = std::make_unique<dbt::NETPlus>(TheManager, true);
+    }else if (RFTName == "lei") {
       std::cerr << "LEI rft selected\n";
       RftChosen = std::make_unique<dbt::LEI>(TheManager);
     } else if (RFTName == "mb") {

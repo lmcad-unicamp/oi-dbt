@@ -28,7 +28,6 @@
 #define __STDC_CONSTANT_MACROS // llvm complains otherwise
 #define __STDC_LIMIT_MACROS
 
-
 #define OIInstList std::vector<std::array<uint32_t,2>>
 
 namespace dbt {

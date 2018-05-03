@@ -5,25 +5,25 @@
 
 using namespace dbt;
 
+//#define LIMITED
+
+#ifdef LIMITED
 unsigned TotalInst1;
+#endif
+
 void NET::onBranch(Machine &M) {
   if (Recording) { 
     if (OIDecoder::isIndirectBranch(OIDecoder::decode(M.getInstAt(M.getLastPC()).asI_)))
       setBranchTarget(M.getLastPC(), M.getPC());
 
     for (uint32_t I = LastTarget; I <= M.getLastPC(); I += 4) {
-      if (TheManager.isRegionEntry(I) || 
-          OIDecoder::decode(M.getInstAt(I).asI_).Type == OIDecoder::OIInstType::Sqrts ||
-          OIDecoder::decode(M.getInstAt(I).asI_).Type == OIDecoder::OIInstType::Sqrtd) {
+      if (TheManager.isRegionEntry(I) || OIRegion.size() > RegionMaxSize || (IsRelaxed && hasRecordedAddrs(I))
+          || (!IsRelaxed && (M.getPC() < M.getLastPC()))) { 
         finishRegionFormation(); 
         break;
       }
 
-      if (hasRecordedAddrs(I)) {
-        finishRegionFormation(); 
-        break;
-      }
-
+#ifdef LIMITED      
       if (TotalInst1 < RegionLimitSize) {
         insertInstruction(I, M.getInstAt(I).asI_);
         TotalInst1++;
@@ -35,7 +35,9 @@ void NET::onBranch(Machine &M) {
         TotalInst1++;
         finishRegionFormation(); 
       }
-
+#else
+      insertInstruction(I, M.getInstAt(I).asI_);
+#endif      
     }
   } else if (M.getPC() < M.getLastPC()) {
     ++ExecFreq[M.getPC()];

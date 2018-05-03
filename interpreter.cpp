@@ -14,6 +14,8 @@ using namespace dbt::OIDecoder;
 #define COLOR_NONE ""
 #endif
 
+//#define PRINTINST
+
 uint64_t instacc = 0;
 #ifdef PRINTINST
 #include <OIPrinter.hpp>

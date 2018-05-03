@@ -95,6 +95,7 @@ void Manager::runPipeline() {
         NativeRegions[EntryAddress] = static_cast<intptr_t>(*Addr);
       else
         std::cerr << EntryAddress << " was not successfully compiled!\n";
+      NativeRegionsMtx.unlock();
 
       if (VerboseOutput) {
         std::cerr << "Disassembly of Region: " << EntryAddress << ":" << std::endl;
@@ -110,7 +111,6 @@ void Manager::runPipeline() {
         std::cerr << buffer.str().c_str() << std::endl;
       }
 
-      NativeRegionsMtx.unlock();
     } else if (VerboseOutput) {
         std::cerr << "Giving up " << std::hex << EntryAddress << " compilation as it starts with a return!\n";
     }

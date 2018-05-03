@@ -10,7 +10,11 @@ using namespace dbt;
 
 #define InstPair std::array<uint32_t, 2>
 
+//#define LIMITED
+
+#ifdef LIMITED
 unsigned TotalInst = 0;
+#endif
 
 bool isControlFlowInst(uint32_t Opcode) {
   OIDecoder::OIInst Inst = OIDecoder::decode(Opcode);
@@ -25,6 +29,7 @@ std::array<uint32_t, 2> getPossibleNextAddrs(InstPair Branch) {
 void NETPlus::addNewPath(OIInstList NewPath) {
   std::reverse(NewPath.begin(), NewPath.end());
   for (auto NewInst : NewPath) {
+#ifdef LIMITED
     if (TotalInst < RegionLimitSize) {
       insertInstruction(NewInst[0], NewInst[1]);
       TotalInst++;
@@ -36,6 +41,9 @@ void NETPlus::addNewPath(OIInstList NewPath) {
       TotalInst++;
       finishRegionFormation(); 
     }
+#else
+    insertInstruction(NewInst[0], NewInst[1]);
+#endif
   }
 }
 
@@ -78,7 +86,10 @@ void NETPlus::expand(unsigned Deepness, Machine& M) {
         InstPair it = {Target, M.getInstAt(Target).asI_};
 
         while (it[0] < M.getCodeEndAddrs()) {
-          if (hasRecordedAddrs(it[0]) && Distance[Current[0]] > 0) {
+          bool IsCycle = ((hasRecordedAddrs(it[0]) && IsExtendedRelaxed) 
+              || (OIRegion[0][0] == it[0] && !IsExtendedRelaxed));
+
+          if (IsCycle && Distance[Current[0]] > 0) {
             OIInstList NewPath;
             uint32_t Begin = it[0];
             uint32_t Prev = Target;
@@ -129,18 +140,14 @@ void NETPlus::onBranch(Machine& M) {
       setBranchTarget(M.getLastPC(), M.getPC());
 
     for (uint32_t I = LastTarget; I <= M.getLastPC(); I += 4) {
-      if (TheManager.isRegionEntry(I) ||
-          OIDecoder::decode(M.getInstAt(I).asI_).Type == OIDecoder::OIInstType::Sqrts ||
-          OIDecoder::decode(M.getInstAt(I).asI_).Type == OIDecoder::OIInstType::Sqrtd) {
-
+      if (TheManager.isRegionEntry(I) || OIRegion.size() > RegionMaxSize 
+          || (IsExtendedRelaxed && hasRecordedAddrs(I))
+          || (!IsExtendedRelaxed && (M.getPC() < M.getLastPC()))) { 
         expandAndFinish(M);
         break;
       }
-      if (hasRecordedAddrs(I)) {
-        finishRegionFormation(); 
-        break;
-      }
 
+#ifdef LIMITED      
       if (TotalInst < RegionLimitSize) {
         OIRegion.push_back({I, M.getInstAt(I).asI_});
         TotalInst++;
@@ -152,6 +159,9 @@ void NETPlus::onBranch(Machine& M) {
         TotalInst++;
         finishRegionFormation(); 
       }
+#else
+      OIRegion.push_back({I, M.getInstAt(I).asI_});
+#endif
     }
   } else if (M.getPC() < M.getLastPC()) {
     ++ExecFreq[M.getPC()];

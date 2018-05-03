@@ -88,7 +88,6 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         break;
       }
 
-    //TODO
     case dbt::OIDecoder::Modu: {
         Value* Res = Builder->CreateURem(genLoadRegister(Inst.RS, Func), genLoadRegister(Inst.RT, Func));
         genStoreRegister(Inst.RV, Res, Func);
@@ -1287,8 +1286,11 @@ void dbt::IREmitter::processBranchesTargets(const OIInstList& OIRegion) {
   }
 }
 
-Module* dbt::IREmitter::generateRegionIR(uint32_t EntryAddress, const OIInstList& OIRegion, uint32_t MemOffset, spp::sparse_hash_map<uint32_t, uint32_t>& BT, TargetMachine& TM, volatile uint64_t* NativeRegions) {
+Module* dbt::IREmitter::generateRegionIR(uint32_t EntryAddress, const OIInstList& OIRegion, uint32_t MemOffset, 
+    spp::sparse_hash_map<uint32_t, uint32_t>& BT, TargetMachine& TM, volatile uint64_t* NativeRegions) {
+
   CurrentNativeRegions = NativeRegions;
+  LastEmittedAddrs = 0;
   static unsigned int id = 0;
   Module* TheModule = new Module(std::to_string(id), TheContext);
   TheModule->setDataLayout(TM.createDataLayout());
@@ -1322,11 +1324,15 @@ Module* dbt::IREmitter::generateRegionIR(uint32_t EntryAddress, const OIInstList
     OIDecoder::OIInst Inst = OIDecoder::decode(Pair[1]);
     generateInstIR(Pair[0], Inst);
   }
-  insertDirectExit(OIRegion.back()[0]+4);
 
   processBranchesTargets(OIRegion);
 
-  verifyModule(*TheModule);
+  for (auto& BB : *F) {
+    if (BB.getTerminator() == nullptr) {
+      Builder->SetInsertPoint(&BB);
+      insertDirectExit(OIRegion.back()[0]+4);
+    }
+  }
 
   id++;
   return TheModule;
