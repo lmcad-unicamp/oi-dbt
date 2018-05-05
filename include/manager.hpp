@@ -10,8 +10,10 @@
 #include <shared_mutex>
 #include <timer.hpp>
 #include <sparsepp/spp.h>
+#include <OIPrinter.hpp>
 
 #include "llvm/Support/TargetSelect.h"
+#include "llvm/Bitcode/BitcodeWriter.h"
 
 #define OIInstList std::vector<std::array<uint32_t,2>>
 #define NATIVE_REGION_SIZE 1000000
@@ -97,8 +99,7 @@ namespace dbt {
         isRunning = false;
 
         // Waits the thread finish
-        if(NumOfThreads)
-        {
+        if(NumOfThreads) {
           while (!isFinished) {}
 
           if (Thr.joinable())
@@ -166,6 +167,26 @@ namespace dbt {
 
       OIInstList getCompiledOIRegion(uint32_t EntryAddrs) {
         return CompiledOIRegions[EntryAddrs];
+      }
+
+      void dumpRegions() {
+        std::cerr << "Dumping IR regions!\n";
+        for (auto& M : IRRegions) {
+          std::cerr << "Dumping r" << M.first << ".bc\n"; 
+          std::error_code EC;
+          llvm::raw_fd_ostream OS("r"+std::to_string(M.first)+".bc", EC, llvm::sys::fs::F_None);
+          WriteBitcodeToFile(M.second, OS);
+          OS.flush(); 
+        }
+        std::cerr << "Dumping OI regions!\n";
+        for (auto OIRegion : CompiledOIRegions) {
+          std::cerr << "Dumping r" << OIRegion.first << ".oi\n"; 
+          std::error_code EC;
+          llvm::raw_fd_ostream OS("r"+std::to_string(OIRegion.first)+".oi", EC, llvm::sys::fs::F_None);
+          for (auto OIInsts : OIRegion.second) 
+            OS << OIInsts[0] << "\t" << OIPrinter::getString(OIDecoder::decode(OIInsts[1])) <<  "\n"; 
+          OS.flush();
+        }
       }
 
       std::unordered_map<uint32_t, OIInstList>::iterator oiregions_begin() { return CompiledOIRegions.begin(); };
