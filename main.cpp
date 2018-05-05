@@ -21,9 +21,13 @@ clarg::argBool   HelpFlag("-h",  "display the help message");
 clarg::argInt    RegionLimitSize("-l", "region size limit", 0);
 clarg::argString ToCompileFlag("-tc", "Functions to compile", "");
 clarg::argString ArgumentsFlag("-args", "Pass Parameters to binary file (as string)", "");
-clarg::argInt	   stackSizeFlag("-stack", "Set new stack size. (Default: 128mb)" , STACK_SIZE);
-clarg::argInt	   heapSizeFlag ("-heap", "Set new heap size (Default: 128mb)", HEAP_SIZE);
-clarg::argBool   singleThreadFlag("-single-thread", "Use one thread only (for compilation and running)");
+clarg::argInt	   StackSizeFlag("-stack", "Set new stack size. (Default: 128mb)" , STACK_SIZE);
+clarg::argInt	   HeapSizeFlag ("-heap", "Set new heap size (Default: 128mb)", HEAP_SIZE);
+
+/* Iterative Compiler Tools */
+clarg::argBool   DumpRegionsFlag("-dr", "Dump Regions (llvm ir and OI) to files");
+clarg::argString RegionsOptsFlag("-opts", "path to regions optimization list file", "");
+
 #ifdef DEBUG
 clarg::argInt debugFlag ("-d", "Set Debug Level. This value can be 1 or 2 (1 - Less verbosive; 2 - More Verbosive)", 1);
 #endif
@@ -39,7 +43,7 @@ void usage(char* PrgName) {
 
   cout << "DESCRIPTION:\n";
   cout << "This program implements the OpenISA DBT (Dynamic Binary Translator)\n" <<
-    "Institute of Computing, 2018.\n\n";
+    "Vanderson Martins do Rosario, 2018.\n\n";
 
   cout << "ARGUMENTS:\n";
   clarg::arguments_descriptions(cout, "  ", "\n");
@@ -102,14 +106,14 @@ int main(int argc, char** argv) {
   if (validateArguments())
     return 1;
 
-  if (stackSizeFlag.was_set()) {
-    std::cerr << "Stack size was set to " << stackSizeFlag.get_value() << std::endl;
-    M.setStackSize(stackSizeFlag.get_value());
+  if (StackSizeFlag.was_set()) {
+    std::cerr << "Stack size was set to " << StackSizeFlag.get_value() << std::endl;
+    M.setStackSize(StackSizeFlag.get_value());
   }
 
-  if (heapSizeFlag.was_set()) {
-    std::cerr << "Heap size was set to " << heapSizeFlag.get_value() << std::endl;
-    M.setHeapSize(heapSizeFlag.get_value());
+  if (HeapSizeFlag.was_set()) {
+    std::cerr << "Heap size was set to " << HeapSizeFlag.get_value() << std::endl;
+    M.setHeapSize(HeapSizeFlag.get_value());
   }
 
 
@@ -195,7 +199,6 @@ int main(int argc, char** argv) {
     M.setPreheating(false);
   }
 
-
   if(ArgumentsFlag.was_set())
     if(M.setCommandLineArguments(ArgumentsFlag.get_value()) < 0)
       exit(1);
@@ -203,9 +206,12 @@ int main(int argc, char** argv) {
   GlobalTimer.startClock();
   dbt::ITDInterpreter I(*SyscallM.get(), *RftChosen.get());
   std::cerr << "Starting execution:\n";
-  I.executeAll(M);
-  GlobalTimer.stopClock();
 
+  I.executeAll(M);
+
+  if (DumpRegionsFlag.was_set()) TheManager.dumpRegions();
+
+  GlobalTimer.stopClock();
   GlobalTimer.printReport("Global");
 
   if(ReportFileFlag.was_set()) {
@@ -238,12 +244,3 @@ int main(int argc, char** argv) {
   return SyscallM->getExitStatus();
 }
 
-/*
- * TODO:
- *  - Add all instructions need by printf (commit)
- *  - Correct bugs in at least 6 tests (commit)
- *  - Add new benchmarks (commit)
- *  - Make improvements on the code (commit)
- *  - Make improvements on the performance (commit)
- *  ---------------------------------------------------- Until: 24 May
- */

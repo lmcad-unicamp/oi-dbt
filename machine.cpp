@@ -98,15 +98,15 @@ void Machine::setPC(uint32_t NewPC) {
   #endif
 }
 
-Word Machine::getInstAt(uint32_t Addr) {
+dbt::Word Machine::getInstAt(uint32_t Addr) {
   return CodeMemory[Addr - CodeMemOffset];
 }
 
-Word Machine::getInstAtPC() {
+dbt::Word Machine::getInstAtPC() {
   return getInstAt(PC);
 }
 
-Word Machine::getNextInst() {
+dbt::Word Machine::getNextInst() {
   ++PC;
   return getInstAtPC();
 }
@@ -133,7 +133,7 @@ uint16_t Machine::getMemHalfAt(uint32_t Addr) {
   return Half.asH_;
 }
 
-Word Machine::getMemValueAt(uint32_t Addr) {
+dbt::Word Machine::getMemValueAt(uint32_t Addr) {
   uint32_t CorrectAddr = Addr - DataMemOffset;
   //assert((Addr % 4) == 0 && "Address not aligned!");
   Word Bytes;

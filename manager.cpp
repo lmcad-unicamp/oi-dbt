@@ -5,6 +5,7 @@
 #include "llvm/IR/Verifier.h"
 #include "llvm/Support/raw_ostream.h"
 #include "timer.hpp"
+#include "llvm/Transforms/Utils/Cloning.h"
 
 using namespace dbt;
 
@@ -78,6 +79,8 @@ void Manager::runPipeline() {
       if (VerboseOutput)
         Module->print(llvm::errs(), nullptr);
 
+      IRRegions[EntryAddress] = llvm::CloneModule(Module).release();
+
       IRJIT->addModule(std::unique_ptr<llvm::Module>(Module));
 
       if (VerboseOutput)
@@ -118,7 +121,6 @@ void Manager::runPipeline() {
     OIRegionsMtx.lock();
     OIRegions.erase(EntryAddress);
     OIRegionsMtx.unlock();
-
   }
   isFinished = true;
 }
