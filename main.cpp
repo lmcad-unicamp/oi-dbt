@@ -81,7 +81,7 @@ void  sigHandler(int sig) {
     std::cerr << "SIGSEGV (" << sig << ") while emulating at PC: " << std::hex << M.getPC() << std::dec << "\n";
 
   std::cerr << "Last Machine state:";
-  M.dumpRegisters();
+//  M.dumpRegisters();
 
   exit(1);
 }

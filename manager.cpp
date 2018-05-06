@@ -45,7 +45,6 @@ void Manager::runPipeline() {
     OICompiled += OIRegion.size();
 
     auto Module = IRE->generateRegionIR(EntryAddress, OIRegion, DataMemOffset, BrTargets, IRJIT->getTargetMachine(), NativeRegions);
-
     if (VerboseOutput)
       std::cerr << "OK" << std::endl;
 
@@ -98,6 +97,7 @@ void Manager::runPipeline() {
         NativeRegions[EntryAddress] = static_cast<intptr_t>(*Addr);
       else
         std::cerr << EntryAddress << " was not successfully compiled!\n";
+
       NativeRegionsMtx.unlock();
 
       if (VerboseOutput) {
@@ -139,21 +139,12 @@ bool Manager::addOIRegion(uint32_t EntryAddress, OIInstList OIRegion, spp::spars
 int32_t Manager::jumpToRegion(uint32_t EntryAddress, dbt::Machine& M) {
   uint32_t JumpTo = EntryAddress;
 
-  if(isRegionRecorging)
-    RegionAddresses.clear();
-
   while (isNativeRegionEntry(JumpTo)) {
     uint32_t LastTo = JumpTo;
 
-    if(isRegionRecorging)
-      RegionAddresses.push_back(LastTo);
-
-    M.setOnNativeExecution(JumpTo);
     uint32_t (*FP)(int32_t*, uint32_t*, volatile uint64_t*) = (uint32_t (*)(int32_t*, uint32_t*, volatile uint64_t*)) NativeRegions[JumpTo];
     JumpTo = FP(M.getRegisterPtr(), M.getMemoryPtr(), NativeRegions);
   }
-
-  M.setOffNativeExecution();
 
   return JumpTo;
 }

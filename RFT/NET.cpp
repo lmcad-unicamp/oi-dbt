@@ -5,7 +5,7 @@
 
 using namespace dbt;
 
-//#define LIMITED
+#define LIMITED
 
 #ifdef LIMITED
 unsigned TotalInst1 = 0;
@@ -23,6 +23,7 @@ void NET::onBranch(Machine &M) {
         if (TheManager.isRegionEntry(I) || OIRegion.size() > RegionMaxSize || (IsRelaxed && hasRecordedAddrs(I))
             || (!IsRelaxed && (M.getPC() < M.getLastPC()))) { 
           finishRegionFormation(); 
+          while (TheManager.getNumOfOIRegions() != 0) {}//isNativeRegionEntry(PossibleEntry)) {}
           break;
         }
 
@@ -37,6 +38,7 @@ void NET::onBranch(Machine &M) {
           std::cerr <<"BLAH: " << I << "\n";
           TotalInst1++;
           finishRegionFormation(); 
+          while (TheManager.getNumOfOIRegions() != 0) {}//isNativeRegionEntry(PossibleEntry)) {}
         }
 #else
         insertInstruction(I, M.getInstAt(I).asI_);

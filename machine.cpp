@@ -5,6 +5,8 @@
 
 using namespace dbt;
 
+//#define DEBUG
+
 #ifdef DEBUG
   #define CORRECT_ASSERT() assert(Addr>=DataMemOffset && "Error on correcting address. Data memory offset Value < 0!")
 #else
@@ -135,7 +137,6 @@ uint16_t Machine::getMemHalfAt(uint32_t Addr) {
 
 dbt::Word Machine::getMemValueAt(uint32_t Addr) {
   uint32_t CorrectAddr = Addr - DataMemOffset;
-  //assert((Addr % 4) == 0 && "Address not aligned!");
   Word Bytes;
   CORRECT_ASSERT();
   Bytes.asI_ = *((uint32_t*)(DataMemory.get() + CorrectAddr));
@@ -180,10 +181,6 @@ float Machine::getFloatRegister(uint16_t R) {
 }
 
 double Machine::getDoubleRegister(uint16_t R) {
-  /*double res;
-  uint64_t input = ((uint64_t)Register[2*R + 131]) + (((uint64_t)Register[2*R+130]) << 32);
-  memcpy(&res, &input, sizeof(input));
-  return res;*/
   return ((double*)Register)[R + 65];
 }
 
@@ -199,10 +196,6 @@ void Machine::setFloatRegister(uint16_t R, float V) {
 }
 
 void Machine::setDoubleRegister(uint16_t R, double V) {
-  /*uint64_t temp;
-  memcpy(&temp, &V, sizeof(temp));
-  Register[2*R + 131] = temp & 0xFFFFFFFF;
-  Register[2*R + 130] = temp >> 32;*/
   ((double*)Register)[R + 65] = V;
 }
 
