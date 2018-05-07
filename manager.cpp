@@ -44,7 +44,7 @@ void Manager::runPipeline() {
 
     OICompiled += OIRegion.size();
 
-    auto Module = IRE->generateRegionIR(EntryAddress, OIRegion, DataMemOffset, BrTargets, IRJIT->getTargetMachine(), NativeRegions);
+    auto Module = IRE->generateRegionIR(EntryAddress, OIRegion, DataMemOffset, TheMachine, IRJIT->getTargetMachine(), NativeRegions);
     if (VerboseOutput)
       std::cerr << "OK" << std::endl;
 
@@ -139,14 +139,14 @@ bool Manager::addOIRegion(uint32_t EntryAddress, OIInstList OIRegion, spp::spars
   return false;
 }
 
-int32_t Manager::jumpToRegion(uint32_t EntryAddress, dbt::Machine& M) {
+int32_t Manager::jumpToRegion(uint32_t EntryAddress) {
   uint32_t JumpTo = EntryAddress;
 
   while (isNativeRegionEntry(JumpTo)) {
     uint32_t LastTo = JumpTo;
 
     uint32_t (*FP)(int32_t*, uint32_t*, volatile uint64_t*) = (uint32_t (*)(int32_t*, uint32_t*, volatile uint64_t*)) NativeRegions[JumpTo];
-    JumpTo = FP(M.getRegisterPtr(), M.getMemoryPtr(), NativeRegions);
+    JumpTo = FP(TheMachine.getRegisterPtr(), TheMachine.getMemoryPtr(), NativeRegions);
   }
 
   return JumpTo;

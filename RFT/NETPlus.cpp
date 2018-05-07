@@ -180,7 +180,7 @@ void NETPlus::onBranch(Machine& M) {
       regionFrequency=0;
     }
 
-    auto Next = TheManager.jumpToRegion(M.getPC(), M); 
+    auto Next = TheManager.jumpToRegion(M.getPC()); 
     M.setPC(Next);
 
     ++ExecFreq[Next];

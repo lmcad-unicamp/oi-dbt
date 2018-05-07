@@ -149,7 +149,7 @@ int main(int argc, char** argv) {
     return 2;
   }
 
-  dbt::Manager TheManager(NumThreadsFlag.get_value(), M.getDataMemOffset(), VerboseFlag.was_set());
+  dbt::Manager TheManager(NumThreadsFlag.get_value(), M.getDataMemOffset(), M, VerboseFlag.was_set());
 
   if (CustomOptsFlag.was_set()) {
     TheManager.setOptPolicy(dbt::Manager::OptPolitic::Custom);

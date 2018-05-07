@@ -61,18 +61,12 @@ int Machine::setCommandLineArguments(std::string parameters) {
   offset = DataMemTotalSize-totalSize-1;
   setMemValueAt(sp, (uint32_t) argv.size());
 
-  #ifdef DEBUG
-  //std::cout << "Argc: " << argv.size() << "\n";
-  #endif
   for(auto argument : argv) {
     sp += 4;                                                          //Subtract stack pointer
     unsigned argSize = argument.length()+1;                           //Argument size
     copystr(DataMemory.get() + offset, argument.c_str(), argSize);    //Put argument in sp+4+size(arg[0..])=offset
     setMemValueAt(sp, (uint32_t) offset+DataMemOffset);               //Put offset in sp
     offset += argSize;                                                //Increment offset by argument Size
-    #ifdef DEBUG
-    //std::cout << argument << "\n";
-    #endif
   }
 
   setMemValueAt(sp+4, 0);
@@ -336,13 +330,11 @@ int Machine::loadELF(const std::string ElfPath) {
 }
 
 //#ifdef DEBUG
-void Machine::dumpRegisters(void)
-{
+void Machine::dumpRegisters(void) {
   std::cerr << std::endl << "PC: " << std::hex << PC << "; \n";
   std::cerr << "(int32_t [258]) = {" << std::endl;
 
-  for (int i = 0; i<258; ++i)
-  {
+  for (int i = 0; i<258; ++i) {
     std::cerr << "  [" << std::dec << i << "] = " << "0x" << std::setw(8) << std::setfill('0') << std::hex <<  Register[i] << std::endl;
   }
 

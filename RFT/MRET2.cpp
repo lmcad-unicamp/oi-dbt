@@ -74,7 +74,7 @@ void MRET2::onBranch(Machine& M) {
     if (Recording) 
       finishPhase();
 
-    auto Next = TheManager.jumpToRegion(M.getPC(), M); 
+    auto Next = TheManager.jumpToRegion(M.getPC()); 
     M.setPC(Next);
 
     ++ExecFreq[M.getPC()];

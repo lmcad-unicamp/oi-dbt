@@ -2,6 +2,7 @@
 #define IREMITTER_HPP
 
 #include <OIDecoder.hpp>
+#include <machine.hpp>
 
 #include "llvm/IR/Function.h"
 #include "llvm/IR/LLVMContext.h"
@@ -31,6 +32,7 @@
 #define OIInstList std::vector<std::array<uint32_t,2>>
 
 namespace dbt {
+  class Machine;
   class IREmitter {
   private:
 		llvm::LLVMContext TheContext;
@@ -88,8 +90,8 @@ namespace dbt {
 			Builder = std::make_unique<llvm::IRBuilder<>>(TheContext);
     };
 
-    llvm::Module* generateRegionIR(uint32_t, const OIInstList&, uint32_t, spp::sparse_hash_map<uint32_t, uint32_t>&,
-        llvm::TargetMachine&, volatile uint64_t* NativeRegions);
+    llvm::Module* generateRegionIR(uint32_t, const OIInstList&, uint32_t, dbt::Machine&, llvm::TargetMachine&, 
+        volatile uint64_t* NativeRegions);
 
     static size_t disassemble(const void* func, std::ostream &buffer) {
       char outline[1024];

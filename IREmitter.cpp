@@ -1334,8 +1334,8 @@ void dbt::IREmitter::processBranchesTargets(const OIInstList& OIRegion) {
   }
 }
 
-Module* dbt::IREmitter::generateRegionIR(uint32_t EntryAddress, const OIInstList& OIRegion, uint32_t MemOffset,
-    spp::sparse_hash_map<uint32_t, uint32_t>& BT, TargetMachine& TM, volatile uint64_t* NativeRegions) {
+Module* dbt::IREmitter::generateRegionIR(uint32_t EntryAddress, const OIInstList& OIRegion, uint32_t MemOffset, dbt::Machine& M,
+    TargetMachine& TM, volatile uint64_t* NativeRegions) {
 
   CurrentNativeRegions = NativeRegions;
   LastEmittedAddrs = 0;

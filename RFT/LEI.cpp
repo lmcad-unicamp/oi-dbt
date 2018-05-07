@@ -45,7 +45,7 @@ bool LEI::isFollowedByExit(int Old) {
 
 void LEI::onBranch(Machine& M) {
   if (TheManager.isNativeRegionEntry(M.getPC())) {
-    M.setPC(TheManager.jumpToRegion(M.getPC(), M)); 
+    M.setPC(TheManager.jumpToRegion(M.getPC())); 
     return;
   }
 
@@ -82,7 +82,7 @@ void LEI::onBranch(Machine& M) {
 
         // jump newT
         if (TheManager.isNativeRegionEntry(tgt)) 
-          M.setPC(TheManager.jumpToRegion(tgt, M)); 
+          M.setPC(TheManager.jumpToRegion(tgt)); 
       }
     }
   } else {

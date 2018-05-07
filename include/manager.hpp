@@ -19,6 +19,7 @@
 #define NATIVE_REGION_SIZE 1000000
 
 namespace dbt {
+  class IREmitter;
   class Machine;
   class Manager {
     public:
@@ -26,6 +27,7 @@ namespace dbt {
 
     private:
       llvm::LLVMContext TheContext;
+      dbt::Machine& TheMachine;
 
       spp::sparse_hash_map<uint32_t, spp::sparse_hash_map<uint32_t, uint32_t>> OIBrTargets;
       spp::sparse_hash_map<uint32_t, OIInstList> OIRegions;
@@ -63,8 +65,8 @@ namespace dbt {
       void runPipeline();
 
     public:
-      Manager(unsigned T, uint32_t DMO, bool VO = false) : NumOfThreads(T), DataMemOffset(DMO),
-         isRunning(true), isFinished(false), VerboseOutput(VO) {
+      Manager(unsigned T, uint32_t DMO, dbt::Machine& M, bool VO = false) : NumOfThreads(T), DataMemOffset(DMO),
+         isRunning(true), isFinished(false), VerboseOutput(VO), TheMachine(M) {
 
         memset((void*) NativeRegions, 0, sizeof(NativeRegions));
 
@@ -130,7 +132,7 @@ namespace dbt {
 
      bool addOIRegion(uint32_t, OIInstList, spp::sparse_hash_map<uint32_t, uint32_t>);
 
-      int32_t jumpToRegion(uint32_t, dbt::Machine&);
+      int32_t jumpToRegion(uint32_t);
 
       bool isRegionEntry(uint32_t EntryAddress) {
 //        std::shared_lock<std::shared_mutex> lockOI(OIRegionsMtx);

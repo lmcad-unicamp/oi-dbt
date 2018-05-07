@@ -69,7 +69,7 @@ void MethodBased::onBranch(Machine &M) {
   }
 
   if (!M.isPreheating() && TheManager.isNativeRegionEntry(M.getPC())) {
-    auto Next = TheManager.jumpToRegion(M.getPC(), M);
+    auto Next = TheManager.jumpToRegion(M.getPC());
     M.setPC(Next);
   }
 }

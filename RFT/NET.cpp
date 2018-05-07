@@ -5,7 +5,7 @@
 
 using namespace dbt;
 
-#define LIMITED
+//#define LIMITED
 
 #ifdef LIMITED
 unsigned TotalInst1 = 0;
@@ -23,7 +23,7 @@ void NET::onBranch(Machine &M) {
         if (TheManager.isRegionEntry(I) || OIRegion.size() > RegionMaxSize || (IsRelaxed && hasRecordedAddrs(I))
             || (!IsRelaxed && (M.getPC() < M.getLastPC()))) { 
           finishRegionFormation(); 
-          while (TheManager.getNumOfOIRegions() != 0) {}//isNativeRegionEntry(PossibleEntry)) {}
+ //         while (TheManager.getNumOfOIRegions() != 0) {}//isNativeRegionEntry(PossibleEntry)) {}
           break;
         }
 
@@ -57,7 +57,7 @@ void NET::onBranch(Machine &M) {
     if (Recording) 
       finishRegionFormation(); 
 
-    auto Next = TheManager.jumpToRegion(M.getPC(), M); 
+    auto Next = TheManager.jumpToRegion(M.getPC()); 
     M.setPC(Next);
 
     ++ExecFreq[Next];
