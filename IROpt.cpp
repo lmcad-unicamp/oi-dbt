@@ -73,6 +73,7 @@ void dbt::IROpt::populateFuncPassManager(llvm::legacy::FunctionPassManager* FPM,
         break;
     }
   }
+  std::cerr << "\n";
 }
 
 void dbt::IROpt::customOptimizeIRFunction(llvm::Module* M, std::vector<std::string> Opts) {
@@ -94,8 +95,8 @@ void dbt::IROpt::optimizeIRFunction(llvm::Module *M, OptLevel Level) {
           "memcpyopt", "loop-unswitch", "instcombine", "indvars", "loop-deletion", "loop-predication", "loop-unroll",
           "simplifycfg", "instcombine"});
       BasicPM->doInitialization();
-      for (auto &F : *M)
-        BasicPM->run(F);
     }
+    for (auto &F : *M)
+      BasicPM->run(F);
   } 
 }
