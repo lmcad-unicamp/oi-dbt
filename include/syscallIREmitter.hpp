@@ -4,6 +4,7 @@
 #include <OIDecoder.hpp>
 #include <syscall.hpp>
 #include <IREmitter.hpp>
+#include <map>
 
 #include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/STLExtras.h"
@@ -26,6 +27,7 @@ namespace dbt {
   private:
     IREmitter& emitter;
     void generateSyscallGet(const int syscallNo);
+    static std::map<std::string, llvm::Function*> external_functions_;
 
   public:
     SyscallIREmitter(IREmitter& E) : emitter(E) {};

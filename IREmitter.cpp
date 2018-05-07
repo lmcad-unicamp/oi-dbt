@@ -1,5 +1,5 @@
 #include <IREmitter.hpp>
-
+#include <syscallIREmitter.hpp>
 #include <OIPrinter.hpp>
 
 #include "llvm/ADT/APFloat.h"
@@ -29,6 +29,7 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
   LLVMContext& C = Func->getContext();
   int instructions = 10;
   auto lastFuncInst = inst_end(Func);
+  SyscallIREmitter syscallIR(*this);
 
   // If the address is not continuos and the last inst was not a jump, split the BB
   std::array<uint32_t, 2> Targets = getPossibleTargets(LastEmittedAddrs, LastEmittedInst);
@@ -1160,7 +1161,7 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
             Builder->SetInsertPoint(T2);
             Builder->CreateBr(BB);
           } else {
-            Builder->CreateBr(F2); 
+            Builder->CreateBr(F2);
           }
 
           Builder->SetInsertPoint(F2);
@@ -1200,6 +1201,7 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
       }
 
     case dbt::OIDecoder::Syscall:{
+      //syscallIR.generateSyscallIR(TheContext, Func, Builder, GuestAddr);
         Value* Res = Builder->CreateRet(genImm(GuestAddr));
         BasicBlock* BB = BasicBlock::Create(TheContext, "", Func);
         Builder->SetInsertPoint(BB);
@@ -1215,7 +1217,7 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
   }
   static int inst_i = 0;
 
-  if (!FirstInstGen) { 
+  if (!FirstInstGen) {
     std::cerr << "First Instruction not set for inst at " << std::hex << GuestAddr << "\n";
     exit(1);
   }
@@ -1332,7 +1334,7 @@ void dbt::IREmitter::processBranchesTargets(const OIInstList& OIRegion) {
   }
 }
 
-Module* dbt::IREmitter::generateRegionIR(uint32_t EntryAddress, const OIInstList& OIRegion, uint32_t MemOffset, 
+Module* dbt::IREmitter::generateRegionIR(uint32_t EntryAddress, const OIInstList& OIRegion, uint32_t MemOffset,
     spp::sparse_hash_map<uint32_t, uint32_t>& BT, TargetMachine& TM, volatile uint64_t* NativeRegions) {
 
   CurrentNativeRegions = NativeRegions;
@@ -1366,7 +1368,7 @@ Module* dbt::IREmitter::generateRegionIR(uint32_t EntryAddress, const OIInstList
   Builder->SetInsertPoint(BB);
 
   // Listing all existing addresses. This enables look-ahead while emitting code.
-  for (auto Pair : OIRegion) 
+  for (auto Pair : OIRegion)
     IRMemoryMap[Pair[0]] = nullptr;
 
   for (auto Pair : OIRegion) {
