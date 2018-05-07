@@ -23,6 +23,7 @@ clarg::argString ToCompileFlag("-tc", "Functions to compile", "");
 clarg::argString ArgumentsFlag("-args", "Pass Parameters to binary file (as string)", "");
 clarg::argInt	   StackSizeFlag("-stack", "Set new stack size. (Default: 128mb)" , STACK_SIZE);
 clarg::argInt	   HeapSizeFlag ("-heap", "Set new heap size (Default: 128mb)", HEAP_SIZE);
+clarg::argInt	   NumThreadsFlag ("-threads", "Number of compilation threads (min 1)", 1);
 
 /* Iterative Compiler Tools */
 clarg::argBool   DumpRegionsFlag("-dr", "Dump Regions (llvm ir and OI) to files");
@@ -148,7 +149,7 @@ int main(int argc, char** argv) {
     return 2;
   }
 
-  dbt::Manager TheManager(1, M.getDataMemOffset(), VerboseFlag.was_set());
+  dbt::Manager TheManager(NumThreadsFlag.get_value(), M.getDataMemOffset(), VerboseFlag.was_set());
 
   if (CustomOptsFlag.was_set()) {
     TheManager.setOptPolicy(dbt::Manager::OptPolitic::Custom);

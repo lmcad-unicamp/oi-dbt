@@ -14,11 +14,11 @@ void Manager::runPipeline() {
     llvm::InitializeNativeTarget();
     llvm::InitializeNativeTargetAsmPrinter();
     llvm::InitializeNativeTargetAsmParser();
-
-    IRE = llvm::make_unique<IREmitter>();
-    IRO = llvm::make_unique<IROpt>();
     IRJIT = new llvm::orc::IRLazyJIT();
   }
+
+  IRE = llvm::make_unique<IREmitter>();
+  IRO = llvm::make_unique<IROpt>();
 
   while (isRunning) {
     uint32_t EntryAddress;
@@ -65,11 +65,10 @@ void Manager::runPipeline() {
       for (auto& BB : F)
         Size += BB.size();
 
-    if (OptMode != OptPolitic::Custom) {
+    if (OptMode != OptPolitic::Custom) 
       IRO->optimizeIRFunction(Module, IROpt::OptLevel::Basic);
-    } else if (CustomOpts->count(EntryAddress) != 0) {
+    else if (CustomOpts->count(EntryAddress) != 0) 
       IRO->customOptimizeIRFunction(Module, (*CustomOpts)[EntryAddress]);
-    }
 
     unsigned OSize = 1;
     for (auto& F : *Module)
@@ -84,6 +83,7 @@ void Manager::runPipeline() {
 
       IRRegions[EntryAddress] = llvm::CloneModule(Module).release();
 
+      NativeRegionsMtx.lock();
       IRJIT->addModule(std::unique_ptr<llvm::Module>(Module));
 
       if (VerboseOutput)
@@ -93,7 +93,6 @@ void Manager::runPipeline() {
       LLVMCompiled += OSize;
       AvgOptCodeSize += (float) OSize/Size;
 
-      NativeRegionsMtx.lock();
 
       auto Addr = IRJIT->findSymbol("r"+std::to_string(EntryAddress)).getAddress();
 

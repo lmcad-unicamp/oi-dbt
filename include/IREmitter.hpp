@@ -44,7 +44,7 @@ namespace dbt {
 
     uint32_t DataMemOffset;
     uint32_t CurrentEntryAddrs;
-    dbt::OIDecoder::OIInst   LastEmittedInst;
+    dbt::OIDecoder::OIInst LastEmittedInst;
     uint32_t LastEmittedAddrs;
 
     llvm::Value* FirstInstGen = nullptr;
@@ -56,11 +56,9 @@ namespace dbt {
     std::unordered_map<uint32_t, llvm::BranchInst*> IRBranchMap;
     std::unordered_map<uint32_t, llvm::ReturnInst*> IRIBranchMap;
 
-    std::unordered_map<uint32_t, std::vector<uint32_t>> DirectTransitions; // FIXME: THIS SHOULDN'T BE IN THIS CLASS!
-
     void cleanCFG();
     void updateBranchTarget(uint32_t, std::array<uint32_t, 2>);
-    void improveIndirectBranch(uint32_t);
+    void improveIndirectBranch(uint32_t, uint32_t);
     void processBranchesTargets(const OIInstList&);
     void generateInstIR(const uint32_t, const OIDecoder::OIInst);
 
@@ -87,10 +85,6 @@ namespace dbt {
 		IREmitter() {
 			Builder = std::make_unique<llvm::IRBuilder<>>(TheContext);
     };
-
-    std::vector<uint32_t> getDirectTransitions(uint32_t Addrs) { // Mother of GOD TODO: remove it from here!
-      return DirectTransitions[Addrs];
-    }
 
     llvm::Module* generateRegionIR(uint32_t, const OIInstList&, uint32_t, spp::sparse_hash_map<uint32_t, uint32_t>&,
         llvm::TargetMachine&, volatile uint64_t* NativeRegions);

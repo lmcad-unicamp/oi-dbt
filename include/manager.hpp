@@ -50,7 +50,7 @@ namespace dbt {
       std::atomic<bool> isRegionRecorging;
       std::atomic<bool> isRunning;
       std::atomic<bool> isFinished;
-      std::thread Thr;
+      std::vector<std::thread> ThreadPool;
 
       unsigned regionFrequency = 0;
       unsigned CompiledRegions = 0;
@@ -68,8 +68,10 @@ namespace dbt {
 
         memset((void*) NativeRegions, 0, sizeof(NativeRegions));
 
-        if (T)
-          Thr = std::thread(&Manager::runPipeline, this);
+        if (T) {
+          for (unsigned i = 0; i < T; i++)
+            ThreadPool.push_back(std::thread(&Manager::runPipeline, this));
+        }
       }
 
       ~Manager() {
@@ -80,8 +82,9 @@ namespace dbt {
         if(NumOfThreads) {
           while (!isFinished) {}
 
-          if (Thr.joinable())
-            Thr.join();
+          for (unsigned i = 0; i < NumOfThreads; i++) 
+            if (ThreadPool[i].joinable())
+              ThreadPool[i].join();
         }
 
         std::cerr << "Compiled Regions: " << std::dec << CompiledRegions << "\n";
@@ -98,6 +101,7 @@ namespace dbt {
 
       void setCustomOpts(std::unordered_map<uint32_t, std::vector<std::string>>* COpts) {
         CustomOpts = COpts;
+        OptMode = Custom;
       }
  
       unsigned getCompiledRegions (void){
@@ -129,8 +133,8 @@ namespace dbt {
       int32_t jumpToRegion(uint32_t, dbt::Machine&);
 
       bool isRegionEntry(uint32_t EntryAddress) {
-        std::shared_lock<std::shared_mutex> lockOI(OIRegionsMtx);
-        std::shared_lock<std::shared_mutex> lockNative(NativeRegionsMtx);
+//        std::shared_lock<std::shared_mutex> lockOI(OIRegionsMtx);
+//        std::shared_lock<std::shared_mutex> lockNative(NativeRegionsMtx);
         return OIRegions.count(EntryAddress) != 0 || NativeRegions[EntryAddress] != 0;
       }
 
@@ -169,10 +173,6 @@ namespace dbt {
             ++i;
         }
         return false;
-      }
-
-      std::vector<uint32_t> getDirectTransitions(uint32_t EntryAddrs) {
-        return IRE->getDirectTransitions(EntryAddrs);
       }
 
       OIInstList getCompiledOIRegion(uint32_t EntryAddrs) {

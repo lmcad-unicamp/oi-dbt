@@ -60,13 +60,12 @@ void MethodBased::addFunctionToCompile(uint32_t PC, Machine &M) {
       }
     }
   }
-
 }
 
 void MethodBased::onBranch(Machine &M) {
   if (!TheManager.isNativeRegionEntry(M.getPC())) {
     addFunctionToCompile(M.getPC(), M);
-    while (TheManager.getNumOfOIRegions() != 0) {}//isNativeRegionEntry(PossibleEntry)) {}
+    while (TheManager.getNumOfOIRegions() != 0) {}
   }
 
   if (!M.isPreheating() && TheManager.isNativeRegionEntry(M.getPC())) {

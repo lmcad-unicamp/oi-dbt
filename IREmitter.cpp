@@ -1112,8 +1112,8 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
       }
 
     case dbt::OIDecoder::Jumpr: { 
-        Value* Ret = Builder->CreateRet(genLoadRegister(Inst.RT, Func));
-        setIfNotTheFirstInstGen(Ret);
+        IRIBranchMap[GuestAddr] = Builder->CreateRet(genLoadRegister(Inst.RT, Func));
+        setIfNotTheFirstInstGen(IRIBranchMap[GuestAddr]);
         BasicBlock* BB = BasicBlock::Create(TheContext, "", Func);
         Builder->SetInsertPoint(BB);
         break;
@@ -1176,7 +1176,7 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         break;
     }
 
-    case dbt::OIDecoder::Callr: { // TODO: improve indirect Jump
+    case dbt::OIDecoder::Callr: { 
         Value* Res = genStoreRegister(31, genImm(GuestAddr + 4), Func);
         IRIBranchMap[GuestAddr] = Builder->CreateRet(genLoadRegister(Inst.RT, Func));
         BasicBlock* BB = BasicBlock::Create(TheContext, "", Func);
@@ -1185,7 +1185,7 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         break;
       }
 
-    case dbt::OIDecoder::Ijmp: { // TODO: improve indirect Jump
+    case dbt::OIDecoder::Ijmp: { 
         Value* IjmpReg  = genLoadRegister(IJMP_REG, Func);
         Value* IjmpReg2 = Builder->CreateAnd(IjmpReg, 0xFFFFF000);
         Value* IjmpReg3 = Builder->CreateOr(IjmpReg2, Inst.Imm & 0xFFF);
@@ -1221,6 +1221,7 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
   }
 
   addFirstInstToMap(GuestAddr);
+
   LastEmittedAddrs = GuestAddr;
   LastEmittedInst  = Inst;
 }
@@ -1252,43 +1253,82 @@ void dbt::IREmitter::updateBranchTarget(uint32_t GuestAddr, std::array<uint32_t,
   }
 }
 
-/*void dbt::IREmitter::improveIndirectBranch(uint32_t GuestAddr) {
-  if (IRMemoryMap.count(BrTargets[GuestAddr]) != 0) {
+void dbt::IREmitter::improveIndirectBranch(uint32_t GuestAddr, uint32_t NextAddrs) {
+  if (NextAddrs != 0) {
     Instruction* GuestInst   = cast<Instruction>(IRMemoryMap[GuestAddr]);
     Value*       TargetAddrs = IRIBranchMap[GuestAddr]->getReturnValue();
 
     Function* F = Builder->GetInsertBlock()->getParent();
 
-    BasicBlock* IfFalse = GuestInst->getParent()->splitBasicBlock(IRIBranchMap[GuestAddr]);
+    BasicBlock* RetBB   = GuestInst->getParent()->splitBasicBlock(IRIBranchMap[GuestAddr]);
     BasicBlock* IfBB    = BasicBlock::Create(TheContext, "IfBB", F);
     BasicBlock* IfTrue  = BasicBlock::Create(TheContext, "IfTrue", F);
+    BasicBlock* IfFalse = BasicBlock::Create(TheContext, "IfFalse", F);
 
-    IfFalse->getUniquePredecessor()->getTerminator()->setSuccessor(0, IfBB);
+    RetBB->getUniquePredecessor()->getTerminator()->setSuccessor(0, IfBB);
 
     Builder->SetInsertPoint(IfBB);
-    Value* Bol = Builder->CreateICmpEQ(genImm(BrTargets[GuestAddr]), TargetAddrs, "ibr");
+    Value* Bol = Builder->CreateICmpEQ(genImm(NextAddrs), TargetAddrs, "ibr");
     Builder->CreateCondBr(Bol, IfTrue, IfFalse);
 
     Builder->SetInsertPoint(IfTrue);
-    auto TargetInst = cast<Instruction>(IRMemoryMap[BrTargets[GuestAddr]]);
+    auto TargetInst = cast<Instruction>(IRMemoryMap[NextAddrs]);
     BasicBlock *TargetBB = TargetInst->getParent();
     BasicBlock* BBTarget;
     if (TargetBB->getFirstNonPHI() == TargetInst)
       BBTarget = TargetBB;
-    else {
+    else 
       BBTarget = TargetBB->splitBasicBlock(TargetInst);
-    }
     Builder->CreateBr(BBTarget);
+
+    // BB: IF FALSE TRY TO JUMP DIRECT TO ANOTHER REGION
+    Builder->SetInsertPoint(IfFalse);
+
+    Argument *ArgDataMemPtr1 = &*(F->arg_begin());
+    Value *CastedPtr1 = Builder->CreatePointerCast(ArgDataMemPtr1, Type::getIntNPtrTy(TheContext, 32));
+    Argument *ArgDataMemPtr2 = &*(F->arg_begin()+1);
+    Value *CastedPtr2 = Builder->CreatePointerCast(ArgDataMemPtr2, Type::getIntNPtrTy(TheContext, 32));
+    Argument *ArgDataMemPtr3 = &*(F->arg_begin()+2);
+    Value *CastedPtr3 = Builder->CreatePointerCast(ArgDataMemPtr3, Type::getIntNPtrTy(TheContext, 64));
+
+    Value *GEP = Builder->CreateGEP(CastedPtr3, TargetAddrs);
+    Value *HostTarget = Builder->CreateLoad(GEP);
+    Value *Cond = Builder->CreateICmpEQ(HostTarget, Builder->CreateZExt(genImm(0), Type::getInt64Ty(TheContext)));
+
+    BasicBlock* NotNative = BasicBlock::Create(TheContext, "CallNotNative", F);
+    BasicBlock* Native = BasicBlock::Create(TheContext, "CallNative", F);
+    Builder->CreateCondBr(Cond, NotNative, Native);
+
+    Builder->SetInsertPoint(Native);
+    std::array<Type*, 3> ArgsType = {Type::getInt32PtrTy(TheContext), Type::getInt32PtrTy(TheContext), Type::getInt64PtrTy(TheContext)};
+    FunctionType *FT = FunctionType::get(Type::getInt32Ty(TheContext), ArgsType, false);
+    Value* V = Builder->CreateIntToPtr(HostTarget, PointerType::get(FT,0));
+
+    Value *Ret = Builder->CreateCall(V, {CastedPtr1, CastedPtr2, CastedPtr3});
+    Builder->CreateRet(Ret);
+
+    Builder->SetInsertPoint(NotNative);
+    Builder->CreateRet(TargetAddrs);
   }
-}*/
+}
 
 void dbt::IREmitter::processBranchesTargets(const OIInstList& OIRegion) {
-  for (auto Pair : OIRegion) {
+  uint32_t NextAddrs = 0;
+  for (unsigned I = 0; I < OIRegion.size(); I++) {
+    auto Pair = OIRegion[I];
+    if (I < OIRegion.size()-1)
+      NextAddrs = OIRegion[I+1][0];
+    else
+      NextAddrs = 0;
+
     OIDecoder::OIInst Inst = OIDecoder::decode(Pair[1]);
     uint32_t GuestAddr = Pair[0];
 
     if (OIDecoder::isControlFlowInst(Inst))
       updateBranchTarget(GuestAddr, OIDecoder::getPossibleTargets(GuestAddr, Inst));
+
+    if (OIDecoder::isIndirectBranch(Inst))
+      improveIndirectBranch(GuestAddr, NextAddrs);
   }
 }
 
@@ -1305,7 +1345,6 @@ Module* dbt::IREmitter::generateRegionIR(uint32_t EntryAddress, const OIInstList
   IRMemoryMap.clear();
   IRBranchMap.clear();
 
-  BrTargets = BT;
   DataMemOffset     = MemOffset;
   CurrentEntryAddrs = EntryAddress;
   std::array<Type*, 3> ArgsType = {Type::getInt32PtrTy(TheContext), Type::getInt32PtrTy(TheContext), Type::getInt64PtrTy(TheContext)};
