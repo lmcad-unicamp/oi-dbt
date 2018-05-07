@@ -156,10 +156,13 @@ static Function* fstat_prototype(LLVMContext& C, Module* mod)
   return func;
 }
 
+<<<<<<< HEAD
 static Value* CastToCStr(Value *V, std::unique_ptr<IRBuilder<>>& Builder) {
   return Builder->CreateBitCast(V, Builder->getInt8PtrTy(), "cstr");
 }
 
+=======
+>>>>>>> 3529cdcb4b0398eb65a1d40205843908ded74f3b
 void SyscallIREmitter::generateSyscallIR(LLVMContext& TheContext, Function* Func, std::unique_ptr<IRBuilder<>>& Builder, const uint32_t GuestAddr)
 {
   Module* TheModule = Func->getParent();

@@ -26,7 +26,7 @@ clarg::argInt	   HeapSizeFlag ("-heap", "Set new heap size (Default: 128mb)", HE
 
 /* Iterative Compiler Tools */
 clarg::argBool   DumpRegionsFlag("-dr", "Dump Regions (llvm ir and OI) to files");
-clarg::argString RegionsOptsFlag("-opts", "path to regions optimization list file", "");
+clarg::argString CustomOptsFlag("-opts", "path to regions optimization list file", "");
 
 #ifdef DEBUG
 clarg::argInt debugFlag ("-d", "Set Debug Level. This value can be 1 or 2 (1 - Less verbosive; 2 - More Verbosive)", 1);
@@ -43,7 +43,7 @@ void usage(char* PrgName) {
 
   cout << "DESCRIPTION:\n";
   cout << "This program implements the OpenISA DBT (Dynamic Binary Translator)\n" <<
-    "Vanderson Martins do Rosario, 2018.\n\n";
+    "Vanderson Martins do Rosario <vandersonmr2@gmail.com>, 2018.\n\n";
 
   cout << "ARGUMENTS:\n";
   clarg::arguments_descriptions(cout, "  ", "\n");
@@ -86,6 +86,29 @@ void  sigHandler(int sig) {
   exit(1);
 }
 
+std::unordered_map<uint32_t, std::vector<std::string>>* loadCustomOpts(std::string CustomOptsPath) {
+  auto CustomOpts = new std::unordered_map<uint32_t, std::vector<std::string>>;
+
+  ifstream File;
+  File.open(CustomOptsPath);
+  if (!File.is_open()) {
+    std::cerr << "You must provide a valid path to the custom opts file\n";
+    exit(1);
+  }
+
+  std::string Line;
+  while (std::getline(File, Line)) {
+    std::istringstream ISS(Line);
+    uint32_t EntryAddrs;
+    ISS >> EntryAddrs;
+
+    std::string OPT;
+    while (ISS >> OPT) (*CustomOpts)[EntryAddrs].push_back(OPT);
+  }
+
+  return CustomOpts;
+}
+
 int main(int argc, char** argv) {
   signal(SIGSEGV, sigHandler);
   signal(SIGABRT, sigHandler);
@@ -116,7 +139,6 @@ int main(int argc, char** argv) {
     M.setHeapSize(HeapSizeFlag.get_value());
   }
 
-
   int loadStatus = M.loadELF(BinaryFlag.get_value());
 
   //M.dumpRegisters();
@@ -126,7 +148,14 @@ int main(int argc, char** argv) {
     return 2;
   }
 
-  dbt::Manager TheManager(1, dbt::Manager::OptPolitic::Normal, M.getDataMemOffset(), VerboseFlag.was_set());
+  dbt::Manager TheManager(1, M.getDataMemOffset(), VerboseFlag.was_set());
+
+  if (CustomOptsFlag.was_set()) {
+    TheManager.setOptPolicy(dbt::Manager::OptPolitic::Custom);
+    TheManager.setCustomOpts(loadCustomOpts(CustomOptsFlag.get_value()));
+  } else {
+    TheManager.setOptPolicy(dbt::Manager::OptPolitic::Normal);
+  }
 
   if (InterpreterFlag.was_set()) {
     RftChosen = std::make_unique<dbt::NullRFT>(TheManager);
