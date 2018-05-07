@@ -39,7 +39,7 @@ static Function* exit_prototype(LLVMContext& C, Module* mod)
   Function* func = cast<Function>(mod->getOrInsertFunction("exit", FT));
 
   func->setCallingConv(CallingConv::C);
-  func->addAttribute(1, Attribute::NoAlias);
+  //func->addAttribute(1, Attribute::NoAlias);
   func->setLinkage(GlobalValue::ExternalLinkage);
 
   return func;
@@ -47,29 +47,43 @@ static Function* exit_prototype(LLVMContext& C, Module* mod)
 
 static Function* read_prototype(LLVMContext& C, Module* mod)
 {
-  std::array<Type*, 3> ArgsType = {Type::getInt32Ty(C), Type::getInt8PtrTy(C), Type::getInt64Ty(C)};
-  FunctionType *FT = FunctionType::get(Type::getInt32Ty(C), ArgsType, false);
-  Function* func = cast<Function>(mod->getOrInsertFunction("read", FT));
+  std::array<Type*, 3> ArgsType =
+    {Type::getInt32Ty(C), Type::getInt8PtrTy(C), Type::getInt64Ty(C)};
+  FunctionType *FT = FunctionType::get(
+    Type::getInt64Ty(C), ArgsType, false);
 
+  Constant *F = mod->getOrInsertFunction("read", FT);
+  Function* func = dyn_cast<Function>(F->stripPointerCasts());
+  assert(func != NULL && "Read Func Error....");
+
+  func->addAttribute(~0u, Attribute::ReadOnly);
+  func->addAttribute(~0u, Attribute::NoUnwind);
+  func->addAttribute(1, Attribute::NoCapture);
+  func->addAttribute(2, Attribute::NoCapture);
+  func->addAttribute(3, Attribute::NoCapture);
   func->setCallingConv(CallingConv::C);
-  func->addAttribute(1, Attribute::NoAlias);
-  func->addAttribute(2, Attribute::NoAlias);
   func->setLinkage(GlobalValue::ExternalLinkage);
-
   return func;
 }
 
 static Function* write_prototype(LLVMContext& C, Module* mod)
 {
-  std::array<Type*, 3> ArgsType = {Type::getInt32Ty(C), Type::getInt8PtrTy(C), Type::getInt64Ty(C)};
-  FunctionType *FT = FunctionType::get(Type::getInt32Ty(C), ArgsType, false);
-  Function* func = cast<Function>(mod->getOrInsertFunction("write", FT));
+  std::array<Type*, 3> ArgsType =
+    {Type::getInt32Ty(C), Type::getInt8PtrTy(C), Type::getInt64Ty(C)};
+  FunctionType *FT = FunctionType::get(
+    Type::getInt64Ty(C), ArgsType, false);
 
+  Constant *F = mod->getOrInsertFunction("write", FT);
+  Function* func = dyn_cast<Function>(F->stripPointerCasts());
+  assert(func != NULL && "Write Func Error....");
+
+  func->addAttribute(~0u, Attribute::ReadOnly);
+  func->addAttribute(~0u, Attribute::NoUnwind);
+  func->addAttribute(1, Attribute::NoCapture);
+  func->addAttribute(2, Attribute::NoCapture);
+  func->addAttribute(3, Attribute::NoCapture);
   func->setCallingConv(CallingConv::C);
-  func->addAttribute(1, Attribute::NoAlias);
-  func->addAttribute(2, Attribute::NoAlias);
-  //func->setLinkage(GlobalValue::ExternalLinkage);
-
+  func->setLinkage(GlobalValue::ExternalLinkage);
   return func;
 }
 
@@ -142,7 +156,9 @@ static Function* fstat_prototype(LLVMContext& C, Module* mod)
   return func;
 }
 
-
+static Value* CastToCStr(Value *V, std::unique_ptr<IRBuilder<>>& Builder) {
+  return Builder->CreateBitCast(V, Builder->getInt8PtrTy(), "cstr");
+}
 
 void SyscallIREmitter::generateSyscallIR(LLVMContext& TheContext, Function* Func, std::unique_ptr<IRBuilder<>>& Builder, const uint32_t GuestAddr)
 {
@@ -152,12 +168,12 @@ void SyscallIREmitter::generateSyscallIR(LLVMContext& TheContext, Function* Func
   //Basic Blocks for system calls
   BasicBlock* BBwrite   = BasicBlock::Create(TheContext, "write_syscall", Func);
   BasicBlock* BBread    = BasicBlock::Create(TheContext, "read_syscall", Func);
-  BasicBlock* BBopen    = BasicBlock::Create(TheContext, "open_syscall", Func);
+  /*BasicBlock* BBopen    = BasicBlock::Create(TheContext, "open_syscall", Func);
   BasicBlock* BBclose   = BasicBlock::Create(TheContext, "close_syscall", Func);
   BasicBlock* BBcreat   = BasicBlock::Create(TheContext, "creat_syscall", Func);
   BasicBlock* BBfstat   = BasicBlock::Create(TheContext, "fstat_syscall", Func);
   BasicBlock* BBlseek   = BasicBlock::Create(TheContext, "lseek_syscall", Func);
-  BasicBlock* BBelse    = BasicBlock::Create(TheContext, "interpret_syscall", Func);
+  */BasicBlock* BBelse    = BasicBlock::Create(TheContext, "interpret_syscall", Func);
   BasicBlock* MergeBB   = BasicBlock::Create(TheContext, "continue_syscall", Func);
 
 
@@ -181,7 +197,7 @@ void SyscallIREmitter::generateSyscallIR(LLVMContext& TheContext, Function* Func
   Builder->SetInsertPoint(BBwrite);
   {
     Function* write_func    =   write_prototype(TheContext, TheModule);
-    Value* Ret              =   Builder->CreateCall(write_func, {R5, MemoryOffsetPtr, R7});
+    Value* Ret              =   Builder->CreateCall(write_func, {R5, CastToCStr(MemoryOffsetPtr, Builder), R7});
     emitter.genStoreRegister(2, Ret, Func, emitter.RegType::Int);
     Builder->CreateBr(MergeBB);
   }
@@ -192,17 +208,17 @@ void SyscallIREmitter::generateSyscallIR(LLVMContext& TheContext, Function* Func
     BasicBlock* BB      =  BasicBlock::Create(TheContext, "", Func);
 
     Res = Builder->CreateICmpEQ(SysTy, emitter.genImm(LinuxSyscallManager::SyscallType::Read));
-    Builder->CreateCondBr(Res, BB, BBopen);
+    Builder->CreateCondBr(Res, BB, BBelse);
 
     Builder->SetInsertPoint(BB);
     Function* read_func     =   read_prototype(TheContext, TheModule);
-    Value* Ret              =   Builder->CreateCall(read_func, {R5, MemoryOffsetPtr, R7});
+    Value* Ret              =   Builder->CreateCall(read_func, {R5, CastToCStr(MemoryOffsetPtr, Builder), R7});
     emitter.genStoreRegister(2, Ret, Func, emitter.RegType::Int);
     //emitter.setIfNotTheFirstInstGen(Ret);
 
     Builder->CreateBr(MergeBB);
   }
-
+/*
   Builder->SetInsertPoint(BBopen);
   {
     BasicBlock* BB      =  BasicBlock::Create(TheContext, "", Func);
@@ -279,7 +295,7 @@ void SyscallIREmitter::generateSyscallIR(LLVMContext& TheContext, Function* Func
     Value* Ret              =   Builder->CreateCall(lseek_func, {R5, R6, R7});
     emitter.genStoreRegister(2, Ret, Func, emitter.RegType::Int);
     Builder->CreateBr(MergeBB);
-  }
+  }*/
 
   //Interpret Syscall
   Builder->SetInsertPoint(BBelse);

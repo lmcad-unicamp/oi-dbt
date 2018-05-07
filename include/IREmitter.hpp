@@ -33,10 +33,6 @@
 namespace dbt {
   class IREmitter {
   private:
-    enum RegType {
-      Int, Float, Double
-    };
-
 		llvm::LLVMContext TheContext;
 		std::unordered_map<std::string, llvm::Value*> NamedValues;
 		std::unique_ptr<llvm::IRBuilder<>> Builder;
@@ -49,7 +45,7 @@ namespace dbt {
 
     llvm::Value* FirstInstGen = nullptr;
     void addFirstInstToMap(uint32_t);
-    void setIfNotTheFirstInstGen(llvm::Value*);
+
 
     spp::sparse_hash_map<uint32_t, uint32_t> BrTargets;
     std::unordered_map<uint32_t, llvm::Value*> IRMemoryMap;
@@ -57,6 +53,12 @@ namespace dbt {
     std::unordered_map<uint32_t, llvm::ReturnInst*> IRIBranchMap;
 
     std::unordered_map<uint32_t, std::vector<uint32_t>> DirectTransitions; // FIXME: THIS SHOULDN'T BE IN THIS CLASS!
+
+  public:
+    enum RegType {
+      Int, Float, Double
+    };
+    void setIfNotTheFirstInstGen(llvm::Value*);
 
     void cleanCFG();
     void updateBranchTarget(uint32_t, std::array<uint32_t, 2>);
@@ -83,7 +85,7 @@ namespace dbt {
     llvm::Value* genLogicalAnd(llvm::Value*, llvm::Value*, llvm::Function*);
 
     void insertDirectExit(uint32_t);
-  public:
+
 		IREmitter() {
 			Builder = std::make_unique<llvm::IRBuilder<>>(TheContext);
     };
@@ -101,7 +103,7 @@ namespace dbt {
       uint64_t pc;
       const uint64_t extent = 96*1024;
       const uint8_t *bytes = (const uint8_t *) func;
-      
+
       //Initialize LLVM targets
       LLVMInitializeNativeAsmParser();
       LLVMInitializeNativeAsmPrinter();
@@ -114,7 +116,7 @@ namespace dbt {
           buffer << "Error: Could not create disassembler for triple " << LLVM_HOST_TRIPLE << '\n';
           return -1;
       }
-      
+
       for(pc = 0; pc<extent; pc+=Size) {
         unsigned int i;
         memset(outline, 0, sizeof(outline));
