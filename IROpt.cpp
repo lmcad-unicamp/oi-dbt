@@ -18,35 +18,84 @@
 #include "llvm/Transforms/IPO/PassManagerBuilder.h"
 #include "timer.hpp"
 
+constexpr unsigned int str2int(const char* str, int h = 0) {
+    return !str[h] ? 5381 : (str2int(str, h+1) * 33) ^ str[h];
+}
+
+void dbt::IROpt::populateFuncPassManager(llvm::legacy::FunctionPassManager* FPM, std::vector<std::string> PassesNames) {
+  for (std::string PassName : PassesNames) {
+    switch (str2int(PassName.c_str())) {
+      case str2int("instcombine"):
+        FPM->add(llvm::createInstructionCombiningPass());
+        break;
+      case str2int("simplifycfg"):
+        FPM->add(llvm::createCFGSimplificationPass());
+        break;
+      case str2int("reassociate"):
+        FPM->add(llvm::createReassociatePass());
+        break;
+      case str2int("gvn"):
+        FPM->add(llvm::createNewGVNPass());
+        break;
+      case str2int("die"):
+        FPM->add(llvm::createDeadInstEliminationPass());
+        break;
+      case str2int("dce"):
+        FPM->add(llvm::createDeadCodeEliminationPass());
+        break;
+      case str2int("mem2reg"):
+        FPM->add(llvm::createPromoteMemoryToRegisterPass());
+        break;
+      case str2int("licm"):
+        FPM->add(llvm::createLICMPass());
+        break;
+      case str2int("memcpyopt"):
+        FPM->add(llvm::createMemCpyOptPass());
+        break;
+      case str2int("loop-unswitch"):
+        FPM->add(llvm::createLoopUnswitchPass());
+        break;
+      case str2int("indvars"):
+        FPM->add(llvm::createIndVarSimplifyPass());       // Canonicalize indvars
+        break;
+      case str2int("loop-deletion"):
+        FPM->add(llvm::createLoopDeletionPass());         // Delete dead loops
+        break;
+      case str2int("loop-predication"):
+        FPM->add(llvm::createLoopPredicationPass());
+        break;
+      case str2int("loop-unroll"):
+        FPM->add(llvm::createSimpleLoopUnrollPass());     // Unroll small loops
+        break;
+      default:
+        std::cerr << "Trying to use an invalid optimization pass!\n";
+        exit(1);
+        break;
+    }
+  }
+}
+
+void dbt::IROpt::customOptimizeIRFunction(llvm::Module* M, std::vector<std::string> Opts) {
+  std::cerr << "Custom opt " << Opts[1] << "\n";
+  auto PM = std::make_unique<llvm::legacy::FunctionPassManager>(M);
+  populateFuncPassManager(PM.get(), Opts);
+  PM->doInitialization();
+  for (auto &F : *M)
+    PM->run(F);
+}
+
 void dbt::IROpt::optimizeIRFunction(llvm::Module *M, OptLevel Level) {
   // Lazy initialization
   if (Level == OptLevel::Basic) {
     if (!BasicPM) {
       BasicPM = std::make_unique<llvm::legacy::FunctionPassManager>(M);
-
-      BasicPM->add(llvm::createInstructionCombiningPass());
-      BasicPM->add(llvm::createCFGSimplificationPass());
-      BasicPM->add(llvm::createReassociatePass());
-      BasicPM->add(llvm::createNewGVNPass());
-      BasicPM->add(llvm::createDeadInstEliminationPass());
-      BasicPM->add(llvm::createDeadCodeEliminationPass());
-      BasicPM->add(llvm::createPromoteMemoryToRegisterPass());
-      BasicPM->add(llvm::createInstructionCombiningPass());
-      BasicPM->add(llvm::createLICMPass());
-      BasicPM->add(llvm::createMemCpyOptPass());
-      BasicPM->add(llvm::createLoopUnswitchPass());
-      BasicPM->add(llvm::createInstructionCombiningPass());
-      BasicPM->add(llvm::createIndVarSimplifyPass());       // Canonicalize indvars
-      BasicPM->add(llvm::createLoopDeletionPass());         // Delete dead loops
-      BasicPM->add(llvm::createLoopPredicationPass());
-      BasicPM->add(llvm::createSimpleLoopUnrollPass());     // Unroll small loops
-      BasicPM->add(llvm::createCFGSimplificationPass());
-      BasicPM->add(llvm::createInstructionCombiningPass());
-
+      populateFuncPassManager(BasicPM.get(), 
+          {"instcombine", "simplifycfg", "reassociate", "gvn", "die", "dce", "mem2reg", "instcombine", "licm",
+          "memcpyopt", "loop-unswitch", "instcombine", "indvars", "loop-deletion", "loop-predication", "loop-unroll",
+          "simplifycfg", "instcombine"});
       BasicPM->doInitialization();
+      for (auto &F : *M)
+        BasicPM->run(F);
     }
-
-    for (auto &F : *M)
-      BasicPM->run(F);
-  }
+  } 
 }

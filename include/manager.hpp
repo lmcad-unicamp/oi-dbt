@@ -22,7 +22,7 @@ namespace dbt {
   class Machine;
   class Manager {
     public:
-      enum OptPolitic { None, Normal, Aggressive };
+      enum OptPolitic { None, Normal, Aggressive, Custom };
 
     private:
       llvm::LLVMContext TheContext;
@@ -37,7 +37,9 @@ namespace dbt {
       mutable std::shared_mutex OIRegionsMtx, IRRegionsMtx, NativeRegionsMtx, CompiledOIRegionsMtx;
 
       unsigned NumOfThreads;
+
       OptPolitic OptMode;
+      std::unordered_map<uint32_t, std::vector<std::string>>* CustomOpts;
 
       uint32_t DataMemOffset;
 
@@ -61,32 +63,8 @@ namespace dbt {
       void runPipeline();
 
     public:
-      unsigned getCompiledRegions (void){
-        return CompiledRegions;
-      }
-
-      unsigned getOICompiled (void) {
-        return OICompiled;
-      }
-
-      bool getRegionRecording (void) {
-        return static_cast<bool>(isRegionRecorging);
-      }
-
-      void setRegionRecorging (bool value) {
-        isRegionRecorging = value;
-      }
-
-      unsigned getLLVMCompiled (void) {
-        return LLVMCompiled;
-      }
-
-      float getAvgOptCodeSize (void) {
-        return AvgOptCodeSize;
-      }
-
-      Manager(unsigned T, OptPolitic O, uint32_t DMO, bool VO = false) : NumOfThreads(T), OptMode(O),
-            DataMemOffset(DMO), isRunning(true), isFinished(false), VerboseOutput(VO) {
+      Manager(unsigned T, uint32_t DMO, bool VO = false) : NumOfThreads(T), DataMemOffset(DMO),
+         isRunning(true), isFinished(false), VerboseOutput(VO) {
 
         memset((void*) NativeRegions, 0, sizeof(NativeRegions));
 
@@ -114,7 +92,39 @@ namespace dbt {
         std::cerr << "Compiled LLVM: " << LLVMCompiled << "\n";
       }
 
-      bool addOIRegion(uint32_t, OIInstList, spp::sparse_hash_map<uint32_t, uint32_t>);
+      void setOptPolicy(OptPolitic OM) {
+        OptMode = OM;
+      }
+
+      void setCustomOpts(std::unordered_map<uint32_t, std::vector<std::string>>* COpts) {
+        CustomOpts = COpts;
+      }
+ 
+      unsigned getCompiledRegions (void){
+        return CompiledRegions;
+      }
+
+      unsigned getOICompiled (void) {
+        return OICompiled;
+      }
+
+      bool getRegionRecording (void) {
+        return static_cast<bool>(isRegionRecorging);
+      }
+
+      void setRegionRecorging (bool value) {
+        isRegionRecorging = value;
+      }
+
+      unsigned getLLVMCompiled (void) {
+        return LLVMCompiled;
+      }
+
+      float getAvgOptCodeSize (void) {
+        return AvgOptCodeSize;
+      }
+
+     bool addOIRegion(uint32_t, OIInstList, spp::sparse_hash_map<uint32_t, uint32_t>);
 
       int32_t jumpToRegion(uint32_t, dbt::Machine&);
 

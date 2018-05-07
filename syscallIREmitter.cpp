@@ -142,8 +142,6 @@ static Function* fstat_prototype(LLVMContext& C, Module* mod)
   return func;
 }
 
-
-
 void SyscallIREmitter::generateSyscallIR(LLVMContext& TheContext, Function* Func, std::unique_ptr<IRBuilder<>>& Builder, const uint32_t GuestAddr)
 {
   Module* TheModule = Func->getParent();

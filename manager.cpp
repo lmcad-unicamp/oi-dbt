@@ -65,7 +65,11 @@ void Manager::runPipeline() {
       for (auto& BB : F)
         Size += BB.size();
 
-    IRO->optimizeIRFunction(Module, IROpt::OptLevel::Basic);
+    if (OptMode != OptPolitic::Custom) {
+      IRO->optimizeIRFunction(Module, IROpt::OptLevel::Basic);
+    } else if (CustomOpts->count(EntryAddress) != 0) {
+      IRO->customOptimizeIRFunction(Module, (*CustomOpts)[EntryAddress]);
+    }
 
     unsigned OSize = 1;
     for (auto& F : *Module)
