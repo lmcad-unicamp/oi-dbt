@@ -6,148 +6,182 @@
 #include "llvm/Support/raw_ostream.h"
 #include "timer.hpp"
 #include "llvm/Transforms/Utils/Cloning.h"
+#include <experimental/filesystem>
+#include "llvm/Support/SourceMgr.h"
+#include "llvm/IRReader/IRReader.h"
 
+namespace fs = std::experimental::filesystem;
 using namespace dbt;
 
+void Manager::loadRegionsFromFiles() {
+	llvm::SMDiagnostic error;
+	for(const auto& p : fs::directory_iterator("./")) {
+		if(p.path().extension() == ".bc") { 
+			std::string Path = p.path().string();
+			Path.erase(0,3);
+			Path.erase(Path.size()-3, 3);
+			auto M = llvm::parseIRFile(p.path().string(), error, TheContext).release();
+			if (M) {
+				ModulesLoaded[std::stoi(Path)] = M;
+			} else {
+			 	std::cerr << p.path() << " " << error.getMessage().str() << "\n";
+			}
+		}
+	}
+}
+
 void Manager::runPipeline() {
-  if (!IRE) {
-    llvm::InitializeNativeTarget();
-    llvm::InitializeNativeTargetAsmPrinter();
-    llvm::InitializeNativeTargetAsmParser();
-    IRJIT = new llvm::orc::IRLazyJIT();
-  }
+	if (!IRE) {
+		llvm::InitializeNativeTarget();
+		llvm::InitializeNativeTargetAsmPrinter();
+		llvm::InitializeNativeTargetAsmParser();
+		IRJIT = new llvm::orc::IRLazyJIT();
+	}
 
-  IRE = llvm::make_unique<IREmitter>();
-  IRO = llvm::make_unique<IROpt>();
+	IRE = llvm::make_unique<IREmitter>();
+	IRO = llvm::make_unique<IROpt>();
 
-  while (isRunning) {
-    uint32_t EntryAddress;
-    OIInstList OIRegion;
-    spp::sparse_hash_map<uint32_t, uint32_t> BrTargets;
+	if (IsToLoadRegions)
+		loadRegionsFromFiles();
 
-    if (getNumOfOIRegions() > 0) {
-      OIRegionsMtx.lock_shared();
-      EntryAddress = OIRegions.begin()->first;
-      OIRegion     = OIRegions.begin()->second;
-      BrTargets    = OIBrTargets[EntryAddress];
-      OIRegionsMtx.unlock_shared();
-    }
+	while (isRunning) {
+		uint32_t EntryAddress;
+		OIInstList OIRegion;
+		spp::sparse_hash_map<uint32_t, uint32_t> BrTargets;
 
-    if (OIRegion.size() == 0) continue;
+		if (getNumOfOIRegions() > 0) {
+			OIRegionsMtx.lock_shared();
+			EntryAddress = OIRegionsKey.front();
+			OIRegion     = OIRegions[EntryAddress];
+			BrTargets    = OIBrTargets[EntryAddress];
+			OIRegionsMtx.unlock_shared();
+		}
 
-    CompiledOIRegionsMtx.lock();
-    CompiledOIRegions[EntryAddress] = OIRegion;
-    CompiledOIRegionsMtx.unlock();
+		llvm::Module* Module;
+		unsigned Size = 1;
+		unsigned OSize = 1;
 
-    if (VerboseOutput)
-      std::cerr << "Trying to compile: " << std::hex <<  EntryAddress  << "...";
+		if (IsToLoadRegions && ModulesLoaded.count(EntryAddress) != 0) {
+			//std::cerr << "loading" << EntryAddress << "\n";
+			Module = ModulesLoaded[EntryAddress]; 
+			ModulesLoaded.erase(EntryAddress);
+		} else {
+			//std::cerr << "compiling" << EntryAddress << "\n";
+			if (OIRegion.size() == 0) continue;
 
-    OICompiled += OIRegion.size();
+			CompiledOIRegionsMtx.lock();
+			CompiledOIRegions[EntryAddress] = OIRegion;
+			CompiledOIRegionsMtx.unlock();
 
-    auto Module = IRE->generateRegionIR(EntryAddress, OIRegion, DataMemOffset, TheMachine, IRJIT->getTargetMachine(), NativeRegions);
-    if (VerboseOutput)
-      std::cerr << "OK" << std::endl;
+			if (VerboseOutput)
+				std::cerr << "Trying to compile: " << std::hex <<  EntryAddress  << "...";
 
-    if (VerboseOutput)
-      Module->print(llvm::errs(), nullptr);
+			OICompiled += OIRegion.size();
 
-    if (VerboseOutput) {
-      std::cerr << "---------------------- Printing OIRegion (OpenISA instr.) --------------------" << std::endl;
+			Module = IRE->generateRegionIR(EntryAddress, OIRegion, DataMemOffset, TheMachine, IRJIT->getTargetMachine(), NativeRegions);
+			if (VerboseOutput)
+				std::cerr << "OK" << std::endl;
 
-      for (auto Pair : OIRegion)
-        std::cerr << std::hex << Pair[0] << ":\t" << dbt::OIPrinter::getString(OIDecoder::decode(Pair[1])) << "\n";
+			if (VerboseOutput)
+				Module->print(llvm::errs(), nullptr);
 
-      std::cerr << "\n" << std::endl;
-    }
+			if (VerboseOutput) {
+				std::cerr << "---------------------- Printing OIRegion (OpenISA instr.) --------------------" << std::endl;
 
-    unsigned Size = 1;
-    for (auto& F : *Module)
-      for (auto& BB : F)
-        Size += BB.size();
+				for (auto Pair : OIRegion)
+					std::cerr << std::hex << Pair[0] << ":\t" << dbt::OIPrinter::getString(OIDecoder::decode(Pair[1])) << "\n";
 
-    if (OptMode != OptPolitic::Custom) 
-      IRO->optimizeIRFunction(Module, IROpt::OptLevel::Basic);
-    else if (CustomOpts->count(EntryAddress) != 0) 
-      IRO->customOptimizeIRFunction(Module, (*CustomOpts)[EntryAddress]);
+				std::cerr << "\n" << std::endl;
+			}
 
-    unsigned OSize = 1;
-    for (auto& F : *Module)
-      for (auto& BB : F)
-        OSize += BB.size();
+			for (auto& F : *Module)
+				for (auto& BB : F)
+					Size += BB.size();
 
-    // Remove a region if the first instruction is a return <- can cause infinity loops
-    llvm::Function* LLVMRegion = Module->getFunction("r"+std::to_string(EntryAddress));
-    if (LLVMRegion->getEntryBlock().getFirstNonPHI()->getOpcode() != llvm::Instruction::Ret) {
-      if (VerboseOutput)
-        Module->print(llvm::errs(), nullptr);
+			if (OptMode != OptPolitic::Custom) 
+				IRO->optimizeIRFunction(Module, IROpt::OptLevel::Basic);
+			else if (CustomOpts->count(EntryAddress) != 0) 
+				IRO->customOptimizeIRFunction(Module, (*CustomOpts)[EntryAddress]);
 
-      IRRegions[EntryAddress] = llvm::CloneModule(Module).release();
+			for (auto& F : *Module)
+				for (auto& BB : F)
+					OSize += BB.size();
+		}
 
-      NativeRegionsMtx.lock();
-      IRJIT->addModule(std::unique_ptr<llvm::Module>(Module));
+		// Remove a region if the first instruction is a return <- can cause infinity loops
+		llvm::Function* LLVMRegion = Module->getFunction("r"+std::to_string(EntryAddress));
+		if (LLVMRegion->getEntryBlock().getFirstNonPHI()->getOpcode() != llvm::Instruction::Ret) {
+			if (VerboseOutput)
+				Module->print(llvm::errs(), nullptr);
 
-      if (VerboseOutput)
-        llvm::errs() << ".. we've compiled (" << (float) OSize/Size << ")\n";
+			IRRegions[EntryAddress] = llvm::CloneModule(Module).release();
 
-      CompiledRegions += 1;
-      LLVMCompiled += OSize;
-      AvgOptCodeSize += (float) OSize/Size;
+			NativeRegionsMtx.lock();
+			IRJIT->addModule(std::unique_ptr<llvm::Module>(Module));
 
+			if (VerboseOutput)
+				llvm::errs() << ".. we've compiled (" << (float) OSize/Size << ")\n";
 
-      auto Addr = IRJIT->findSymbol("r"+std::to_string(EntryAddress)).getAddress();
+			CompiledRegions += 1;
+			LLVMCompiled += OSize;
+			AvgOptCodeSize += (float) OSize/Size;
 
-      if (Addr)
-        NativeRegions[EntryAddress] = static_cast<intptr_t>(*Addr);
-      else
-        std::cerr << EntryAddress << " was not successfully compiled!\n";
+			auto Addr = IRJIT->findSymbol("r"+std::to_string(EntryAddress)).getAddress();
 
-      NativeRegionsMtx.unlock();
+			if (Addr)
+				NativeRegions[EntryAddress] = static_cast<intptr_t>(*Addr);
+			else
+				std::cerr << EntryAddress << " was not successfully compiled!\n";
 
-      if (VerboseOutput) {
-        std::cerr << "Disassembly of Region: " << EntryAddress << ":" << std::endl;
-        std::ostringstream buffer;
-        size_t t = IREmitter::disassemble((const void*) *Addr, buffer);
-        std::cerr << buffer.str().c_str() << std::endl;
+			NativeRegionsMtx.unlock();
 
-        buffer.clear();
-        buffer.str("");
+			if (VerboseOutput) {
+				std::cerr << "Disassembly of Region: " << EntryAddress << ":" << std::endl;
+				std::ostringstream buffer;
+				size_t t = IREmitter::disassemble((const void*) *Addr, buffer);
+				std::cerr << buffer.str().c_str() << std::endl;
 
-        std::cerr << "Dumping Region: " << EntryAddress << ":" << std::endl;
-        IREmitter::regionDump((const void*) *Addr, buffer, t);
-        std::cerr << buffer.str().c_str() << std::endl;
-      }
+				buffer.clear();
+				buffer.str("");
 
-    } else if (VerboseOutput) {
-        std::cerr << "Giving up " << std::hex << EntryAddress << " compilation as it starts with a return!\n";
-    }
+				std::cerr << "Dumping Region: " << EntryAddress << ":" << std::endl;
+				IREmitter::regionDump((const void*) *Addr, buffer, t);
+				std::cerr << buffer.str().c_str() << std::endl;
+			}
 
-    OIRegionsMtx.lock();
-    OIRegions.erase(EntryAddress);
-    OIRegionsMtx.unlock();
-  }
-  isFinished = true;
+		} else if (VerboseOutput) {
+			std::cerr << "Giving up " << std::hex << EntryAddress << " compilation as it starts with a return!\n";
+		}
+
+		OIRegionsMtx.lock();
+		OIRegions.erase(EntryAddress);
+		OIRegionsKey.erase(OIRegionsKey.begin());
+		OIRegionsMtx.unlock();
+	}
+	isFinished = true;
 }
 
 bool Manager::addOIRegion(uint32_t EntryAddress, OIInstList OIRegion, spp::sparse_hash_map<uint32_t, uint32_t> BrTargets) {
-  if (!isRegionEntry(EntryAddress) && OIRegion.size() > 3) {
-    OIRegionsMtx.lock();
-    OIRegions[EntryAddress]   = OIRegion;
-    OIBrTargets[EntryAddress] = BrTargets;
-    OIRegionsMtx.unlock();
-    return true;
-  }
-  return false;
+	if (!isRegionEntry(EntryAddress) && OIRegion.size() > 3 && OIRegions.count(EntryAddress) == 0) {
+		OIRegionsMtx.lock();
+		OIRegionsKey.push_back(EntryAddress);
+		OIRegions[EntryAddress]   = OIRegion;
+		OIBrTargets[EntryAddress] = BrTargets;
+		OIRegionsMtx.unlock();
+		return true;
+	}
+	return false;
 }
 
 int32_t Manager::jumpToRegion(uint32_t EntryAddress) {
-  uint32_t JumpTo = EntryAddress;
+	uint32_t JumpTo = EntryAddress;
 
-  while (isNativeRegionEntry(JumpTo)) {
-    uint32_t LastTo = JumpTo;
+	while (isNativeRegionEntry(JumpTo)) {
+		uint32_t LastTo = JumpTo;
 
-    uint32_t (*FP)(int32_t*, uint32_t*, volatile uint64_t*) = (uint32_t (*)(int32_t*, uint32_t*, volatile uint64_t*)) NativeRegions[JumpTo];
-    JumpTo = FP(TheMachine.getRegisterPtr(), TheMachine.getMemoryPtr(), NativeRegions);
-  }
+		uint32_t (*FP)(int32_t*, uint32_t*, volatile uint64_t*) = (uint32_t (*)(int32_t*, uint32_t*, volatile uint64_t*)) NativeRegions[JumpTo];
+		JumpTo = FP(TheMachine.getRegisterPtr(), TheMachine.getMemoryPtr(), NativeRegions);
+	}
 
-  return JumpTo;
+	return JumpTo;
 }

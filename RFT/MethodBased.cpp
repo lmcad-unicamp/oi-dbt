@@ -9,7 +9,6 @@ using namespace dbt;
 // Run perf record
 // then perf report --stdio | sed '/^#/d' | awk '{print $1,$3,$5}' | sed '/^\s*$/d' | grep "a.out" | sed 's/%//g'
 
-std::set<uint32_t> AlreadyCompiled;
 
 unsigned NumOfInsts = 0;
 void MethodBased::addFunctionToCompile(uint32_t PC, Machine &M) {
@@ -48,7 +47,6 @@ void MethodBased::addFunctionToCompile(uint32_t PC, Machine &M) {
         }
 
         bool Inserted = finishRegionFormation();
-        AlreadyCompiled.insert(PossibleEntry);
     }
 
     for (uint32_t Addr = PC + 4; Addr < M.getMethodEnd(PC); Addr += 4) {

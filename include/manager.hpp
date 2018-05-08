@@ -11,6 +11,7 @@
 #include <timer.hpp>
 #include <sparsepp/spp.h>
 #include <OIPrinter.hpp>
+#include <stack>
 
 #include "llvm/Support/TargetSelect.h"
 #include "llvm/Bitcode/BitcodeWriter.h"
@@ -30,6 +31,7 @@ namespace dbt {
       dbt::Machine& TheMachine;
 
       spp::sparse_hash_map<uint32_t, spp::sparse_hash_map<uint32_t, uint32_t>> OIBrTargets;
+			std::vector<uint32_t> OIRegionsKey;
       spp::sparse_hash_map<uint32_t, OIInstList> OIRegions;
       std::unordered_map<uint32_t, OIInstList> CompiledOIRegions;
       spp::sparse_hash_map<uint32_t, llvm::Module*> IRRegions;
@@ -61,6 +63,11 @@ namespace dbt {
       float AvgOptCodeSize = 0;
 
       bool VerboseOutput = false;
+
+			std::unordered_map<uint32_t, llvm::Module*> ModulesLoaded;
+      bool IsToLoadRegions = false;
+
+			void loadRegionsFromFiles();
 
       void runPipeline();
 
@@ -128,6 +135,10 @@ namespace dbt {
 
       float getAvgOptCodeSize (void) {
         return AvgOptCodeSize;
+      }
+
+      void setToLoadRegions() {
+        IsToLoadRegions = true;
       }
 
      bool addOIRegion(uint32_t, OIInstList, spp::sparse_hash_map<uint32_t, uint32_t>);

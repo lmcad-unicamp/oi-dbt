@@ -19,6 +19,7 @@ namespace dbt {
 
   class RFT {
   protected:
+    std::set<uint32_t> AlreadyCompiled;
     unsigned HotnessThreshold = 50;
     spp::sparse_hash_map<uint32_t, uint8_t> ExecFreq;
     spp::sparse_hash_map<uint32_t, uint32_t> BranchesTargets;

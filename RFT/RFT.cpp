@@ -41,10 +41,12 @@ bool dbt::RFT::hasRecordedAddrs(uint32_t Addrs) {
 
 bool dbt::RFT::finishRegionFormation() {
   bool Added = false;
-  if (OIRegion.size() > 0 && hasRecordedAddrs(RecordingEntry)) {
+  if (OIRegion.size() > 0 && hasRecordedAddrs(RecordingEntry) && AlreadyCompiled.count(RecordingEntry) == 0) {
     Added = TheManager.addOIRegion(RecordingEntry, OIRegion, BranchesTargets);
-    if (Added)
+    if (Added) {
       Total += OIRegion.size();
+      AlreadyCompiled.insert(RecordingEntry);
+    }
   }
   OIRegion.clear();
   Recording = false;

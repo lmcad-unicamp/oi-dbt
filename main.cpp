@@ -27,6 +27,7 @@ clarg::argInt	   NumThreadsFlag ("-threads", "Number of compilation threads (min
 
 /* Iterative Compiler Tools */
 clarg::argBool   DumpRegionsFlag("-dr", "Dump Regions (llvm ir and OI) to files");
+clarg::argBool   LoadRegionsFlag("-lr", "Load Regions (.bc) from files");
 clarg::argString CustomOptsFlag("-opts", "path to regions optimization list file", "");
 
 #ifdef DEBUG
@@ -150,6 +151,9 @@ int main(int argc, char** argv) {
   }
 
   dbt::Manager TheManager(NumThreadsFlag.get_value(), M.getDataMemOffset(), M, VerboseFlag.was_set());
+
+  if (LoadRegionsFlag.was_set()) 
+    TheManager.setToLoadRegions();
 
   if (CustomOptsFlag.was_set()) {
     TheManager.setOptPolicy(dbt::Manager::OptPolitic::Custom);
