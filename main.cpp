@@ -168,7 +168,10 @@ int main(int argc, char** argv) {
     std::string RFTName = RFTFlag.get_value();
     transform(RFTName.begin(), RFTName.end(), RFTName.begin(), ::tolower);
 
-    if (RFTName == "net") {
+    if (LoadRegionsFlag.was_set()) {
+      std::cerr << "Preheated RFT Selected\n";
+      RftChosen = std::make_unique<dbt::PreheatRFT>(TheManager);
+    } else if (RFTName == "net") {
       std::cerr << "NET RFT Selected\n";
       RftChosen = std::make_unique<dbt::NET>(TheManager);
     } else if (RFTName == "net-r") {

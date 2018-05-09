@@ -34,6 +34,7 @@ namespace dbt {
 			std::vector<uint32_t> OIRegionsKey;
       spp::sparse_hash_map<uint32_t, OIInstList> OIRegions;
       std::unordered_map<uint32_t, OIInstList> CompiledOIRegions;
+      std::vector<uint32_t> IRRegionsKey;
       spp::sparse_hash_map<uint32_t, llvm::Module*> IRRegions;
       std::vector<uint32_t> RegionAddresses;
       volatile uint64_t NativeRegions[NATIVE_REGION_SIZE];
@@ -68,7 +69,6 @@ namespace dbt {
       bool IsToLoadRegions = false;
 
       llvm::Module* loadRegionFromFile(std::string);
-			void loadRegionsFromFiles();
 
       void runPipeline();
 
@@ -192,6 +192,8 @@ namespace dbt {
         return CompiledOIRegions[EntryAddrs];
       }
 
+			void loadRegionsFromFiles();
+
       void dumpRegions() {
         std::cerr << "Dumping IR regions!\n";
         for (auto& M : IRRegions) {
@@ -210,6 +212,12 @@ namespace dbt {
             OS << OIInsts[0] << "\t" << OIPrinter::getString(OIDecoder::decode(OIInsts[1])) <<  "\n"; 
           OS.flush();
         }
+        std::error_code EC;
+        llvm::raw_fd_ostream OS("regions.order", EC, llvm::sys::fs::F_None);
+        for (auto A : IRRegionsKey) {
+          OS << A << "\n";
+        }
+        OS.flush();
       }
 
       std::unordered_map<uint32_t, OIInstList>::iterator oiregions_begin() { return CompiledOIRegions.begin(); };

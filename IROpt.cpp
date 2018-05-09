@@ -91,6 +91,7 @@ void dbt::IROpt::optimizeIRFunction(llvm::Module *M, OptLevel Level) {
     if (!BasicPM) {
       BasicPM = std::make_unique<llvm::legacy::FunctionPassManager>(M);
       populateFuncPassManager(BasicPM.get(), 
+          //{"instcombine","simplifycfg", "gvn", "dce", "licm", "gvn"});
           {"instcombine", "simplifycfg", "reassociate", "gvn", "die", "dce", "mem2reg", "instcombine", "licm",
           "memcpyopt", "loop-unswitch", "instcombine", "indvars", "loop-deletion", "loop-predication", "loop-unroll",
           "simplifycfg", "instcombine"});

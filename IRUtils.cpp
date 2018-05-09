@@ -51,7 +51,6 @@ Value *dbt::IREmitter::genDataWordVecPtr(Value *RawAddrs, Function *Func) {
   return genDataVecPtr(RawAddrs, Func, Type::getInt32Ty(TheContext), 4);
 }
 
-
 Value *dbt::IREmitter::genRegisterVecPtr(Value *RegNum, Function *Func, RegType Type) {
   Argument *ArgIntRegPtr = &*Func->arg_begin();
 
@@ -87,7 +86,6 @@ Value *dbt::IREmitter::genLoadRegister(uint16_t RegNum, Function *Func, RegType 
     return genImm(0);
 
   Value *Ptr = genRegisterVecPtr(Right, Func, Type);
-
   return Builder->CreateLoad(Ptr);
 }
 

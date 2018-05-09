@@ -801,7 +801,7 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
     case dbt::OIDecoder::Mflc1: {
         Value* RT    = genLoadRegister(Inst.RT, Func, RegType::Double);
         Value* RTInt = Builder->CreateBitCast(RT, Type::getInt64Ty(TheContext));
-        Value* Res   = Builder->CreateAnd(RTInt, 0xFFFFFFFF);
+        Value* Res   = Builder->CreateTrunc(Builder->CreateAnd(RTInt, 0xFFFFFFFF), Type::getInt32Ty(TheContext));
         genStoreRegister(Inst.RS, Res, Func, RegType::Int);
         break;
       }
@@ -809,7 +809,7 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
     case dbt::OIDecoder::Mfhc1: {
         Value* RT    = genLoadRegister(Inst.RT, Func, RegType::Double);
         Value* RTInt = Builder->CreateBitCast(RT, Type::getInt64Ty(TheContext));
-        Value* Res   = Builder->CreateLShr(RTInt, 32);
+        Value* Res   = Builder->CreateTrunc(Builder->CreateLShr(RTInt, 32), Type::getInt32Ty(TheContext));
         genStoreRegister(Inst.RS, Res, Func, RegType::Int);
         break;
       }

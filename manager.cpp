@@ -6,11 +6,9 @@
 #include "llvm/Support/raw_ostream.h"
 #include "timer.hpp"
 #include "llvm/Transforms/Utils/Cloning.h"
-#include <experimental/filesystem>
 #include "llvm/Support/SourceMgr.h"
 #include "llvm/IRReader/IRReader.h"
 
-namespace fs = std::experimental::filesystem;
 using namespace dbt;
 
 llvm::Module* Manager::loadRegionFromFile(std::string Path) {
@@ -19,20 +17,22 @@ llvm::Module* Manager::loadRegionFromFile(std::string Path) {
   if (M) {
      return M;
   } else {
-//    std::cerr << Path << " " << error.getMessage().str() << "\n";
+    //std::cerr << Path << " " << error.getMessage().str() << "\n";
     return nullptr;
   }
 }
 
 void Manager::loadRegionsFromFiles() {
-  for(const auto& p : fs::directory_iterator("./")) {
-    if(p.path().extension() == ".bc") { 
-      std::string Path = p.path().string();
-      Path.erase(0,3);
-      Path.erase(Path.size()-3, 3);
-      ModulesLoaded[std::stoi(Path)] = loadRegionFromFile(p.path().string());
-    }
+  std::ifstream infile("regions.order");
+  std::string line;
+  OIRegionsMtx.lock();
+  while (std::getline(infile, line)) {
+    uint32_t Entry = std::stoi(line);
+    OIRegionsKey.push_back(Entry);
+    OIRegions[Entry] = {{Entry,0}};
   }
+  OIRegionsMtx.unlock();
+    //ModulesLoaded[std::stoi(line)] = loadRegionFromFile("r"+line+".bc");
 }
 
 void Manager::runPipeline() {
@@ -46,8 +46,8 @@ void Manager::runPipeline() {
   IRE = llvm::make_unique<IREmitter>();
   IRO = llvm::make_unique<IROpt>();
 
-/*  if (IsToLoadRegions)
-    loadRegionsFromFiles();*/
+  if (IsToLoadRegions)
+    loadRegionsFromFiles();
 
   while (isRunning) {
     uint32_t EntryAddress;
@@ -69,7 +69,7 @@ void Manager::runPipeline() {
     if (OIRegion.size() == 0) continue;
 
     if (IsToLoadRegions) {
-      /*if (ModulesLoaded.count(EntryAddress) != 0) {
+/*      if (ModulesLoaded.count(EntryAddress) != 0) {
         //std::cerr << "loading" << EntryAddress << "\n";
         Module = ModulesLoaded[EntryAddress]; 
         ModulesLoaded.erase(EntryAddress);
@@ -126,6 +126,7 @@ void Manager::runPipeline() {
         Module->print(llvm::errs(), nullptr);
 
       IRRegions[EntryAddress] = llvm::CloneModule(Module).release();
+      IRRegionsKey.push_back(EntryAddress);
 
       NativeRegionsMtx.lock();
       IRJIT->addModule(std::unique_ptr<llvm::Module>(Module));
