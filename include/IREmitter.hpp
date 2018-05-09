@@ -36,9 +36,12 @@ namespace dbt {
   class IREmitter {
   private:
 		llvm::LLVMContext TheContext;
-		std::unordered_map<std::string, llvm::Value*> NamedValues;
+		spp::sparse_hash_map<std::string, llvm::Value*> NamedValues;
 		std::unique_ptr<llvm::IRBuilder<>> Builder;
     volatile uint64_t* CurrentNativeRegions;
+
+    uint16_t ldireg;
+    spp::sparse_hash_map<llvm::BasicBlock*, spp::sparse_hash_map<uint32_t, llvm::Value*>> RegisterBank;
 
     uint32_t DataMemOffset;
     uint32_t CurrentEntryAddrs;
@@ -48,11 +51,9 @@ namespace dbt {
     llvm::Value* FirstInstGen = nullptr;
     void addFirstInstToMap(uint32_t);
 
-
-    spp::sparse_hash_map<uint32_t, uint32_t> BrTargets;
-    std::unordered_map<uint32_t, llvm::Value*> IRMemoryMap;
-    std::unordered_map<uint32_t, llvm::BranchInst*> IRBranchMap;
-    std::unordered_map<uint32_t, llvm::ReturnInst*> IRIBranchMap;
+    spp::sparse_hash_map<uint32_t, llvm::Value*> IRMemoryMap;
+    spp::sparse_hash_map<uint32_t, llvm::BranchInst*> IRBranchMap;
+    spp::sparse_hash_map<uint32_t, llvm::ReturnInst*> IRIBranchMap;
 
   public:
     enum RegType {
@@ -77,9 +78,7 @@ namespace dbt {
     llvm::Value* genImm(uint32_t);
 
     llvm::Value* genLoadRegister(uint16_t, llvm::Function*, RegType Type = RegType::Int);
-    llvm::Value* genLoadRegister(llvm::Value*, llvm::Function*, RegType Type = RegType::Int);
     llvm::Value* genStoreRegister(uint16_t, llvm::Value*, llvm::Function*, RegType Type = RegType::Int);
-    llvm::Value* genStoreRegister(llvm::Value*, llvm::Value*, llvm::Function*, RegType Type = RegType::Int);
 
     llvm::Value* genLogicalOr(llvm::Value*, llvm::Value*, llvm::Function*);
     llvm::Value* genLogicalAnd(llvm::Value*, llvm::Value*, llvm::Function*);

@@ -48,7 +48,8 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
       }
 
     case dbt::OIDecoder::Ldi: {
-        genStoreRegister(64, genImm(Inst.RT), Func);
+        ldireg = Inst.RT;
+        genStoreRegister(64, genImm(Inst.RT), Func); 
         Value* R1 = Builder->CreateAnd(genLoadRegister(Inst.RT, Func), genImm(0xFFFFC000));
         Value* Res = Builder->CreateOr(R1, genImm(Inst.Imm & 0x3FFF));
         genStoreRegister(Inst.RT, Res, Func);
@@ -56,9 +57,9 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
       }
 
     case dbt::OIDecoder::Ldihi: {
-        Value* R1 = Builder->CreateAnd(genLoadRegister(genLoadRegister(64, Func), Func), genImm(0x3FFF));
+        Value* R1 = Builder->CreateAnd(genLoadRegister(ldireg, Func), genImm(0x3FFF));
         Value* Res = Builder->CreateOr(R1, genImm(Inst.Addrs << 14));
-        genStoreRegister(genLoadRegister(64, Func), Res, Func);
+        genStoreRegister(ldireg, Res, Func);
         break;
       }
 
@@ -853,19 +854,16 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
       }
 
     case dbt::OIDecoder::Ldc1: {
-        Value* Reg = Builder->CreateAdd(genImm(Inst.RT*2), genImm(130));
-
         //M.setRegister(130 + I.RT*2 + 0, M.getMemValueAt(M.getRegister(I.RS) + I.Imm  ).asI_);
         Value* RS    = genLoadRegister(Inst.RS, Func, RegType::Int);
         Value* Addrs = Builder->CreateAdd(RS, genImm(Inst.Imm));
         Value* Res1  = Builder->CreateLoad(genDataWordVecPtr(Addrs, Func));
-        genStoreRegister(Reg, Res1, Func, RegType::Int);
+        genStoreRegister((Inst.RT*2)+130, Res1, Func, RegType::Int);
 
         //M.setRegister(130 + I.RT*2 + 1, M.getMemValueAt(M.getRegister(I.RS) + I.Imm + 4).asI_);
         Value* Addrs2 = Builder->CreateAdd(RS, genImm(Inst.Imm + 4));
         Value* Res2   = Builder->CreateLoad(genDataWordVecPtr(Addrs2, Func));
-        Value* Reg2   = Builder->CreateAdd(Reg, genImm(1));
-        genStoreRegister(Reg2, Res2, Func, RegType::Int);
+        genStoreRegister((Inst.RT*2)+131, Res2, Func, RegType::Int);
         break;
       }
 
@@ -891,9 +889,6 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
       }
 
     case dbt::OIDecoder::Ldxc1: {
-        Value* T1    = Builder->CreateMul(genImm(Inst.RD), genImm(2));
-        Value* RBD   = Builder->CreateAdd(T1, genImm(130));
-
         //M.setRegister(130 + I.RT*2 + 0, M.getMemValueAt(M.getRegister(I.RS) + I.Imm  ).asI_);
         Value* RS    = genLoadRegister(Inst.RS, Func, RegType::Int);
         Value* RT    = genLoadRegister(Inst.RT, Func, RegType::Int);
@@ -902,11 +897,10 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         Value* Addr1 = Builder->CreateAdd(RTS, genImm(4));
         Value* Res1  = Builder->CreateLoad(genDataWordVecPtr(Addr1, Func));
 
-        Value* Str1  = Builder->CreateAdd(RBD, genImm(1));
-        genStoreRegister(Str1, Res1, Func, RegType::Int);
+        genStoreRegister((Inst.RD*2)+131, Res1, Func, RegType::Int);
 
         Value* Res2  = Builder->CreateLoad(genDataWordVecPtr(RTS, Func));
-        genStoreRegister(RBD, Res2, Func, RegType::Int);
+        genStoreRegister((Inst.RD*2)+130, Res2, Func, RegType::Int);
 
         break;
       }
@@ -916,8 +910,7 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         Value* RS    = genLoadRegister(Inst.RS, Func, RegType::Int);
         Value* Addrs = Builder->CreateAdd(RS, genImm(Inst.Imm));
 
-        Value* Reg = Builder->CreateAdd(genImm(Inst.RT), genImm(66));
-        Value* Res  = genLoadRegister(Reg, Func, RegType::Int);
+        Value* Res  = genLoadRegister(Inst.RT+66, Func, RegType::Int);
 
         Builder->CreateStore(Res, genDataWordVecPtr(Addrs, Func));
         break;
@@ -928,8 +921,7 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         Value* RT    = genLoadRegister(Inst.RT, Func, RegType::Int);
         Value* Addrs = Builder->CreateAdd(RS, RT);
 
-        Value* Reg = Builder->CreateAdd(genImm(Inst.RD), genImm(66));
-        Value* Res  = genLoadRegister(Reg, Func, RegType::Int);
+        Value* Res  = genLoadRegister(Inst.RD+66, Func, RegType::Int);
 
         Builder->CreateStore(Res, genDataWordVecPtr(Addrs, Func));
         break;
@@ -942,18 +934,12 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         //RS+Immed+4
         Value* Addrs1 = Builder->CreateAdd(Addrs, genImm(4));
 
-        //RT*2+130
-        Value* T1  = Builder->CreateMul(genImm(Inst.RT), genImm(2));
-        Value* Reg = Builder->CreateAdd(T1, genImm(130));
-        //RT+1
-        Value* Reg1= Builder->CreateAdd(Reg, genImm(1));
-
         //M.setMemValueAt(M.getRegister(I.RS) + I.Imm + 4, M.getRegister(130 + I.RT*2 + 1));
-        Value* Res1 = genLoadRegister(Reg1, Func, RegType::Int);
+        Value* Res1 = genLoadRegister((Inst.RT*2)+131, Func, RegType::Int);
         Builder->CreateStore(Res1, genDataWordVecPtr(Addrs1, Func));
 
         //M.setMemValueAt(M.getRegister(I.RS) + I.Imm, M.getRegister(130 + I.RT*2));
-        Value* Res2 = genLoadRegister(Reg, Func, RegType::Int);
+        Value* Res2 = genLoadRegister((Inst.RT*2)+130, Func, RegType::Int);
         Builder->CreateStore(Res2, genDataWordVecPtr(Addrs, Func));
         break;
       }
@@ -962,17 +948,13 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         Value* RS    = genLoadRegister(Inst.RS, Func, RegType::Int);
         Value* Addrs = Builder->CreateAdd(RS, genLoadRegister(Inst.RT, Func, RegType::Int));
 
-        Value* T1  = Builder->CreateMul(genImm(Inst.RD), genImm(2));
-        Value* Reg = Builder->CreateAdd(T1, genImm(130));
-
-        //M.setMemValueAt(M.getRegister(I.RS) + I.Imm + 4, M.getRegister(130 + I.RT*2 + 1));
-        Value* R1   = Builder->CreateAdd(Reg, genImm(1));
-        Value* Res1 = genLoadRegister(R1, Func, RegType::Int);
+        //M.setMemValueAt(M.getRegister(I.RS) + I.Imm + 4, M.getRegister(130 + I.Rd*2 + 1));
+        Value* Res1 = genLoadRegister((Inst.RD*2)+131, Func, RegType::Int);
         Value* Addrs1 = Builder->CreateAdd(Addrs, genImm(4));
         Builder->CreateStore(Res1, genDataWordVecPtr(Addrs1, Func));
 
-        //M.setMemValueAt(M.getRegister(I.RS) + I.Imm, M.getRegister(130 + I.RT*2));
-        Value* Res2 = genLoadRegister(Reg, Func, RegType::Int);
+        //M.setMemValueAt(M.getRegister(I.RS) + I.Imm, M.getRegister(130 + I.RD*2));
+        Value* Res2 = genLoadRegister((Inst.RD*2)+130, Func, RegType::Int);
         Builder->CreateStore(Res2, genDataWordVecPtr(Addrs, Func));
         break;
       }

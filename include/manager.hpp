@@ -67,6 +67,7 @@ namespace dbt {
 			std::unordered_map<uint32_t, llvm::Module*> ModulesLoaded;
       bool IsToLoadRegions = false;
 
+      llvm::Module* loadRegionFromFile(std::string);
 			void loadRegionsFromFiles();
 
       void runPipeline();
@@ -78,8 +79,7 @@ namespace dbt {
         memset((void*) NativeRegions, 0, sizeof(NativeRegions));
 
         if (T) {
-          for (unsigned i = 0; i < T; i++)
-            ThreadPool.push_back(std::thread(&Manager::runPipeline, this));
+          ThreadPool.push_back(std::thread(&Manager::runPipeline, this));
         }
       }
 

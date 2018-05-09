@@ -4,9 +4,9 @@
 #include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/IR/BasicBlock.h"
-#include "llvm/IR/Constants.h"
 #include "llvm/IR/DerivedTypes.h"
 #include "llvm/IR/Type.h"
+#include "llvm/IR/Constants.h"
 
 #include "llvm/IR/CFG.h"
 
@@ -75,21 +75,8 @@ Value *dbt::IREmitter::genRegisterVecPtr(uint16_t RegNum, Function *Func, RegTyp
 
 /********************************** Register Bank Interface *****************************************/ 
 
-Value *dbt::IREmitter::genLoadRegister(Value *R, Function *Func, RegType Type) {
-  Value *Right = R;
-  if (Type == RegType::Float) {
-    Right = Builder->CreateAdd(R, genImm(66));
-    setIfNotTheFirstInstGen(Right);
-  } else if (Type == RegType::Double) {
-    Right = Builder->CreateAdd(R, genImm(65));
-    setIfNotTheFirstInstGen(Right);
-  }
-
-  Value *Ptr = genRegisterVecPtr(Right, Func, Type);
-  return Builder->CreateLoad(Ptr);
-}
-
 Value *dbt::IREmitter::genLoadRegister(uint16_t RegNum, Function *Func, RegType Type) {
+  auto BB = Builder->GetInsertBlock();
   uint16_t Right = RegNum;
   if (Type == RegType::Float) 
     Right += 66;  
@@ -100,24 +87,12 @@ Value *dbt::IREmitter::genLoadRegister(uint16_t RegNum, Function *Func, RegType 
     return genImm(0);
 
   Value *Ptr = genRegisterVecPtr(Right, Func, Type);
+
   return Builder->CreateLoad(Ptr);
 }
 
-Value *dbt::IREmitter::genStoreRegister(Value *R, Value *V, Function *Func, RegType Type) {
-  Value *Right = R;
-  if (Type == RegType::Float) {
-    Right = Builder->CreateAdd(R, genImm(66));
-    setIfNotTheFirstInstGen(Right);
-  } else if (Type == RegType::Double) {
-    Right = Builder->CreateAdd(R, genImm(65));
-    setIfNotTheFirstInstGen(Right);
-  }
-
-  Value *Ptr = genRegisterVecPtr(Right, Func, Type);
-  return Builder->CreateStore(V, Ptr);
-}
-
 Value *dbt::IREmitter::genStoreRegister(uint16_t RegNum, Value *V, Function *Func, RegType Type) {
+  auto BB = Builder->GetInsertBlock();
   uint16_t Right = RegNum;
   if (Type == RegType::Float) 
     Right += 66;  
