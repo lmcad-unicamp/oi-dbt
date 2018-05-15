@@ -67,8 +67,10 @@ namespace dbt {
 
 			std::unordered_map<uint32_t, llvm::Module*> ModulesLoaded;
       bool IsToLoadRegions = false;
+      bool IsToLoadBCFormat = true;
 
       llvm::Module* loadRegionFromFile(std::string);
+      void loadRegionsFromFiles();
 
       void runPipeline();
 
@@ -137,8 +139,9 @@ namespace dbt {
         return AvgOptCodeSize;
       }
 
-      void setToLoadRegions() {
+      void setToLoadRegions(bool AlreadLLVMFormat = true) {
         IsToLoadRegions = true;
+        IsToLoadBCFormat = AlreadLLVMFormat; 
       }
 
      bool addOIRegion(uint32_t, OIInstList, spp::sparse_hash_map<uint32_t, uint32_t>);
@@ -192,7 +195,10 @@ namespace dbt {
         return CompiledOIRegions[EntryAddrs];
       }
 
-			void loadRegionsFromFiles();
+			void loadOIRegionsFromFiles();
+
+      void mergeOIRegions() { 
+      }
 
       void dumpRegions() {
         std::cerr << "Dumping IR regions!\n";
@@ -209,7 +215,7 @@ namespace dbt {
           std::error_code EC;
           llvm::raw_fd_ostream OS("r"+std::to_string(OIRegion.first)+".oi", EC, llvm::sys::fs::F_None);
           for (auto OIInsts : OIRegion.second) 
-            OS << OIInsts[0] << "\t" << OIPrinter::getString(OIDecoder::decode(OIInsts[1])) <<  "\n"; 
+            OS << OIInsts[0] << "\t" << OIInsts[1] << "\t" << OIPrinter::getString(OIDecoder::decode(OIInsts[1])) <<  "\n"; 
           OS.flush();
         }
         std::error_code EC;

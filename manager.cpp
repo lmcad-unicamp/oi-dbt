@@ -29,10 +29,20 @@ void Manager::loadRegionsFromFiles() {
   while (std::getline(infile, line)) {
     uint32_t Entry = std::stoi(line);
     OIRegionsKey.push_back(Entry);
-    OIRegions[Entry] = {{Entry,0}};
+    if (!IsToLoadBCFormat) {
+      std::ifstream infile("r"+std::to_string(Entry)+".oi"); 
+      std::string line;
+      while (std::getline(infile, line)) {
+        std::istringstream iss(line);
+        uint32_t Addrs, Opcode;
+        if (!(iss >> Addrs >> Opcode)) { break; }
+        OIRegions[Entry].push_back({Addrs, Opcode});
+      }
+    } else {
+      OIRegions[Entry] = {{Entry,0}};
+    }
   }
   OIRegionsMtx.unlock();
-    //ModulesLoaded[std::stoi(line)] = loadRegionFromFile("r"+line+".bc");
 }
 
 void Manager::runPipeline() {
@@ -68,18 +78,10 @@ void Manager::runPipeline() {
 
     if (OIRegion.size() == 0) continue;
 
-    if (IsToLoadRegions) {
-/*      if (ModulesLoaded.count(EntryAddress) != 0) {
-        //std::cerr << "loading" << EntryAddress << "\n";
-        Module = ModulesLoaded[EntryAddress]; 
-        ModulesLoaded.erase(EntryAddress);
-      }*/
+    if (IsToLoadRegions && IsToLoadBCFormat) 
       Module = loadRegionFromFile("r"+std::to_string(EntryAddress)+".bc");
-    } 
 
     if (Module == nullptr) {
-      //std::cerr << "compiling" << EntryAddress << "\n";
-
       CompiledOIRegionsMtx.lock();
       CompiledOIRegions[EntryAddress] = OIRegion;
       CompiledOIRegionsMtx.unlock();

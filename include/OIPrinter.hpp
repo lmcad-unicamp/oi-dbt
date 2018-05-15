@@ -421,7 +421,7 @@ namespace dbt {
           Out << " $" << (uint32_t) I.RT;
           break;
         case EncodingType::PL26j:
-          Out << " " << I.Addrs;
+          Out << " " << (I.Addrs << 2);
           break;
         case EncodingType::PL16:
           Out << " " << ((I.Imm << 2) + 4);

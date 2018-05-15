@@ -31,7 +31,7 @@ namespace dbt {
     uint32_t LastTarget;
 
     unsigned RegionLimitSize = -1;
-    unsigned RegionMaxSize = 100;
+    unsigned RegionMaxSize = 1000;
     
     Manager& TheManager;
 

@@ -28,6 +28,7 @@ clarg::argInt	   NumThreadsFlag ("-threads", "Number of compilation threads (min
 /* Iterative Compiler Tools */
 clarg::argBool   DumpRegionsFlag("-dr", "Dump Regions (llvm ir and OI) to files");
 clarg::argBool   LoadRegionsFlag("-lr", "Load Regions (.bc) from files");
+clarg::argBool   LoadOIFlag("-loi", "Load Regions (.oi) from files");
 clarg::argString CustomOptsFlag("-opts", "path to regions optimization list file", "");
 
 #ifdef DEBUG
@@ -59,6 +60,11 @@ int validateArguments() {
 
   if (!BinaryFlag.was_set()) {
     cerr << "You must set the path of the binary which will be emulated!\n";
+    return 1;
+  }
+
+  if (LoadRegionsFlag.was_set() && LoadOIFlag.was_set()) {
+    cerr << "You cannot use -lr and -loi together!\n";
     return 1;
   }
 
@@ -152,8 +158,8 @@ int main(int argc, char** argv) {
 
   dbt::Manager TheManager(NumThreadsFlag.get_value(), M.getDataMemOffset(), M, VerboseFlag.was_set());
 
-  if (LoadRegionsFlag.was_set()) 
-    TheManager.setToLoadRegions();
+  if (LoadRegionsFlag.was_set() || LoadOIFlag.was_set()) 
+    TheManager.setToLoadRegions(!LoadOIFlag.was_set());
 
   if (CustomOptsFlag.was_set()) {
     TheManager.setOptPolicy(dbt::Manager::OptPolitic::Custom);
