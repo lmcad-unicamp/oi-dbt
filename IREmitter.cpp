@@ -1110,7 +1110,7 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         BasicBlock* BB = BasicBlock::Create(TheContext, "AfterCall", Func);
 
         // If the function was inlined just jump to it first address, if not try to jump direct to its native code
-/*        if (IRMemoryMap.count(GuestTarget) == 0) {
+        if (IRMemoryMap.count(GuestTarget) == 0) {
           Argument *ArgDataMemPtr1 = &*(Func->arg_begin());
           Value *CastedPtr1 = Builder->CreatePointerCast(ArgDataMemPtr1, Type::getIntNPtrTy(TheContext, 32));
           Argument *ArgDataMemPtr2 = &*(Func->arg_begin()+1);
@@ -1150,9 +1150,9 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
           Builder->CreateRet(Ret);
 
           Builder->SetInsertPoint(T);
-        } /*else {
+        } else {
           CallerList[GuestTarget].insert(GuestAddr);
-        }*/
+        }
 
         BranchInst* Br = Builder->CreateBr(BB);
         Builder->SetInsertPoint(BB);

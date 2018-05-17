@@ -250,7 +250,6 @@ int main(int argc, char** argv) {
   std::cerr << "Starting execution:\n";
 
   I.executeAll(M);
-
   if (DumpRegionsFlag.was_set()) TheManager.dumpRegions(MergeOIFlag.was_set());
 
   GlobalTimer.stopClock();
@@ -283,6 +282,9 @@ int main(int argc, char** argv) {
       std::cerr << "Report Error: Unable to open file: \'" << ReportFileFlag.get_value() << "\' for writting.\n";
   }
 
-  return SyscallM->getExitStatus();
+  std::cerr.flush();
+  std::cout.flush();
+
+  exit(SyscallM->getExitStatus());
 }
 

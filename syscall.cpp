@@ -78,8 +78,13 @@ int LinuxSyscallManager::processSyscall(Machine& M) {
   }
 
   case SyscallType::Close: {
-    ssize_t r = close(M.getRegister(5));
-    M.setRegister(2, r);
+    auto FD = M.getRegister(5);
+    if (FD > 2) {
+      ssize_t r = close(FD);
+      M.setRegister(2, r);
+    } else {
+      M.setRegister(2, 0);
+    }
     return 0;
   }
 

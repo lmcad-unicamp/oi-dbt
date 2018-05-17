@@ -97,7 +97,7 @@ namespace dbt {
             if (ThreadPool[i].joinable())
               ThreadPool[i].join();
         }
-
+        
         std::cerr << "Compiled Regions: " << std::dec << CompiledRegions << "\n";
         std::cerr << "Avg Code Size Reduction: ";
         std::cerr << CompiledRegions? AvgOptCodeSize/CompiledRegions : 0;
