@@ -85,7 +85,17 @@ namespace dbt {
         }
       }
 
+      void dumpStats() {
+        std::cerr << "Compiled Regions: " << std::dec << CompiledRegions << "\n";
+        std::cerr << "Avg Code Size Reduction: ";
+        std::cerr << CompiledRegions? AvgOptCodeSize/CompiledRegions : 0;
+        std::cerr << std::endl;
+        std::cerr << "Compiled OI: " << OICompiled << "\n";
+        std::cerr << "Compiled LLVM: " << LLVMCompiled << std::endl;
+      }
+
       ~Manager() {
+
         // Alert threads to stop
         isRunning = false;
 
@@ -97,13 +107,6 @@ namespace dbt {
             if (ThreadPool[i].joinable())
               ThreadPool[i].join();
         }
-        
-        std::cerr << "Compiled Regions: " << std::dec << CompiledRegions << "\n";
-        std::cerr << "Avg Code Size Reduction: ";
-        std::cerr << CompiledRegions? AvgOptCodeSize/CompiledRegions : 0;
-        std::cerr << std::endl;
-        std::cerr << "Compiled OI: " << OICompiled << "\n";
-        std::cerr << "Compiled LLVM: " << LLVMCompiled << "\n";
       }
 
       void setOptPolicy(OptPolitic OM) {

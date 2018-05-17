@@ -250,9 +250,11 @@ int main(int argc, char** argv) {
   std::cerr << "Starting execution:\n";
 
   I.executeAll(M);
+
   if (DumpRegionsFlag.was_set()) TheManager.dumpRegions(MergeOIFlag.was_set());
 
   GlobalTimer.stopClock();
+  TheManager.dumpStats();
   GlobalTimer.printReport("Global");
 
   if(ReportFileFlag.was_set()) {
