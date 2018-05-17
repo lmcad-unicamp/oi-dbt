@@ -25,6 +25,7 @@
 #include <array>
 #include <unordered_map>
 #include <memory>
+#include <set>
 
 #define __STDC_CONSTANT_MACROS // llvm complains otherwise
 #define __STDC_LIMIT_MACROS
@@ -43,6 +44,8 @@ namespace dbt {
     uint16_t ldireg;
     spp::sparse_hash_map<llvm::BasicBlock*, spp::sparse_hash_map<uint32_t, llvm::Value*>> RegisterBank;
 
+    spp::sparse_hash_map<uint32_t, std::set<uint32_t>> CallerList;
+
     uint32_t DataMemOffset;
     uint32_t CurrentEntryAddrs;
     dbt::OIDecoder::OIInst LastEmittedInst;
@@ -50,6 +53,8 @@ namespace dbt {
 
     llvm::Value* FirstInstGen = nullptr;
     void addFirstInstToMap(uint32_t);
+
+    dbt::Machine* Mach;
 
     spp::sparse_hash_map<uint32_t, llvm::Value*> IRMemoryMap;
     spp::sparse_hash_map<uint32_t, llvm::BranchInst*> IRBranchMap;

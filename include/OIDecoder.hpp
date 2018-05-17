@@ -537,7 +537,6 @@ namespace dbt {
       return I;
     }
 
-
     static std::array<uint32_t, 2> getPossibleTargets(uint32_t PC, OIInst Inst) {
       switch (Inst.Type) {
         case dbt::OIDecoder::Jne: 

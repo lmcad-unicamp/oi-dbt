@@ -89,6 +89,7 @@ void Manager::runPipeline() {
       if (VerboseOutput)
         std::cerr << "Trying to compile: " << std::hex <<  EntryAddress  << "...";
 
+
       OICompiled += OIRegion.size();
 
       Module = IRE->generateRegionIR(EntryAddress, OIRegion, DataMemOffset, TheMachine, IRJIT->getTargetMachine(), NativeRegions);
@@ -123,7 +124,17 @@ void Manager::runPipeline() {
 
     // Remove a region if the first instruction is a return <- can cause infinity loops
     llvm::Function* LLVMRegion = Module->getFunction("r"+std::to_string(EntryAddress));
-    if (LLVMRegion->getEntryBlock().getFirstNonPHI()->getOpcode() != llvm::Instruction::Ret) {
+    auto Inst     = LLVMRegion->getEntryBlock().getFirstNonPHI();
+    bool IsRet    = Inst->getOpcode() == llvm::Instruction::Ret;
+    bool RetLoop = true;
+    if (IsRet) {
+      auto RetInst = llvm::dyn_cast<llvm::ReturnInst>(Inst);
+      if (llvm::isa<llvm::ConstantInt>(RetInst->getReturnValue())) 
+        if (!llvm::dyn_cast<llvm::ConstantInt>(RetInst->getReturnValue())->equalsInt(EntryAddress)) 
+          RetLoop = false;
+    }
+
+    if (!IsRet || !RetLoop) {
       if (VerboseOutput)
         Module->print(llvm::errs(), nullptr);
 
@@ -162,9 +173,8 @@ void Manager::runPipeline() {
         IREmitter::regionDump((const void*) *Addr, buffer, t);
         std::cerr << buffer.str().c_str() << std::endl;
       }
-
-    } else if (VerboseOutput) {
-      std::cerr << "Giving up " << std::hex << EntryAddress << " compilation as it starts with a return!\n";
+    } else if (VerboseOutput) { 
+        std::cerr << "Giving up " << std::hex << EntryAddress << " compilation as it starts with a return!\n";
     }
 
     OIRegionsMtx.lock();
@@ -176,7 +186,7 @@ void Manager::runPipeline() {
 }
 
 bool Manager::addOIRegion(uint32_t EntryAddress, OIInstList OIRegion, spp::sparse_hash_map<uint32_t, uint32_t> BrTargets) {
-  if (!isRegionEntry(EntryAddress) && OIRegion.size() > 3 && OIRegions.count(EntryAddress) == 0) {
+  if (!isRegionEntry(EntryAddress) && OIRegions.count(EntryAddress) == 0) {
     OIRegionsMtx.lock();
     OIRegionsKey.push_back(EntryAddress);
     OIRegions[EntryAddress]   = OIRegion;
@@ -189,12 +199,14 @@ bool Manager::addOIRegion(uint32_t EntryAddress, OIInstList OIRegion, spp::spars
 
 int32_t Manager::jumpToRegion(uint32_t EntryAddress) {
   uint32_t JumpTo = EntryAddress;
+  uint32_t LastTo = JumpTo;
+  int32_t* RegPtr = TheMachine.getRegisterPtr();
+  uint32_t* MemPtr = TheMachine.getMemoryPtr();
 
   while (isNativeRegionEntry(JumpTo)) {
-    uint32_t LastTo = JumpTo;
-
+    LastTo = JumpTo;
     uint32_t (*FP)(int32_t*, uint32_t*, volatile uint64_t*) = (uint32_t (*)(int32_t*, uint32_t*, volatile uint64_t*)) NativeRegions[JumpTo];
-    JumpTo = FP(TheMachine.getRegisterPtr(), TheMachine.getMemoryPtr(), NativeRegions);
+    JumpTo = FP(RegPtr, MemPtr, NativeRegions);
   }
 
   return JumpTo;

@@ -16,14 +16,12 @@ void NET::onBranch(Machine &M) {
 #ifdef LIMITED
     if (TotalInst1 <= RegionLimitSize) {
 #endif
-      if (OIDecoder::isIndirectBranch(OIDecoder::decode(M.getInstAt(M.getLastPC()).asI_)))
-        setBranchTarget(M.getLastPC(), M.getPC());
 
       for (uint32_t I = LastTarget; I <= M.getLastPC(); I += 4) {
-        if (TheManager.isRegionEntry(I) || OIRegion.size() > RegionMaxSize || (IsRelaxed && hasRecordedAddrs(I))
+        if (TheManager.isRegionEntry(I) || (IsRelaxed && hasRecordedAddrs(I))
             || (!IsRelaxed && (M.getPC() < M.getLastPC()))) { 
+
           finishRegionFormation(); 
- //         while (TheManager.getNumOfOIRegions() != 0) {}//isNativeRegionEntry(PossibleEntry)) {}
           break;
         }
 
@@ -47,7 +45,7 @@ void NET::onBranch(Machine &M) {
 #ifdef LIMITED
     }
 #endif
-  } else if (M.getPC() < M.getLastPC()) {
+  } else if (M.getPC() - M.getLastPC()) {
     ++ExecFreq[M.getPC()];
     if (!TheManager.isRegionEntry(M.getPC()) && ExecFreq[M.getPC()] > HotnessThreshold) 
       startRegionFormation(M.getPC());
@@ -61,7 +59,7 @@ void NET::onBranch(Machine &M) {
     M.setPC(Next);
 
     ++ExecFreq[Next];
-    if (ExecFreq[M.getPC()] > HotnessThreshold)
+    if (ExecFreq[M.getPC()] > HotnessThreshold) 
       startRegionFormation(Next);
   } 
 

@@ -137,6 +137,7 @@ namespace dbt {
     bool isMethodEntry(uint32_t);
     uint32_t getMethodEnd(uint32_t);
     std::string getMethodName(uint32_t);
+    uint32_t findMethod(uint32_t);
     std::vector<uint32_t> getVectorOfMethodEntries();
 
     int loadELF(const std::string);

@@ -29,6 +29,7 @@ clarg::argInt	   NumThreadsFlag ("-threads", "Number of compilation threads (min
 clarg::argBool   DumpRegionsFlag("-dr", "Dump Regions (llvm ir and OI) to files");
 clarg::argBool   LoadRegionsFlag("-lr", "Load Regions (.bc) from files");
 clarg::argBool   LoadOIFlag("-loi", "Load Regions (.oi) from files");
+clarg::argBool   MergeOIFlag("-moi", "Merge OI Regions before dumping");
 clarg::argString CustomOptsFlag("-opts", "path to regions optimization list file", "");
 
 #ifdef DEBUG
@@ -89,7 +90,6 @@ void  sigHandler(int sig) {
     std::cerr << "SIGSEGV (" << sig << ") while emulating at PC: " << std::hex << M.getPC() << std::dec << "\n";
 
   std::cerr << "Last Machine state:";
-//  M.dumpRegisters();
 
   exit(1);
 }
@@ -147,11 +147,9 @@ int main(int argc, char** argv) {
     M.setHeapSize(HeapSizeFlag.get_value());
   }
 
-  int loadStatus = M.loadELF(BinaryFlag.get_value());
+  int LoadStatus = M.loadELF(BinaryFlag.get_value());
 
-  //M.dumpRegisters();
-
-  if (!loadStatus) {
+  if (!LoadStatus) {
     std::cerr << "Can't find or process ELF file " << argv[1] << std::endl;
     return 2;
   }
@@ -239,6 +237,7 @@ int main(int argc, char** argv) {
     RftChosen = std::make_unique<dbt::PreheatRFT>(TheManager);
     GlobalTimer.printReport("Preheat");
 
+    while (TheManager.getNumOfOIRegions() != 0) {}
     M.setPreheating(false);
   }
 
@@ -252,7 +251,7 @@ int main(int argc, char** argv) {
 
   I.executeAll(M);
 
-  if (DumpRegionsFlag.was_set()) TheManager.dumpRegions();
+  if (DumpRegionsFlag.was_set()) TheManager.dumpRegions(MergeOIFlag.was_set());
 
   GlobalTimer.stopClock();
   GlobalTimer.printReport("Global");

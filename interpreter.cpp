@@ -21,6 +21,7 @@ uint64_t instacc = 0;
 #include <OIPrinter.hpp>
 //#define DEBUG_PRINT(Addr, Inst) std::cerr << OIPrinter::getString(Inst) << "\n";
 //#define DEBUG_PRINT(Addr, Inst) std::cerr << /*std::dec << (++instacc) <<" -- "<<*/ std::hex << Addr << "\t" << OIPrinter::getString(Inst) << std::dec << "\n";
+//#define DEBUG_PRINT(Addr, Inst) std::cerr << "\n" << COLOR_CYAN <<  std::dec << (++instacc) <<" -- "<< std::hex << Addr << "\t" << OIPrinter::getString(Inst) << std::dec << COLOR_NONE << "\t";
 #define DEBUG_PRINT(Addr, Inst) std::cerr << "\n" << COLOR_CYAN <<  std::dec << (++instacc) <<" -- "<< std::hex << Addr << "\t" << OIPrinter::getString(Inst) << std::dec << COLOR_NONE << "\t";
 #else
 #define DEBUG_PRINT(Addr, Inst)
@@ -108,7 +109,6 @@ void ITDInterpreter::setDecodedInst(uint32_t Addrs, OIInst DI) {
 void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs) {
   for (uint32_t Addrs = StartAddrs; Addrs < EndAddrs; Addrs+=4) {
     Word W = M.getInstAt(Addrs);
-    //std::cout << std::hex << Addrs << std::endl;
     OIInst I = decode(W.asI_);
     switch(I.Type) {
       SET_DISPACH(Addrs, Absd,    &&absd);

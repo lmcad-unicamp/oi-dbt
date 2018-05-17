@@ -197,21 +197,23 @@ namespace dbt {
 
 			void loadOIRegionsFromFiles();
 
-      void mergeOIRegions() { 
-      }
+      void mergeOIRegions();
 
-      void dumpRegions() {
+      void dumpRegions(bool MergeRegions = false) {
+        while (getNumOfOIRegions() != 0) {}
         std::cerr << "Dumping IR regions!\n";
         for (auto& M : IRRegions) {
-          std::cerr << "Dumping r" << M.first << ".bc\n"; 
           std::error_code EC;
           llvm::raw_fd_ostream OS("r"+std::to_string(M.first)+".bc", EC, llvm::sys::fs::F_None);
           WriteBitcodeToFile(M.second, OS);
           OS.flush(); 
         }
+        if (MergeRegions) {
+          std::cerr << "Merging OI regions!\n";
+          mergeOIRegions();
+        }
         std::cerr << "Dumping OI regions!\n";
         for (auto OIRegion : CompiledOIRegions) {
-          std::cerr << "Dumping r" << OIRegion.first << ".oi\n"; 
           std::error_code EC;
           llvm::raw_fd_ostream OS("r"+std::to_string(OIRegion.first)+".oi", EC, llvm::sys::fs::F_None);
           for (auto OIInsts : OIRegion.second) 

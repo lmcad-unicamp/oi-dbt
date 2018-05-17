@@ -223,6 +223,13 @@ void Machine::setOffNativeExecution() {
 
 }
 
+uint32_t Machine::findMethod(uint32_t Addr) {
+  for (auto Method : Symbolls) 
+    if (Method.first < Addr && Method.second.second > Addr) 
+      return Method.first;
+  return 0;
+}
+
 bool Machine::isMethodEntry(uint32_t Addr) {
   return Symbolls.count(Addr) != 0;
 }
