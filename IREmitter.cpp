@@ -1110,7 +1110,9 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         BasicBlock* BB = BasicBlock::Create(TheContext, "AfterCall", Func);
 
         // If the function was inlined just jump to it first address, if not try to jump direct to its native code
-        if (IRMemoryMap.count(GuestTarget) == 0) {
+        //if () {
+        //  CallerList[GuestTarget].insert(GuestAddr);
+/*        if (IRMemoryMap.count(GuestTarget) == 0) {
           Argument *ArgDataMemPtr1 = &*(Func->arg_begin());
           Value *CastedPtr1 = Builder->CreatePointerCast(ArgDataMemPtr1, Type::getIntNPtrTy(TheContext, 32));
           Argument *ArgDataMemPtr2 = &*(Func->arg_begin()+1);
@@ -1152,7 +1154,7 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
           Builder->SetInsertPoint(T);
         } else {
           CallerList[GuestTarget].insert(GuestAddr);
-        }
+        }*/
 
         BranchInst* Br = Builder->CreateBr(BB);
         Builder->SetInsertPoint(BB);
@@ -1240,7 +1242,7 @@ void dbt::IREmitter::updateBranchTarget(uint32_t GuestAddr, std::array<uint32_t,
 }
 
 void dbt::IREmitter::improveIndirectBranch(uint32_t GuestAddr, uint32_t NextAddrs) {
-  uint32_t MethodEntry = Mach->findMethod(GuestAddr);
+/*  uint32_t MethodEntry = Mach->findMethod(GuestAddr);
   if (NextAddrs != 0)
     CallerList[MethodEntry].insert(NextAddrs-4);
 
@@ -1301,10 +1303,10 @@ void dbt::IREmitter::improveIndirectBranch(uint32_t GuestAddr, uint32_t NextAddr
     Value *Ret = Builder->CreateCall(V, {CastedPtr1, CastedPtr2, CastedPtr3});
     Builder->CreateRet(Ret);
 
-    Builder->SetInsertPoint(NotNative);*/
+    Builder->SetInsertPoint(NotNative);
     Builder->CreateRet(TargetAddrs);
-  } 
-/*  if (NextAddrs != 0) {
+  } */
+  if (NextAddrs != 0) {
     Instruction* GuestInst   = cast<Instruction>(IRMemoryMap[GuestAddr]);
     Value*       TargetAddrs = IRIBranchMap[GuestAddr]->getReturnValue();
 
@@ -1359,7 +1361,7 @@ void dbt::IREmitter::improveIndirectBranch(uint32_t GuestAddr, uint32_t NextAddr
 
     Builder->SetInsertPoint(NotNative);
     Builder->CreateRet(TargetAddrs);
-  }*/
+  }
 }
 
 void dbt::IREmitter::processBranchesTargets(const OIInstList& OIRegion) {
