@@ -1336,7 +1336,7 @@ void dbt::IREmitter::improveIndirectBranch(uint32_t GuestAddr, uint32_t NextAddr
     // BB: IF FALSE TRY TO JUMP DIRECT TO ANOTHER REGION
     Builder->SetInsertPoint(IfFalse);
 
-    Argument *ArgDataMemPtr1 = &*(F->arg_begin());
+/*    Argument *ArgDataMemPtr1 = &*(F->arg_begin());
     Value *CastedPtr1 = Builder->CreatePointerCast(ArgDataMemPtr1, Type::getIntNPtrTy(TheContext, 32));
     Argument *ArgDataMemPtr2 = &*(F->arg_begin()+1);
     Value *CastedPtr2 = Builder->CreatePointerCast(ArgDataMemPtr2, Type::getIntNPtrTy(TheContext, 32));
@@ -1359,7 +1359,7 @@ void dbt::IREmitter::improveIndirectBranch(uint32_t GuestAddr, uint32_t NextAddr
     Value *Ret = Builder->CreateCall(V, {CastedPtr1, CastedPtr2, CastedPtr3});
     Builder->CreateRet(Ret);
 
-    Builder->SetInsertPoint(NotNative);
+    Builder->SetInsertPoint(NotNative);*/
     Builder->CreateRet(TargetAddrs);
   }
 }
@@ -1400,7 +1400,8 @@ Module* dbt::IREmitter::generateRegionIR(uint32_t EntryAddress, const OIInstList
 
   DataMemOffset     = MemOffset;
   CurrentEntryAddrs = EntryAddress;
-  std::array<Type*, 3> ArgsType = {Type::getInt32PtrTy(TheContext), Type::getInt32PtrTy(TheContext), Type::getInt64PtrTy(TheContext)};
+  //std::array<Type*, 3> ArgsType = {Type::getInt32PtrTy(TheContext), Type::getInt32PtrTy(TheContext), Type::getInt64PtrTy(TheContext)};
+  std::array<Type*, 2> ArgsType = {Type::getInt32PtrTy(TheContext), Type::getInt32PtrTy(TheContext)};
   FunctionType *FT = FunctionType::get(Type::getInt32Ty(TheContext), ArgsType, false);
   Function *F = Function::Create(FT, Function::ExternalLinkage, "r" + std::to_string(EntryAddress), TheModule);
 

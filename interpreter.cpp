@@ -88,9 +88,7 @@ bool ITDInterpreter::isAddrsContainedIn(uint32_t StartAddrs, uint32_t EndAddrs) 
   return !(StartAddrs < LastStartAddrs || EndAddrs > LastEndAddrs);
 }
 
-int num = 0;
-void* ITDInterpreter::getDispatchValue(uint32_t Addrs) {
-  num++;
+inline void* ITDInterpreter::getDispatchValue(uint32_t Addrs) {
   return (void*)DispatchValues[(Addrs-LastStartAddrs)/4];
 }
 
@@ -98,7 +96,7 @@ void ITDInterpreter::setDispatchValue(uint32_t Addrs, int* Target) {
   DispatchValues[(Addrs-LastStartAddrs)/4] = Target;
 }
 
-OIInst ITDInterpreter::getDecodedInst(uint32_t Addrs) {
+inline OIInst ITDInterpreter::getDecodedInst(uint32_t Addrs) {
   return DecodedInsts[(Addrs-LastStartAddrs)/4];
 }
 

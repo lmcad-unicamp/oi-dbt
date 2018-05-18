@@ -35,7 +35,6 @@ namespace dbt {
       std::unordered_map<uint32_t, OIInstList> CompiledOIRegions;
       std::vector<uint32_t> IRRegionsKey;
       spp::sparse_hash_map<uint32_t, llvm::Module*> IRRegions;
-      std::vector<uint32_t> RegionAddresses;
       volatile uint64_t NativeRegions[NATIVE_REGION_SIZE];
 
       mutable std::shared_mutex OIRegionsMtx, IRRegionsMtx, NativeRegionsMtx, CompiledOIRegionsMtx;
@@ -156,7 +155,7 @@ namespace dbt {
         return OIRegions.count(EntryAddress) != 0 || NativeRegions[EntryAddress] != 0;
       }
 
-      bool isNativeRegionEntry(uint32_t EntryAddress) {
+      inline bool isNativeRegionEntry(uint32_t EntryAddress) {
         return (NativeRegions[EntryAddress] != 0);
       }
 

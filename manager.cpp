@@ -87,7 +87,6 @@ void Manager::runPipeline() {
       if (VerboseOutput)
         std::cerr << "Trying to compile: " << std::hex <<  EntryAddress  << "...";
 
-
       OICompiled += OIRegion.size();
 
       Module = IRE->generateRegionIR(EntryAddress, OIRegion, DataMemOffset, TheMachine, IRJIT->getTargetMachine(), NativeRegions);
@@ -202,8 +201,8 @@ int32_t Manager::jumpToRegion(uint32_t EntryAddress) {
 
   while (isNativeRegionEntry(JumpTo)) {
     LastTo = JumpTo;
-    uint32_t (*FP)(int32_t*, uint32_t*, volatile uint64_t*) = (uint32_t (*)(int32_t*, uint32_t*, volatile uint64_t*)) NativeRegions[JumpTo];
-    JumpTo = FP(RegPtr, MemPtr, NativeRegions);
+    uint32_t (*FP)(int32_t*, uint32_t*) = (uint32_t (*)(int32_t*, uint32_t*)) NativeRegions[JumpTo];
+    JumpTo = FP(RegPtr, MemPtr);
   }
 
   return JumpTo;
