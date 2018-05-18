@@ -136,13 +136,10 @@ static unsigned int regionFrequency= 0;
 
 void NETPlus::onBranch(Machine& M) {
   if (Recording) {
-    if (OIDecoder::isIndirectBranch(OIDecoder::decode(M.getInstAt(M.getLastPC()).asI_)))
-      setBranchTarget(M.getLastPC(), M.getPC());
-
     for (uint32_t I = LastTarget; I <= M.getLastPC(); I += 4) {
-      if (TheManager.isRegionEntry(I) || OIRegion.size() > RegionMaxSize 
+      if (OIRegion.size() > RegionMaxSize 
           || (IsExtendedRelaxed && hasRecordedAddrs(I))
-          || (!IsExtendedRelaxed && (M.getPC() < M.getLastPC()))) { 
+          || (!IsExtendedRelaxed && (M.getPC() < M.getLastPC())) || TheManager.isRegionEntry(I)) { 
         expandAndFinish(M);
         break;
       }
@@ -163,22 +160,15 @@ void NETPlus::onBranch(Machine& M) {
       OIRegion.push_back({I, M.getInstAt(I).asI_});
 #endif
     }
-  } else if (M.getPC() < M.getLastPC()) {
+  } else if (abs(M.getPC() - M.getLastPC()) > 4 && !TheManager.isRegionEntry(M.getPC())) {
     ++ExecFreq[M.getPC()];
-    if (!TheManager.isRegionEntry(M.getPC()) && ExecFreq[M.getPC()] > HotnessThreshold) 
+    if (ExecFreq[M.getPC()] > HotnessThreshold) 
       startRegionFormation(M.getPC());
   }
 
   if (TheManager.isNativeRegionEntry(M.getPC())) {
     if (Recording) 
       expandAndFinish(M);
-
-    ++regionFrequency;
-#define REGION_THRESHOLD 100
-    if(regionFrequency > REGION_THRESHOLD) {
-      TheManager.setRegionRecorging(true);
-      regionFrequency=0;
-    }
 
     auto Next = TheManager.jumpToRegion(M.getPC()); 
     M.setPC(Next);

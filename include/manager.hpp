@@ -30,7 +30,6 @@ namespace dbt {
       llvm::LLVMContext TheContext;
       dbt::Machine& TheMachine;
 
-      spp::sparse_hash_map<uint32_t, spp::sparse_hash_map<uint32_t, uint32_t>> OIBrTargets;
 			std::vector<uint32_t> OIRegionsKey;
       spp::sparse_hash_map<uint32_t, OIInstList> OIRegions;
       std::unordered_map<uint32_t, OIInstList> CompiledOIRegions;
@@ -147,7 +146,7 @@ namespace dbt {
         IsToLoadBCFormat = AlreadLLVMFormat; 
       }
 
-     bool addOIRegion(uint32_t, OIInstList, spp::sparse_hash_map<uint32_t, uint32_t>);
+     bool addOIRegion(uint32_t, OIInstList);
 
       int32_t jumpToRegion(uint32_t);
 

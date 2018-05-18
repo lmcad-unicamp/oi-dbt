@@ -62,13 +62,11 @@ void Manager::runPipeline() {
   while (isRunning) {
     uint32_t EntryAddress;
     OIInstList OIRegion;
-    spp::sparse_hash_map<uint32_t, uint32_t> BrTargets;
 
     if (getNumOfOIRegions() > 0) {
       OIRegionsMtx.lock_shared();
       EntryAddress = OIRegionsKey.front();
       OIRegion     = OIRegions[EntryAddress];
-      BrTargets    = OIBrTargets[EntryAddress];
       OIRegionsMtx.unlock_shared();
     }
 
@@ -185,12 +183,11 @@ void Manager::runPipeline() {
   isFinished = true;
 }
 
-bool Manager::addOIRegion(uint32_t EntryAddress, OIInstList OIRegion, spp::sparse_hash_map<uint32_t, uint32_t> BrTargets) {
+bool Manager::addOIRegion(uint32_t EntryAddress, OIInstList OIRegion) {
   if (!isRegionEntry(EntryAddress) && OIRegions.count(EntryAddress) == 0) {
     OIRegionsMtx.lock();
     OIRegionsKey.push_back(EntryAddress);
     OIRegions[EntryAddress]   = OIRegion;
-    OIBrTargets[EntryAddress] = BrTargets;
     OIRegionsMtx.unlock();
     return true;
   }

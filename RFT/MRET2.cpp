@@ -86,7 +86,7 @@ void MRET2::onBranch(Machine& M) {
     }
   } 
 
-  if (M.getPC() < M.getLastPC()) {
+  if (abs(M.getPC() - M.getLastPC()) > 4) {
     if (!Recording) { 
       ++ExecFreq[M.getPC()];
       if (!TheManager.isRegionEntry(M.getPC()) && ExecFreq[M.getPC()] > HotnessThreshold/2) { 

@@ -18,8 +18,8 @@ void NET::onBranch(Machine &M) {
 #endif
 
       for (uint32_t I = LastTarget; I <= M.getLastPC(); I += 4) {
-        if (TheManager.isRegionEntry(I) || (IsRelaxed && hasRecordedAddrs(I))
-            || (!IsRelaxed && (M.getPC() < M.getLastPC()))) { 
+        if ((IsRelaxed && hasRecordedAddrs(I))
+            || (!IsRelaxed && (M.getPC() < M.getLastPC())) || TheManager.isRegionEntry(I)) { 
 
           finishRegionFormation(); 
           break;
@@ -45,9 +45,9 @@ void NET::onBranch(Machine &M) {
 #ifdef LIMITED
     }
 #endif
-  } else if (M.getPC() - M.getLastPC()) {
+  } else if (abs(M.getPC() - M.getLastPC()) > 4 && !TheManager.isRegionEntry(M.getPC())) {
     ++ExecFreq[M.getPC()];
-    if (!TheManager.isRegionEntry(M.getPC()) && ExecFreq[M.getPC()] > HotnessThreshold) 
+    if (ExecFreq[M.getPC()] > HotnessThreshold) 
       startRegionFormation(M.getPC());
   }
 

@@ -20,9 +20,7 @@ void LEI::formTrace(uint32_t start, int old, Machine& M) {
 
     for (unsigned long long InstAddrs = prev; InstAddrs <= branch_src; InstAddrs += 4) {
         // Stop if next instruction begins a trace or is a syscall
-        if (TheManager.isRegionEntry(InstAddrs) ||
-          OIDecoder::decode(M.getInstAt(InstAddrs).asI_).Type == OIDecoder::OIInstType::Sqrts ||
-          OIDecoder::decode(M.getInstAt(InstAddrs).asI_).Type == OIDecoder::OIInstType::Sqrtd) 
+        if (TheManager.isRegionEntry(InstAddrs)) 
           break;
         insertInstruction(InstAddrs, M.getInstAt(InstAddrs).asI_);
     }
@@ -56,9 +54,6 @@ void LEI::onBranch(Machine& M) {
   if (BufferHash.count(tgt) != 0) {
     int old = BufferHash[tgt];
     BufferHash[tgt] = Buffer.size()-1;
-
-    if (OIDecoder::isIndirectBranch(OIDecoder::decode(M.getInstAt(M.getLastPC()).asI_)))
-      setBranchTarget(M.getLastPC(), M.getPC());
 
     // if tgt ≤ src or old follows exit from code cache
     bool is_a_cache_exit = isFollowedByExit(old);
