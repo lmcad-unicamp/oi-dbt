@@ -39,8 +39,6 @@ namespace dbt {
 
       mutable std::shared_mutex OIRegionsMtx, IRRegionsMtx, NativeRegionsMtx, CompiledOIRegionsMtx;
 
-      unsigned NumOfThreads;
-
       OptPolitic OptMode;
       std::unordered_map<uint32_t, std::vector<std::string>>* CustomOpts;
 
@@ -65,6 +63,7 @@ namespace dbt {
 
 			std::unordered_map<uint32_t, llvm::Module*> ModulesLoaded;
       bool IsToLoadRegions = false;
+      bool IsToDoWholeCompilation = false;
       bool IsToLoadBCFormat = true;
 
       llvm::Module* loadRegionFromFile(std::string);
@@ -73,14 +72,15 @@ namespace dbt {
       void runPipeline();
 
     public:
-      Manager(unsigned T, uint32_t DMO, dbt::Machine& M, bool VO = false) : NumOfThreads(T), DataMemOffset(DMO),
-         isRunning(true), isFinished(false), VerboseOutput(VO), TheMachine(M) {
-
+      Manager(uint32_t DMO, dbt::Machine& M, bool VO = false) : DataMemOffset(DMO), isRunning(true), 
+          isFinished(false), VerboseOutput(VO), TheMachine(M) {
         memset((void*) NativeRegions, 0, sizeof(NativeRegions));
+      }
 
-        if (T) {
-          ThreadPool.push_back(std::thread(&Manager::runPipeline, this));
-        }
+      void startCompilationThr() {
+        if (IsToLoadRegions)
+          loadRegionsFromFiles();
+        ThreadPool.push_back(std::thread(&Manager::runPipeline, this));
       }
 
       void dumpStats() {
@@ -98,10 +98,10 @@ namespace dbt {
         isRunning = false;
 
         // Waits the thread finish
-        if(NumOfThreads) {
+        if (ThreadPool.size() != 0) {
           while (!isFinished) {}
 
-          for (unsigned i = 0; i < NumOfThreads; i++) 
+          for (unsigned i = 0; i < ThreadPool.size(); i++) 
             if (ThreadPool[i].joinable())
               ThreadPool[i].join();
         }
@@ -140,9 +140,10 @@ namespace dbt {
         return AvgOptCodeSize;
       }
 
-      void setToLoadRegions(bool AlreadLLVMFormat = true) {
+      void setToLoadRegions(bool InLLVMFormat = true, bool WholeCompilation = false) {
         IsToLoadRegions = true;
-        IsToLoadBCFormat = AlreadLLVMFormat; 
+        IsToDoWholeCompilation = WholeCompilation;
+        IsToLoadBCFormat = InLLVMFormat; 
       }
 
      bool addOIRegion(uint32_t, OIInstList);
@@ -164,10 +165,6 @@ namespace dbt {
         size_t R = OIRegions.size();
         OIRegionsMtx.unlock();
         return R;
-      }
-
-      unsigned int getNumOfThreads(void){
-        return NumOfThreads;
       }
 
       float getAvgRegionsSize() {

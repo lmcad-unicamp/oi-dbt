@@ -25,6 +25,8 @@ clarg::argInt	   StackSizeFlag("-stack", "Set new stack size. (Default: 128mb)" 
 clarg::argInt	   HeapSizeFlag ("-heap", "Set new heap size (Default: 128mb)", HEAP_SIZE);
 clarg::argInt	   NumThreadsFlag ("-threads", "Number of compilation threads (min 1)", 1);
 
+clarg::argBool   WholeCompilationFlag("-wc",  "load .bc files and compile them all as one region (whole compilation).");
+
 /* Iterative Compiler Tools */
 clarg::argBool   DumpRegionsFlag("-dr", "Dump Regions (llvm ir and OI) to files");
 clarg::argBool   LoadRegionsFlag("-lr", "Load Regions (.bc) from files");
@@ -154,10 +156,10 @@ int main(int argc, char** argv) {
     return 2;
   }
 
-  dbt::Manager TheManager(NumThreadsFlag.get_value(), M.getDataMemOffset(), M, VerboseFlag.was_set());
+  dbt::Manager TheManager(M.getDataMemOffset(), M, VerboseFlag.was_set());
 
-  if (LoadRegionsFlag.was_set() || LoadOIFlag.was_set()) 
-    TheManager.setToLoadRegions(!LoadOIFlag.was_set());
+  if (LoadRegionsFlag.was_set() || LoadOIFlag.was_set() || WholeCompilationFlag.was_set()) 
+    TheManager.setToLoadRegions((!LoadOIFlag.was_set() && !WholeCompilationFlag.was_set()), WholeCompilationFlag.was_set());
 
   if (CustomOptsFlag.was_set()) {
     TheManager.setOptPolicy(dbt::Manager::OptPolitic::Custom);
@@ -166,13 +168,15 @@ int main(int argc, char** argv) {
     TheManager.setOptPolicy(dbt::Manager::OptPolitic::Normal);
   }
 
+  TheManager.startCompilationThr();
+
   if (InterpreterFlag.was_set()) {
     RftChosen = std::make_unique<dbt::NullRFT>(TheManager);
   } else {
     std::string RFTName = RFTFlag.get_value();
     transform(RFTName.begin(), RFTName.end(), RFTName.begin(), ::tolower);
 
-    if (LoadRegionsFlag.was_set()) {
+    if (LoadRegionsFlag.was_set() || LoadOIFlag.was_set() || WholeCompilationFlag.was_set()) {
       std::cerr << "Preheated RFT Selected\n";
       RftChosen = std::make_unique<dbt::PreheatRFT>(TheManager);
     } else if (RFTName == "net") {

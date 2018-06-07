@@ -54,6 +54,11 @@ namespace dbt {
     llvm::Value* FirstInstGen = nullptr;
     void addFirstInstToMap(uint32_t);
 
+    void addMultipleEntriesSupport(std::vector<uint32_t>, llvm::BasicBlock*, llvm::Function*);
+
+    llvm::Value* ReturnAddrs;
+    llvm::BasicBlock* Trampoline;
+
     dbt::Machine* Mach;
 
     spp::sparse_hash_map<uint32_t, llvm::Value*> IRMemoryMap;
@@ -94,7 +99,7 @@ namespace dbt {
 			Builder = std::make_unique<llvm::IRBuilder<>>(TheContext);
     };
 
-    llvm::Module* generateRegionIR(uint32_t, const OIInstList&, uint32_t, dbt::Machine&, llvm::TargetMachine&, 
+    llvm::Module* generateRegionIR(std::vector<uint32_t>, const OIInstList&, uint32_t, dbt::Machine&, llvm::TargetMachine&, 
         volatile uint64_t* NativeRegions);
 
     static size_t disassemble(const void* func, std::ostream &buffer) {
@@ -130,7 +135,7 @@ namespace dbt {
         }
         //Output the bytes in hexidecimal format.
         for (i = 0; i < Size; ++i) {
-              buffer << std::hex << std::setfill('0') << std::setw(2) << static_cast<int> (bytes[pc + i]);
+          buffer << std::hex << std::setfill('0') << std::setw(2) << static_cast<int> (bytes[pc + i]);
         }
 
         buffer << std::setfill(' ') << std::setw(16-Size) <<  " ";

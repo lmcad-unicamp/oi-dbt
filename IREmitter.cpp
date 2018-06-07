@@ -34,7 +34,11 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
   // If the address is not continuos and the last inst was not a jump, split the BB
   std::array<uint32_t, 2> Targets = getPossibleTargets(LastEmittedAddrs, LastEmittedInst);
   if (LastEmittedAddrs != 0 && Targets[0] != GuestAddr && Targets[1] != GuestAddr) {
-    Builder->CreateRet(genImm(LastEmittedAddrs+4));
+
+//    Builder->CreateRet(genImm(LastEmittedAddrs+4));
+    Builder->CreateStore(genImm(LastEmittedAddrs+4), ReturnAddrs);
+    Builder->CreateBr(Trampoline);
+
     BasicBlock* BB = BasicBlock::Create(TheContext, "", Func);
     Builder->SetInsertPoint(BB);
   }
@@ -1095,8 +1099,11 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
       }
 
     case dbt::OIDecoder::Jumpr: { 
-        IRIBranchMap[GuestAddr] = Builder->CreateRet(genLoadRegister(Inst.RT, Func));
-        setIfNotTheFirstInstGen(IRIBranchMap[GuestAddr]);
+        Value* S = Builder->CreateStore(genLoadRegister(Inst.RT, Func), ReturnAddrs);
+        Builder->CreateBr(Trampoline);
+
+//        IRIBranchMap[GuestAddr] = Builder->CreateRet(genLoadRegister(Inst.RT, Func));
+        setIfNotTheFirstInstGen(S);
         BasicBlock* BB = BasicBlock::Create(TheContext, "", Func);
         Builder->SetInsertPoint(BB);
         break;
@@ -1165,7 +1172,10 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
 
     case dbt::OIDecoder::Callr: { 
         Value* Res = genStoreRegister(31, genImm(GuestAddr + 4), Func);
-        IRIBranchMap[GuestAddr] = Builder->CreateRet(genLoadRegister(Inst.RT, Func));
+//        IRIBranchMap[GuestAddr] = Builder->CreateRet(genLoadRegister(Inst.RT, Func));
+        Builder->CreateStore(genLoadRegister(Inst.RT, Func), ReturnAddrs);
+        Builder->CreateBr(Trampoline);
+
         BasicBlock* BB = BasicBlock::Create(TheContext, "", Func);
         Builder->SetInsertPoint(BB);
         setIfNotTheFirstInstGen(Res);
@@ -1179,7 +1189,11 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         genStoreRegister(IJMP_REG, IjmpReg3, Func);
         Value* IPointer = Builder->CreateAdd(IjmpReg3, genLoadRegister(Inst.RT, Func));
         Value* Target   = Builder->CreateLoad(genDataWordVecPtr(IPointer, Func));
-        IRIBranchMap[GuestAddr] = Builder->CreateRet(Target);
+
+//        IRIBranchMap[GuestAddr] = Builder->CreateRet(Target);
+        Builder->CreateStore(Target, ReturnAddrs);
+        Builder->CreateBr(Trampoline);
+
         BasicBlock* BB = BasicBlock::Create(TheContext, "", Func);
         Builder->SetInsertPoint(BB);
         setIfNotTheFirstInstGen(IjmpReg);
@@ -1306,7 +1320,7 @@ void dbt::IREmitter::improveIndirectBranch(uint32_t GuestAddr, uint32_t NextAddr
     Builder->SetInsertPoint(NotNative);
     Builder->CreateRet(TargetAddrs);
   } */
-  if (NextAddrs != 0) {
+/*  if (NextAddrs != 0) {
     Instruction* GuestInst   = cast<Instruction>(IRMemoryMap[GuestAddr]);
     Value*       TargetAddrs = IRIBranchMap[GuestAddr]->getReturnValue();
 
@@ -1336,7 +1350,7 @@ void dbt::IREmitter::improveIndirectBranch(uint32_t GuestAddr, uint32_t NextAddr
     // BB: IF FALSE TRY TO JUMP DIRECT TO ANOTHER REGION
     Builder->SetInsertPoint(IfFalse);
 
-/*    Argument *ArgDataMemPtr1 = &*(F->arg_begin());
+    Argument *ArgDataMemPtr1 = &*(F->arg_begin());
     Value *CastedPtr1 = Builder->CreatePointerCast(ArgDataMemPtr1, Type::getIntNPtrTy(TheContext, 32));
     Argument *ArgDataMemPtr2 = &*(F->arg_begin()+1);
     Value *CastedPtr2 = Builder->CreatePointerCast(ArgDataMemPtr2, Type::getIntNPtrTy(TheContext, 32));
@@ -1359,9 +1373,9 @@ void dbt::IREmitter::improveIndirectBranch(uint32_t GuestAddr, uint32_t NextAddr
     Value *Ret = Builder->CreateCall(V, {CastedPtr1, CastedPtr2, CastedPtr3});
     Builder->CreateRet(Ret);
 
-    Builder->SetInsertPoint(NotNative);*/
+    Builder->SetInsertPoint(NotNative);
     Builder->CreateRet(TargetAddrs);
-  }
+  }*/
 }
 
 void dbt::IREmitter::processBranchesTargets(const OIInstList& OIRegion) {
@@ -1384,7 +1398,44 @@ void dbt::IREmitter::processBranchesTargets(const OIInstList& OIRegion) {
   }
 }
 
-Module* dbt::IREmitter::generateRegionIR(uint32_t EntryAddress, const OIInstList& OIRegion, uint32_t MemOffset, dbt::Machine& M,
+void dbt::IREmitter::addMultipleEntriesSupport(std::vector<uint32_t> PossibleEntryAddress, BasicBlock* EntryBlock, Function* Func) {
+//  Argument *Arg3 = &*(Func->arg_begin()+2);
+  Builder->SetInsertPoint(EntryBlock);
+  Value* RealEntryAddr = Builder->CreateLoad(ReturnAddrs);;//dyn_cast<Value>(Arg3);
+
+  BasicBlock *FailEntry = BasicBlock::Create(TheContext, "FailEntry", Func);
+  Builder->SetInsertPoint(FailEntry);
+  Builder->CreateRet(RealEntryAddr);
+
+  Builder->SetInsertPoint(EntryBlock);
+  SwitchInst* SI = Builder->CreateSwitch(RealEntryAddr, FailEntry);
+
+  for (auto EntryAddrs : PossibleEntryAddress) {
+    uint32_t AddrTarget = EntryAddrs;
+
+    if (AddrTarget == 0)
+      continue;
+
+    BasicBlock *BBTarget;
+    if (IRMemoryMap.count(AddrTarget) != 0) {
+      auto TargetInst = cast<Instruction>(IRMemoryMap[AddrTarget]);
+      BasicBlock *Current = TargetInst->getParent();
+
+      if (Current->getFirstNonPHI() == TargetInst)
+        BBTarget = Current;
+      else
+        BBTarget = Current->splitBasicBlock(TargetInst);
+    } else {
+      BBTarget = BasicBlock::Create(TheContext, "", Func);
+      Builder->SetInsertPoint(BBTarget);
+      insertDirectExit(AddrTarget);
+    }
+
+    SI->addCase(ConstantInt::get(Type::getInt32Ty(TheContext), EntryAddrs, false), BBTarget);
+  }
+}
+
+Module* dbt::IREmitter::generateRegionIR(std::vector<uint32_t> EntryAddress, const OIInstList& OIRegion, uint32_t MemOffset, dbt::Machine& M,
     TargetMachine& TM, volatile uint64_t* NativeRegions) {
 
   Mach = &M;
@@ -1398,12 +1449,18 @@ Module* dbt::IREmitter::generateRegionIR(uint32_t EntryAddress, const OIInstList
   IRMemoryMap.clear();
   IRBranchMap.clear();
 
-  DataMemOffset     = MemOffset;
-  CurrentEntryAddrs = EntryAddress;
-  //std::array<Type*, 3> ArgsType = {Type::getInt32PtrTy(TheContext), Type::getInt32PtrTy(TheContext), Type::getInt64PtrTy(TheContext)};
-  std::array<Type*, 2> ArgsType = {Type::getInt32PtrTy(TheContext), Type::getInt32PtrTy(TheContext)};
+  DataMemOffset = MemOffset;
+  
+  if (EntryAddress.size() == 1) 
+    CurrentEntryAddrs = EntryAddress[0];
+  else
+    CurrentEntryAddrs = 0;
+
+  std::cout << "I'm compiling " << CurrentEntryAddrs << "\n";
+
+  std::array<Type*, 3> ArgsType = {Type::getInt32PtrTy(TheContext), Type::getInt32PtrTy(TheContext), Type::getInt32Ty(TheContext)};
   FunctionType *FT = FunctionType::get(Type::getInt32Ty(TheContext), ArgsType, false);
-  Function *F = Function::Create(FT, Function::ExternalLinkage, "r" + std::to_string(EntryAddress), TheModule);
+  Function *F = Function::Create(FT, Function::ExternalLinkage, "r" + std::to_string(CurrentEntryAddrs), TheModule);
 
   F->setCallingConv(CallingConv::Fast);
   F->addAttribute(1, Attribute::NoAlias);
@@ -1413,10 +1470,13 @@ Module* dbt::IREmitter::generateRegionIR(uint32_t EntryAddress, const OIInstList
 
   // Entry block to function must not have predecessors!
   BasicBlock *Entry = BasicBlock::Create(TheContext, "entry", F);
+  Trampoline = BasicBlock::Create(TheContext, "Trampoline", F);
   BasicBlock *BB    = BasicBlock::Create(TheContext, "", F);
 
   Builder->SetInsertPoint(Entry);
-  Builder->CreateBr(BB);
+  
+  ReturnAddrs = Builder->CreateAlloca(Type::getInt32Ty(TheContext));
+
   Builder->SetInsertPoint(BB);
 
   // Listing all existing addresses. This enables look-ahead while emitting code.
@@ -1431,6 +1491,13 @@ Module* dbt::IREmitter::generateRegionIR(uint32_t EntryAddress, const OIInstList
   insertDirectExit(OIRegion.back()[0]+4);
 
   processBranchesTargets(OIRegion);
+
+  addMultipleEntriesSupport(EntryAddress, Trampoline, F);
+
+  Builder->SetInsertPoint(Entry);
+  Argument *Arg3 = &*(F->arg_begin()+2);
+  Builder->CreateStore(dyn_cast<Value>(Arg3), ReturnAddrs);
+  Builder->CreateBr(Trampoline);
 
   id++;
   return TheModule;

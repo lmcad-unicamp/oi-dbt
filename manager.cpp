@@ -23,6 +23,7 @@ llvm::Module* Manager::loadRegionFromFile(std::string Path) {
 }
 
 void Manager::loadRegionsFromFiles() {
+  std::cout << "merging regions\n";
   std::ifstream infile("regions.order");
   std::string line;
   OIRegionsMtx.lock();
@@ -42,6 +43,23 @@ void Manager::loadRegionsFromFiles() {
       OIRegions[Entry] = {{Entry,0}};
     }
   }
+  
+  // If doing whole compilation, merge all regions in one
+  if (IsToDoWholeCompilation) {
+    OIInstList OIAll;
+    std::set<uint32_t> UniqInsts;
+    for (auto OIR : OIRegions) {
+      for (auto I : OIR.second) {
+        if (UniqInsts.count(I[0]) == 0) 
+          OIAll.push_back({I[0], I[1]});
+        UniqInsts.insert(I[0]);
+      }
+    }
+    OIRegions.clear();
+    OIRegions[0] = OIAll;
+    OIRegionsKey.insert(OIRegionsKey.begin(), 0);
+  }
+
   OIRegionsMtx.unlock();
 }
 
@@ -56,9 +74,6 @@ void Manager::runPipeline() {
   IRE = llvm::make_unique<IREmitter>();
   IRO = llvm::make_unique<IROpt>();
 
-  if (IsToLoadRegions)
-    loadRegionsFromFiles();
-
   while (isRunning) {
     uint32_t EntryAddress;
     OIInstList OIRegion;
@@ -71,13 +86,15 @@ void Manager::runPipeline() {
     }
 
     llvm::Module* Module = nullptr;
-    unsigned Size = 1;
+    unsigned Size  = 1;
     unsigned OSize = 1;
 
     if (OIRegion.size() == 0) continue;
 
     if (IsToLoadRegions && IsToLoadBCFormat) 
       Module = loadRegionFromFile("r"+std::to_string(EntryAddress)+".bc");
+
+    std::vector<uint32_t> EntryAddresses = {EntryAddress};
 
     if (Module == nullptr) {
       CompiledOIRegionsMtx.lock();
@@ -89,12 +106,17 @@ void Manager::runPipeline() {
 
       OICompiled += OIRegion.size();
 
-      Module = IRE->generateRegionIR(EntryAddress, OIRegion, DataMemOffset, TheMachine, IRJIT->getTargetMachine(), NativeRegions);
-      if (VerboseOutput)
-        std::cerr << "OK" << std::endl;
+      if (IsToDoWholeCompilation) {
+        OIRegionsKey.erase(OIRegionsKey.begin());
+        EntryAddresses = OIRegionsKey;
+      }
+
+      std::cout << "Going to generate IR " <<  OIRegions.size() << "\n";
+      Module = IRE->generateRegionIR(EntryAddresses, OIRegion, DataMemOffset, TheMachine, IRJIT->getTargetMachine(), NativeRegions);
+      std::cout << "done\n";
 
       if (VerboseOutput)
-        Module->print(llvm::errs(), nullptr);
+        std::cerr << "OK" << std::endl;
 
       if (VerboseOutput) {
         std::cerr << "---------------------- Printing OIRegion (OpenISA instr.) --------------------" << std::endl;
@@ -120,7 +142,14 @@ void Manager::runPipeline() {
     }
 
     // Remove a region if the first instruction is a return <- can cause infinity loops
+    std::cout << "We are looking for " << EntryAddress << "\n";
     llvm::Function* LLVMRegion = Module->getFunction("r"+std::to_string(EntryAddress));
+    
+    if (LLVMRegion == nullptr) {
+      std::cerr << "Module->getFunction has returned empty!\n";
+      exit(1);
+    }
+
     auto Inst     = LLVMRegion->getEntryBlock().getFirstNonPHI();
     bool IsRet    = Inst->getOpcode() == llvm::Instruction::Ret;
     bool RetLoop = true;
@@ -150,10 +179,12 @@ void Manager::runPipeline() {
 
       auto Addr = IRJIT->findSymbol("r"+std::to_string(EntryAddress)).getAddress();
 
-      if (Addr)
-        NativeRegions[EntryAddress] = static_cast<intptr_t>(*Addr);
-      else
+      if (Addr) {
+        for (auto EA : EntryAddresses)
+          NativeRegions[EA] = static_cast<intptr_t>(*Addr);
+      } else {
         std::cerr << EntryAddress << " was not successfully compiled!\n";
+      }
 
       NativeRegionsMtx.unlock();
 
@@ -201,8 +232,8 @@ int32_t Manager::jumpToRegion(uint32_t EntryAddress) {
 
   while (isNativeRegionEntry(JumpTo)) {
     LastTo = JumpTo;
-    uint32_t (*FP)(int32_t*, uint32_t*) = (uint32_t (*)(int32_t*, uint32_t*)) NativeRegions[JumpTo];
-    JumpTo = FP(RegPtr, MemPtr);
+    uint32_t (*FP)(int32_t*, uint32_t*, uint32_t) = (uint32_t (*)(int32_t*, uint32_t*, uint32_t)) NativeRegions[JumpTo];
+    JumpTo = FP(RegPtr, MemPtr, EntryAddress);
   }
 
   return JumpTo;
