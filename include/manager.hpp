@@ -197,18 +197,20 @@ namespace dbt {
 
       void mergeOIRegions();
 
-      void dumpRegions(bool MergeRegions = false) {
+      void dumpRegions(bool MergeRegions = false, bool OnlyOI = false) {
         while (getNumOfOIRegions() != 0) {}
-        std::cerr << "Dumping IR regions!\n";
-        for (auto& M : IRRegions) {
-          std::error_code EC;
-          llvm::raw_fd_ostream OS("r"+std::to_string(M.first)+".bc", EC, llvm::sys::fs::F_None);
-          WriteBitcodeToFile(M.second, OS);
-          OS.flush(); 
-        }
-        if (MergeRegions) {
-          std::cerr << "Merging OI regions!\n";
-          mergeOIRegions();
+        if (!OnlyOI) {
+          std::cerr << "Dumping IR regions!\n";
+          for (auto& M : IRRegions) {
+            std::error_code EC;
+            llvm::raw_fd_ostream OS("r"+std::to_string(M.first)+".bc", EC, llvm::sys::fs::F_None);
+            WriteBitcodeToFile(M.second, OS);
+            OS.flush(); 
+          }
+          if (MergeRegions) {
+            std::cerr << "Merging OI regions!\n";
+            mergeOIRegions();
+          }
         }
         std::cerr << "Dumping OI regions!\n";
         for (auto OIRegion : CompiledOIRegions) {

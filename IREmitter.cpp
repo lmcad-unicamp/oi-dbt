@@ -35,9 +35,12 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
   std::array<uint32_t, 2> Targets = getPossibleTargets(LastEmittedAddrs, LastEmittedInst);
   if (LastEmittedAddrs != 0 && Targets[0] != GuestAddr && Targets[1] != GuestAddr) {
 
-//    Builder->CreateRet(genImm(LastEmittedAddrs+4));
-    Builder->CreateStore(genImm(LastEmittedAddrs+4), ReturnAddrs);
-    Builder->CreateBr(Trampoline);
+    if (Trampoline != nullptr) {
+      Builder->CreateStore(genImm(LastEmittedAddrs+4), ReturnAddrs);
+      Builder->CreateBr(Trampoline);
+    } else {
+      Builder->CreateRet(genImm(LastEmittedAddrs+4));
+    }
 
     BasicBlock* BB = BasicBlock::Create(TheContext, "", Func);
     Builder->SetInsertPoint(BB);
@@ -1099,10 +1102,14 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
       }
 
     case dbt::OIDecoder::Jumpr: { 
-        Value* S = Builder->CreateStore(genLoadRegister(Inst.RT, Func), ReturnAddrs);
-        Builder->CreateBr(Trampoline);
-
-//        IRIBranchMap[GuestAddr] = Builder->CreateRet(genLoadRegister(Inst.RT, Func));
+        Value* S;
+        if (Trampoline != nullptr) {
+          S = Builder->CreateStore(genLoadRegister(Inst.RT, Func), ReturnAddrs);
+          Builder->CreateBr(Trampoline);
+        } else {
+          IRIBranchMap[GuestAddr] = Builder->CreateRet(genLoadRegister(Inst.RT, Func));
+          S = IRIBranchMap[GuestAddr];
+        }
         setIfNotTheFirstInstGen(S);
         BasicBlock* BB = BasicBlock::Create(TheContext, "", Func);
         Builder->SetInsertPoint(BB);
@@ -1172,9 +1179,13 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
 
     case dbt::OIDecoder::Callr: { 
         Value* Res = genStoreRegister(31, genImm(GuestAddr + 4), Func);
-//        IRIBranchMap[GuestAddr] = Builder->CreateRet(genLoadRegister(Inst.RT, Func));
-        Builder->CreateStore(genLoadRegister(Inst.RT, Func), ReturnAddrs);
-        Builder->CreateBr(Trampoline);
+        
+        if (Trampoline != nullptr) {
+          Builder->CreateStore(genLoadRegister(Inst.RT, Func), ReturnAddrs);
+          Builder->CreateBr(Trampoline);
+        } else {
+          IRIBranchMap[GuestAddr] = Builder->CreateRet(genLoadRegister(Inst.RT, Func));
+        }
 
         BasicBlock* BB = BasicBlock::Create(TheContext, "", Func);
         Builder->SetInsertPoint(BB);
@@ -1190,9 +1201,12 @@ void dbt::IREmitter::generateInstIR(const uint32_t GuestAddr, const dbt::OIDecod
         Value* IPointer = Builder->CreateAdd(IjmpReg3, genLoadRegister(Inst.RT, Func));
         Value* Target   = Builder->CreateLoad(genDataWordVecPtr(IPointer, Func));
 
-//        IRIBranchMap[GuestAddr] = Builder->CreateRet(Target);
-        Builder->CreateStore(Target, ReturnAddrs);
-        Builder->CreateBr(Trampoline);
+        if (Trampoline != nullptr) {
+          Builder->CreateStore(Target, ReturnAddrs);
+          Builder->CreateBr(Trampoline);
+        } else {
+          IRIBranchMap[GuestAddr] = Builder->CreateRet(Target);
+        }
 
         BasicBlock* BB = BasicBlock::Create(TheContext, "", Func);
         Builder->SetInsertPoint(BB);
@@ -1399,9 +1413,8 @@ void dbt::IREmitter::processBranchesTargets(const OIInstList& OIRegion) {
 }
 
 void dbt::IREmitter::addMultipleEntriesSupport(std::vector<uint32_t> PossibleEntryAddress, BasicBlock* EntryBlock, Function* Func) {
-//  Argument *Arg3 = &*(Func->arg_begin()+2);
   Builder->SetInsertPoint(EntryBlock);
-  Value* RealEntryAddr = Builder->CreateLoad(ReturnAddrs);;//dyn_cast<Value>(Arg3);
+  Value* RealEntryAddr = Builder->CreateLoad(ReturnAddrs);;
 
   BasicBlock *FailEntry = BasicBlock::Create(TheContext, "FailEntry", Func);
   Builder->SetInsertPoint(FailEntry);
@@ -1435,7 +1448,7 @@ void dbt::IREmitter::addMultipleEntriesSupport(std::vector<uint32_t> PossibleEnt
   }
 }
 
-Module* dbt::IREmitter::generateRegionIR(std::vector<uint32_t> EntryAddress, const OIInstList& OIRegion, uint32_t MemOffset, dbt::Machine& M,
+Module* dbt::IREmitter::generateRegionIR(std::vector<uint32_t> EntryAddresses, const OIInstList& OIRegion, uint32_t MemOffset, dbt::Machine& M,
     TargetMachine& TM, volatile uint64_t* NativeRegions) {
 
   Mach = &M;
@@ -1451,12 +1464,10 @@ Module* dbt::IREmitter::generateRegionIR(std::vector<uint32_t> EntryAddress, con
 
   DataMemOffset = MemOffset;
   
-  if (EntryAddress.size() == 1) 
-    CurrentEntryAddrs = EntryAddress[0];
+  if (EntryAddresses.size() == 1) 
+    CurrentEntryAddrs = EntryAddresses[0];
   else
     CurrentEntryAddrs = 0;
-
-  std::cout << "I'm compiling " << CurrentEntryAddrs << "\n";
 
   std::array<Type*, 3> ArgsType = {Type::getInt32PtrTy(TheContext), Type::getInt32PtrTy(TheContext), Type::getInt32Ty(TheContext)};
   FunctionType *FT = FunctionType::get(Type::getInt32Ty(TheContext), ArgsType, false);
@@ -1470,8 +1481,10 @@ Module* dbt::IREmitter::generateRegionIR(std::vector<uint32_t> EntryAddress, con
 
   // Entry block to function must not have predecessors!
   BasicBlock *Entry = BasicBlock::Create(TheContext, "entry", F);
-  Trampoline = BasicBlock::Create(TheContext, "Trampoline", F);
   BasicBlock *BB    = BasicBlock::Create(TheContext, "", F);
+
+  if (EntryAddresses.size() > 1) 
+    Trampoline = BasicBlock::Create(TheContext, "Trampoline", F);
 
   Builder->SetInsertPoint(Entry);
   
@@ -1492,12 +1505,17 @@ Module* dbt::IREmitter::generateRegionIR(std::vector<uint32_t> EntryAddress, con
 
   processBranchesTargets(OIRegion);
 
-  addMultipleEntriesSupport(EntryAddress, Trampoline, F);
+  if (EntryAddresses.size() > 1) {
+    addMultipleEntriesSupport(EntryAddresses, Trampoline, F);
 
-  Builder->SetInsertPoint(Entry);
-  Argument *Arg3 = &*(F->arg_begin()+2);
-  Builder->CreateStore(dyn_cast<Value>(Arg3), ReturnAddrs);
-  Builder->CreateBr(Trampoline);
+    Builder->SetInsertPoint(Entry);
+    Argument *Arg3 = &*(F->arg_begin()+2);
+    Builder->CreateStore(dyn_cast<Value>(Arg3), ReturnAddrs);
+    Builder->CreateBr(Trampoline);
+  } else {
+    Builder->SetInsertPoint(Entry);
+    Builder->CreateBr(BB);
+  }
 
   id++;
   return TheModule;

@@ -29,6 +29,7 @@ clarg::argBool   WholeCompilationFlag("-wc",  "load .bc files and compile them a
 
 /* Iterative Compiler Tools */
 clarg::argBool   DumpRegionsFlag("-dr", "Dump Regions (llvm ir and OI) to files");
+clarg::argBool   DumpOIRegionsFlag("-doi", "Dump OI Regions to files");
 clarg::argBool   LoadRegionsFlag("-lr", "Load Regions (.bc) from files");
 clarg::argBool   LoadOIFlag("-loi", "Load Regions (.oi) from files");
 clarg::argBool   MergeOIFlag("-moi", "Merge OI Regions before dumping");
@@ -255,7 +256,8 @@ int main(int argc, char** argv) {
 
   I.executeAll(M);
 
-  if (DumpRegionsFlag.was_set()) TheManager.dumpRegions(MergeOIFlag.was_set());
+  if (DumpRegionsFlag.was_set() || DumpOIRegionsFlag.was_set()) 
+    TheManager.dumpRegions(MergeOIFlag.was_set(), DumpOIRegionsFlag.was_set());
 
   GlobalTimer.stopClock();
   TheManager.dumpStats();

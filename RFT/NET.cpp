@@ -18,7 +18,7 @@ void NET::onBranch(Machine &M) {
 #endif
 
       for (uint32_t I = LastTarget; I <= M.getLastPC(); I += 4) {
-        if ((IsRelaxed && hasRecordedAddrs(I))
+        if ((IsRelaxed && hasRecordedAddrs(I)) 
             || (!IsRelaxed && (M.getPC() < M.getLastPC())) || TheManager.isRegionEntry(I)) { 
 
           finishRegionFormation(); 
@@ -36,7 +36,7 @@ void NET::onBranch(Machine &M) {
           std::cerr <<"BLAH: " << I << "\n";
           TotalInst1++;
           finishRegionFormation(); 
-          while (TheManager.getNumOfOIRegions() != 0) {}//isNativeRegionEntry(PossibleEntry)) {}
+          while (TheManager.getNumOfOIRegions() != 0) {}
         }
 #else
         insertInstruction(I, M.getInstAt(I).asI_);

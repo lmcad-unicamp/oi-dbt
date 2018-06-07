@@ -14,16 +14,13 @@ using namespace dbt;
 llvm::Module* Manager::loadRegionFromFile(std::string Path) {
   llvm::SMDiagnostic error;
   auto M = llvm::parseIRFile(Path, error, TheContext).release();
-  if (M) {
+  if (M)
      return M;
-  } else {
-    //std::cerr << Path << " " << error.getMessage().str() << "\n";
+  else 
     return nullptr;
-  }
 }
 
 void Manager::loadRegionsFromFiles() {
-  std::cout << "merging regions\n";
   std::ifstream infile("regions.order");
   std::string line;
   OIRegionsMtx.lock();
@@ -111,9 +108,7 @@ void Manager::runPipeline() {
         EntryAddresses = OIRegionsKey;
       }
 
-      std::cout << "Going to generate IR " <<  OIRegions.size() << "\n";
       Module = IRE->generateRegionIR(EntryAddresses, OIRegion, DataMemOffset, TheMachine, IRJIT->getTargetMachine(), NativeRegions);
-      std::cout << "done\n";
 
       if (VerboseOutput)
         std::cerr << "OK" << std::endl;
@@ -142,7 +137,6 @@ void Manager::runPipeline() {
     }
 
     // Remove a region if the first instruction is a return <- can cause infinity loops
-    std::cout << "We are looking for " << EntryAddress << "\n";
     llvm::Function* LLVMRegion = Module->getFunction("r"+std::to_string(EntryAddress));
     
     if (LLVMRegion == nullptr) {
@@ -217,7 +211,7 @@ bool Manager::addOIRegion(uint32_t EntryAddress, OIInstList OIRegion) {
   if (!isRegionEntry(EntryAddress) && OIRegions.count(EntryAddress) == 0) {
     OIRegionsMtx.lock();
     OIRegionsKey.push_back(EntryAddress);
-    OIRegions[EntryAddress]   = OIRegion;
+    OIRegions[EntryAddress] = OIRegion;
     OIRegionsMtx.unlock();
     return true;
   }
