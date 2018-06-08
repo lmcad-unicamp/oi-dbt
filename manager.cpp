@@ -203,6 +203,11 @@ void Manager::runPipeline() {
     OIRegions.erase(EntryAddress);
     OIRegionsKey.erase(OIRegionsKey.begin());
     OIRegionsMtx.unlock();
+
+		if (IsToDoWholeCompilation) {
+			isFinished = true;
+			return;
+		}
   }
   isFinished = true;
 }
@@ -219,9 +224,9 @@ bool Manager::addOIRegion(uint32_t EntryAddress, OIInstList OIRegion) {
 }
 
 int32_t Manager::jumpToRegion(uint32_t EntryAddress) {
-  uint32_t JumpTo = EntryAddress;
-  uint32_t LastTo = JumpTo;
-  int32_t* RegPtr = TheMachine.getRegisterPtr();
+  uint32_t JumpTo  = EntryAddress;
+  uint32_t LastTo  = JumpTo;
+  int32_t* RegPtr  = TheMachine.getRegisterPtr();
   uint32_t* MemPtr = TheMachine.getMemoryPtr();
 
   while (isNativeRegionEntry(JumpTo)) {
