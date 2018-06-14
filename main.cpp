@@ -24,6 +24,7 @@ clarg::argString ArgumentsFlag("-args", "Pass Parameters to binary file (as stri
 clarg::argInt	   StackSizeFlag("-stack", "Set new stack size. (Default: 128mb)" , STACK_SIZE);
 clarg::argInt	   HeapSizeFlag ("-heap", "Set new heap size (Default: 128mb)", HEAP_SIZE);
 clarg::argInt	   NumThreadsFlag ("-threads", "Number of compilation threads (min 1)", 1);
+clarg::argString RegionPath ("-reg", "Set default path to load region files", "./");
 
 clarg::argBool   WholeCompilationFlag("-wc",  "load .bc files and compile them all as one region (whole compilation).");
 
@@ -159,8 +160,8 @@ int main(int argc, char** argv) {
 
   dbt::Manager TheManager(M.getDataMemOffset(), M, VerboseFlag.was_set());
 
-  if (LoadRegionsFlag.was_set() || LoadOIFlag.was_set() || WholeCompilationFlag.was_set()) 
-    TheManager.setToLoadRegions((!LoadOIFlag.was_set() && !WholeCompilationFlag.was_set()), WholeCompilationFlag.was_set());
+  if (LoadRegionsFlag.was_set() || LoadOIFlag.was_set() || WholeCompilationFlag.was_set())
+    TheManager.setToLoadRegions(RegionPath.get_value(), (!LoadOIFlag.was_set() && !WholeCompilationFlag.was_set()), WholeCompilationFlag.was_set());
 
   if (CustomOptsFlag.was_set()) {
     TheManager.setOptPolicy(dbt::Manager::OptPolitic::Custom);
@@ -256,7 +257,7 @@ int main(int argc, char** argv) {
 
   I.executeAll(M);
 
-  if (DumpRegionsFlag.was_set() || DumpOIRegionsFlag.was_set()) 
+  if (DumpRegionsFlag.was_set() || DumpOIRegionsFlag.was_set())
     TheManager.dumpRegions(MergeOIFlag.was_set(), DumpOIRegionsFlag.was_set());
 
   GlobalTimer.stopClock();
@@ -268,4 +269,3 @@ int main(int argc, char** argv) {
 
   exit(SyscallM->getExitStatus());
 }
-
