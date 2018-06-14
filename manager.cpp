@@ -20,6 +20,8 @@ llvm::Module* Manager::loadRegionFromFile(std::string Path) {
     return nullptr;
 }
 
+bool compInst(std::array<uint32_t, 2> A, std::array<uint32_t, 2> B) { return (A[0]<B[0]); }
+
 void Manager::loadRegionsFromFiles() {
   std::ifstream infile("regions.order");
   std::string line;
@@ -52,13 +54,26 @@ void Manager::loadRegionsFromFiles() {
         UniqInsts.insert(I[0]);
       }
     }
+		std::sort(OIAll.begin(), OIAll.end(), compInst);
     OIRegions.clear();
+
     OIRegions[0] = OIAll;
+
+/*    std::ifstream infile2("regions.entries");
+    if (infile2.is_open()) {
+      OIRegionsKey.clear();
+      while (std::getline(infile, line)) {
+        OIRegionsKey.push_back(std::stoi(line));
+      }
+    }*/
+
     OIRegionsKey.insert(OIRegionsKey.begin(), 0);
   }
 
   OIRegionsMtx.unlock();
 }
+
+static unsigned int ModuleId = 0;
 
 void Manager::runPipeline() {
   if (!IRE) {
@@ -103,13 +118,14 @@ void Manager::runPipeline() {
 
       OICompiled += OIRegion.size();
 
+      Module = new llvm::Module(std::to_string(++ModuleId), TheContext);
       if (IsToDoWholeCompilation) {
         OIRegionsKey.erase(OIRegionsKey.begin());
         EntryAddresses = OIRegionsKey;
-      }
-
-      Module = IRE->generateRegionIR(EntryAddresses, OIRegion, DataMemOffset, TheMachine, IRJIT->getTargetMachine(), NativeRegions);
-
+      } 
+      IRE->generateRegionIR(EntryAddresses, OIRegion, DataMemOffset, TheMachine, IRJIT->getTargetMachine(), 
+                          NativeRegions, Module);
+      
       if (VerboseOutput)
         std::cerr << "OK" << std::endl;
 

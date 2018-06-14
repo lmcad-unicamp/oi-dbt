@@ -34,6 +34,7 @@ namespace dbt {
       spp::sparse_hash_map<uint32_t, OIInstList> OIRegions;
       std::unordered_map<uint32_t, OIInstList> CompiledOIRegions;
       std::vector<uint32_t> IRRegionsKey;
+      std::set<uint32_t> TouchedEntries;
       spp::sparse_hash_map<uint32_t, llvm::Module*> IRRegions;
       volatile uint64_t NativeRegions[NATIVE_REGION_SIZE];
 
@@ -41,6 +42,10 @@ namespace dbt {
 
       OptPolitic OptMode;
       std::unordered_map<uint32_t, std::vector<std::string>>* CustomOpts;
+
+      std::vector<OIInstList> OIFuncs;
+      std::vector<std::vector<uint32_t>> OIFuncsEntries;
+      uint32_t NumFuncs = 0;
 
       uint32_t DataMemOffset;
 
@@ -90,6 +95,7 @@ namespace dbt {
         std::cerr << std::endl;
         std::cerr << "Compiled OI: " << OICompiled << "\n";
         std::cerr << "Compiled LLVM: " << LLVMCompiled << std::endl;
+        std::cerr << "LLVM/OI: " << ((float)(LLVMCompiled+1)/(OICompiled+1)) << std::endl;
       }
 
       ~Manager() {
@@ -220,11 +226,12 @@ namespace dbt {
             OS << OIInsts[0] << "\t" << OIInsts[1] << "\t" << OIPrinter::getString(OIDecoder::decode(OIInsts[1])) <<  "\n"; 
           OS.flush();
         }
+
         std::error_code EC;
         llvm::raw_fd_ostream OS("regions.order", EC, llvm::sys::fs::F_None);
-        for (auto A : IRRegionsKey) {
+        for (auto A : IRRegionsKey) 
           OS << A << "\n";
-        }
+
         OS.flush();
       }
 

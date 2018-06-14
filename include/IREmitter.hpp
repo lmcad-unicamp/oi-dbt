@@ -42,9 +42,16 @@ namespace dbt {
     volatile uint64_t* CurrentNativeRegions;
 
     uint16_t ldireg;
-    spp::sparse_hash_map<llvm::BasicBlock*, spp::sparse_hash_map<uint32_t, llvm::Value*>> RegisterBank;
+    llvm::Value* IntRegisterBank[64];
+    llvm::Value* FloatRegisterBank[64];
+    llvm::Value* DoubleRegisterBank[64];
 
-    spp::sparse_hash_map<uint32_t, std::set<uint32_t>> CallerList;
+    llvm::BasicBlock* RegionEntry = nullptr;
+
+    spp::sparse_hash_map<uint32_t, std::set<uint32_t>> CallTargetList;
+    std::set<uint32_t> ReturnPoints;
+
+    llvm::Module* Mod;
 
     uint32_t DataMemOffset;
     uint32_t CurrentEntryAddrs;
@@ -54,7 +61,7 @@ namespace dbt {
     llvm::Value* FirstInstGen = nullptr;
     void addFirstInstToMap(uint32_t);
 
-    void addMultipleEntriesSupport(std::vector<uint32_t>, llvm::BasicBlock*, llvm::Function*);
+    void addMultipleEntriesSupport(std::vector<uint32_t>&, llvm::BasicBlock*, llvm::Function*);
 
     llvm::Value* ReturnAddrs;
     llvm::BasicBlock* Trampoline;
@@ -64,10 +71,9 @@ namespace dbt {
     spp::sparse_hash_map<uint32_t, llvm::Value*> IRMemoryMap;
     spp::sparse_hash_map<uint32_t, llvm::BranchInst*> IRBranchMap;
     spp::sparse_hash_map<uint32_t, llvm::ReturnInst*> IRIBranchMap;
-
   public:
     enum RegType {
-      Int, Float, Double
+      Int, Float, Double, Int64
     };
     void setIfNotTheFirstInstGen(llvm::Value*);
 
@@ -99,8 +105,8 @@ namespace dbt {
 			Builder = std::make_unique<llvm::IRBuilder<>>(TheContext);
     };
 
-    llvm::Module* generateRegionIR(std::vector<uint32_t>, const OIInstList&, uint32_t, dbt::Machine&, llvm::TargetMachine&, 
-        volatile uint64_t* NativeRegions);
+    void generateRegionIR(std::vector<uint32_t>&, const OIInstList&, uint32_t, dbt::Machine&,
+        llvm::TargetMachine&, volatile uint64_t* NativeRegions, llvm::Module*);
 
     static size_t disassemble(const void* func, std::ostream &buffer) {
       char outline[1024];

@@ -139,7 +139,6 @@ dbt::Word Machine::getMemValueAt(uint32_t Addr) {
 
 void Machine::setMemValueAt(uint32_t Addr, uint32_t Value) {
   uint32_t CorrectAddr = Addr - DataMemOffset;
-  //assert((Addr % 4) == 0 && "Address not aligned!");
   CORRECT_ASSERT();
   #ifdef PRINTREG
   std::cerr << "MEM[" << std::hex << CorrectAddr << "]=" << Value << "; (uint32_t);  ";

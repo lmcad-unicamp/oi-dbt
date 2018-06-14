@@ -32,11 +32,12 @@ void dbt::IREmitter::setIfNotTheFirstInstGen(Value *Inst) {
 
 Value *dbt::IREmitter::genDataVecPtr(Value *RawAddrs, Function *Func, Type *IType, unsigned ByteSize) {
   Value *AddrsOff = Builder->CreateSub(RawAddrs, genImm(DataMemOffset));
-  Value *Addrs = Builder->CreateExactSDiv(AddrsOff, genImm(ByteSize));
   Argument *ArgDataMemPtr = &*(Func->arg_begin()+1);
-  Value *CastedPtr = Builder->CreatePointerCast(ArgDataMemPtr, Type::getIntNPtrTy(TheContext, ByteSize * 8));
+  Value *MPtr8    = Builder->CreatePointerCast(ArgDataMemPtr, Type::getInt8PtrTy(TheContext));
+  Value *GEPMPtr8 = Builder->CreateGEP(MPtr8, AddrsOff);
+  Value *CastedPtr = Builder->CreatePointerCast(GEPMPtr8, Type::getIntNPtrTy(TheContext, ByteSize * 8));
   setIfNotTheFirstInstGen(AddrsOff);
-  return Builder->CreateGEP(IType, CastedPtr, Addrs);
+  return CastedPtr;
 }
 
 Value *dbt::IREmitter::genDataByteVecPtr(Value *RawAddrs, Function *Func) {
@@ -61,6 +62,9 @@ Value *dbt::IREmitter::genRegisterVecPtr(Value *RegNum, Function *Func, RegType 
   } else if (Type == RegType::Double) {
     CastedPtr = Builder->CreatePointerCast(ArgIntRegPtr, Type::getDoublePtrTy(TheContext));
     setIfNotTheFirstInstGen(CastedPtr);
+  } else if (Type == RegType::Int64) {
+    CastedPtr = Builder->CreatePointerCast(ArgIntRegPtr, Type::getInt64PtrTy(TheContext));
+    setIfNotTheFirstInstGen(CastedPtr);
   }
 
   Value *GEP = Builder->CreateGEP(CastedPtr, RegNum);
@@ -79,8 +83,9 @@ Value *dbt::IREmitter::genLoadRegister(uint16_t RegNum, Function *Func, RegType 
   uint16_t Right = RegNum;
   if (Type == RegType::Float) 
     Right += 66;  
-  else if (Type == RegType::Double) 
+  else if (Type == RegType::Double || Type == RegType::Int64) 
     Right += 65;  
+
 
   if (Right == 0)
     return genImm(0);
@@ -94,7 +99,7 @@ Value *dbt::IREmitter::genStoreRegister(uint16_t RegNum, Value *V, Function *Fun
   uint16_t Right = RegNum;
   if (Type == RegType::Float) 
     Right += 66;  
-  else if (Type == RegType::Double) 
+  else if (Type == RegType::Double || Type == RegType::Int64) 
     Right += 65;  
 
   Value *Ptr = genRegisterVecPtr(Right, Func, Type);

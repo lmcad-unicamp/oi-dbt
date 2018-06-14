@@ -118,6 +118,8 @@ namespace dbt {
     void expandAndFinish(Machine&);
 
     bool IsExtendedRelaxed;
+
+    std::vector<uint32_t> ShadowStack;
   public:
     NETPlus(Manager& M, bool ExtRelaxed = false) : RFT(M), IsExtendedRelaxed(ExtRelaxed) {};
 

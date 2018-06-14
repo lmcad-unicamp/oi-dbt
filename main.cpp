@@ -263,33 +263,6 @@ int main(int argc, char** argv) {
   TheManager.dumpStats();
   GlobalTimer.printReport("Global");
 
-  if(ReportFileFlag.was_set()) {
-    ofstream report;
-    report.open(ReportFileFlag.get_value());
-
-    if(report.is_open()) {
-      report << "No. Compiled Regions | "
-        << "Avg Code Size Reduction | "
-        << "No. OI Instructions Compiled | "
-        << "No. LLVM compiled | "
-        << "No. of Native Instructions Executed | "
-        << "Total Cycles | "
-        << "Conditional Branch Instructions Executed | "
-        << "Conditional Branch Instructions Misses | "
-        << "Total L1 I-Cache misses | "
-        << "Time (s)"
-        << "\n";
-      report << std::dec << TheManager.getCompiledRegions() << std::endl;
-      report << TheManager.getAvgOptCodeSize()/TheManager.getCompiledRegions() << std::endl;
-      report << TheManager.getOICompiled() << std::endl;
-      report << TheManager.getLLVMCompiled() << std::endl;
-      GlobalTimer.printReport("", report);
-    }
-
-    else
-      std::cerr << "Report Error: Unable to open file: \'" << ReportFileFlag.get_value() << "\' for writting.\n";
-  }
-
   std::cerr.flush();
   std::cout.flush();
 

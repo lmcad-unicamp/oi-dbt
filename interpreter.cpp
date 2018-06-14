@@ -22,7 +22,7 @@ uint64_t instacc = 0;
 //#define DEBUG_PRINT(Addr, Inst) std::cerr << OIPrinter::getString(Inst) << "\n";
 //#define DEBUG_PRINT(Addr, Inst) std::cerr << /*std::dec << (++instacc) <<" -- "<<*/ std::hex << Addr << "\t" << OIPrinter::getString(Inst) << std::dec << "\n";
 //#define DEBUG_PRINT(Addr, Inst) std::cerr << "\n" << COLOR_CYAN <<  std::dec << (++instacc) <<" -- "<< std::hex << Addr << "\t" << OIPrinter::getString(Inst) << std::dec << COLOR_NONE << "\t";
-#define DEBUG_PRINT(Addr, Inst) std::cerr << "\n" << COLOR_CYAN <<  std::dec << (++instacc) <<" -- "<< std::hex << Addr << "\t" << OIPrinter::getString(Inst) << std::dec << COLOR_NONE << "\t";
+//#define DEBUG_PRINT(Addr, Inst) std::cerr << "\n" << COLOR_CYAN <<  std::dec << (++instacc) <<" -- "<< std::hex << Addr << "\t" << OIPrinter::getString(Inst) << std::dec << COLOR_NONE << "\t";
 #else
 #define DEBUG_PRINT(Addr, Inst)
 #endif
@@ -466,8 +466,11 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
     );
 
    IMPLEMENT(ldc1,
-      M.setRegister(130 + I.RT*2 + 1, M.getMemValueAt(M.getRegister(I.RS) + I.Imm+4).asI_);
-      M.setRegister(130 + I.RT*2 + 0, M.getMemValueAt(M.getRegister(I.RS) + I.Imm+0).asI_);
+			int32_t* R = M.getRegisterPtr();
+			char* M1 = M.getByteMemoryPtr();	
+			uint32_t Offset = M.getDataMemOffset();
+			
+			*(((int64_t*) R) + 65 + I.RT) = *((int64_t*) ((M1 + I.Imm + (*(R + I.RS))) - Offset));
     );
 
    IMPLEMENT(lwc1,
@@ -479,8 +482,11 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
     );
 
    IMPLEMENT(ldxc1,
-      M.setRegister(130 + I.RD*2 + 1,  M.getMemValueAt(M.getRegister(I.RT) + M.getRegister(I.RS)+4).asI_);
-      M.setRegister(130 + I.RD*2 + 0,  M.getMemValueAt(M.getRegister(I.RT) + M.getRegister(I.RS)+0).asI_);
+			int32_t* R = M.getRegisterPtr();
+			char* M1 = M.getByteMemoryPtr();	
+			uint32_t Offset = M.getDataMemOffset();
+			
+			*(((int64_t*) R) + 65 + I.RD) = *((int64_t*) ((M1 + (*(R + I.RT)) + (*(R + I.RS))) - Offset));
     );
 
    IMPLEMENT(sdxc1,
