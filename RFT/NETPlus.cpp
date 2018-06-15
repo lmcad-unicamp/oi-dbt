@@ -160,7 +160,7 @@ void NETPlus::onBranch(Machine& M) {
       OIRegion.push_back({I, M.getInstAt(I).asI_});
 #endif
     }
-  } else if (abs(M.getPC() - M.getLastPC()) > 4 && !TheManager.isRegionEntry(M.getPC())) {
+  } else if (M.getPC() < M.getLastPC() && !TheManager.isRegionEntry(M.getPC())) {
     ++ExecFreq[M.getPC()];
     if (ExecFreq[M.getPC()] > HotnessThreshold) 
       startRegionFormation(M.getPC());
