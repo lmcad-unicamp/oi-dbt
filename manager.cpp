@@ -13,24 +13,25 @@ using namespace dbt;
 
 llvm::Module* Manager::loadRegionFromFile(std::string Path) {
   llvm::SMDiagnostic error;
-  auto M = llvm::parseIRFile(Path, error, TheContext).release();
+  auto M = llvm::parseIRFile(RegionPath+Path, error, TheContext).release();
   if (M)
      return M;
-  else 
+  else
     return nullptr;
 }
 
 bool compInst(std::array<uint32_t, 2> A, std::array<uint32_t, 2> B) { return (A[0]<B[0]); }
 
 void Manager::loadRegionsFromFiles() {
-  std::ifstream infile("regions.order");
+  std::ifstream infile(RegionPath + "regions.order");
   std::string line;
+  std::cout << "Loading Regions from " << RegionPath << "regions.order\n";
   OIRegionsMtx.lock();
   while (std::getline(infile, line)) {
     uint32_t Entry = std::stoi(line);
     OIRegionsKey.push_back(Entry);
     if (!IsToLoadBCFormat) {
-      std::ifstream infile("r"+std::to_string(Entry)+".oi"); 
+      std::ifstream infile(RegionPath + "r"+std::to_string(Entry)+".oi");
       std::string line;
       while (std::getline(infile, line)) {
         std::istringstream iss(line);
@@ -42,14 +43,14 @@ void Manager::loadRegionsFromFiles() {
       OIRegions[Entry] = {{Entry,0}};
     }
   }
-  
+
   // If doing whole compilation, merge all regions in one
   if (IsToDoWholeCompilation) {
     OIInstList OIAll;
     std::set<uint32_t> UniqInsts;
     for (auto OIR : OIRegions) {
       for (auto I : OIR.second) {
-        if (UniqInsts.count(I[0]) == 0) 
+        if (UniqInsts.count(I[0]) == 0)
           OIAll.push_back({I[0], I[1]});
         UniqInsts.insert(I[0]);
       }
@@ -103,7 +104,7 @@ void Manager::runPipeline() {
 
     if (OIRegion.size() == 0) continue;
 
-    if (IsToLoadRegions && IsToLoadBCFormat) 
+    if (IsToLoadRegions && IsToLoadBCFormat)
       Module = loadRegionFromFile("r"+std::to_string(EntryAddress)+".bc");
 
     std::vector<uint32_t> EntryAddresses = {EntryAddress};
@@ -122,10 +123,10 @@ void Manager::runPipeline() {
       if (IsToDoWholeCompilation) {
         OIRegionsKey.erase(OIRegionsKey.begin());
         EntryAddresses = OIRegionsKey;
-      } 
-      IRE->generateRegionIR(EntryAddresses, OIRegion, DataMemOffset, TheMachine, IRJIT->getTargetMachine(), 
+      }
+      IRE->generateRegionIR(EntryAddresses, OIRegion, DataMemOffset, TheMachine, IRJIT->getTargetMachine(),
                           NativeRegions, Module);
-      
+
       if (VerboseOutput)
         std::cerr << "OK" << std::endl;
 
@@ -142,9 +143,9 @@ void Manager::runPipeline() {
         for (auto& BB : F)
           Size += BB.size();
 
-      if (OptMode != OptPolitic::Custom) 
+      if (OptMode != OptPolitic::Custom)
         IRO->optimizeIRFunction(Module, IROpt::OptLevel::Basic);
-      else if (CustomOpts->count(EntryAddress) != 0) 
+      else if (CustomOpts->count(EntryAddress) != 0)
         IRO->customOptimizeIRFunction(Module, (*CustomOpts)[EntryAddress]);
 
       for (auto& F : *Module)
@@ -154,7 +155,7 @@ void Manager::runPipeline() {
 
     // Remove a region if the first instruction is a return <- can cause infinity loops
     llvm::Function* LLVMRegion = Module->getFunction("r"+std::to_string(EntryAddress));
-    
+
     if (LLVMRegion == nullptr) {
       std::cerr << "Module->getFunction has returned empty!\n";
       exit(1);
@@ -165,8 +166,8 @@ void Manager::runPipeline() {
     bool RetLoop = true;
     if (IsRet) {
       auto RetInst = llvm::dyn_cast<llvm::ReturnInst>(Inst);
-      if (llvm::isa<llvm::ConstantInt>(RetInst->getReturnValue())) 
-        if (!llvm::dyn_cast<llvm::ConstantInt>(RetInst->getReturnValue())->equalsInt(EntryAddress)) 
+      if (llvm::isa<llvm::ConstantInt>(RetInst->getReturnValue()))
+        if (!llvm::dyn_cast<llvm::ConstantInt>(RetInst->getReturnValue())->equalsInt(EntryAddress))
           RetLoop = false;
     }
 
@@ -211,7 +212,7 @@ void Manager::runPipeline() {
         IREmitter::regionDump((const void*) *Addr, buffer, t);
         std::cerr << buffer.str().c_str() << std::endl;
       }
-    } else if (VerboseOutput) { 
+    } else if (VerboseOutput) {
         std::cerr << "Giving up " << std::hex << EntryAddress << " compilation as it starts with a return!\n";
     }
 

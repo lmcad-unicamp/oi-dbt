@@ -29,6 +29,7 @@ namespace dbt {
     private:
       llvm::LLVMContext TheContext;
       dbt::Machine& TheMachine;
+      std::string RegionPath;
 
 			std::vector<uint32_t> OIRegionsKey;
       spp::sparse_hash_map<uint32_t, OIInstList> OIRegions;
@@ -77,7 +78,7 @@ namespace dbt {
       void runPipeline();
 
     public:
-      Manager(uint32_t DMO, dbt::Machine& M, bool VO = false) : DataMemOffset(DMO), isRunning(true), 
+      Manager(uint32_t DMO, dbt::Machine& M, bool VO = false) : DataMemOffset(DMO), isRunning(true),
           isFinished(false), VerboseOutput(VO), TheMachine(M) {
         memset((void*) NativeRegions, 0, sizeof(NativeRegions));
       }
@@ -107,7 +108,7 @@ namespace dbt {
         if (ThreadPool.size() != 0) {
           while (!isFinished) {}
 
-          for (unsigned i = 0; i < ThreadPool.size(); i++) 
+          for (unsigned i = 0; i < ThreadPool.size(); i++)
             if (ThreadPool[i].joinable())
               ThreadPool[i].join();
         }
@@ -121,7 +122,7 @@ namespace dbt {
         CustomOpts = COpts;
         OptMode = Custom;
       }
- 
+
       unsigned getCompiledRegions (void){
         return CompiledRegions;
       }
@@ -146,10 +147,14 @@ namespace dbt {
         return AvgOptCodeSize;
       }
 
-      void setToLoadRegions(bool InLLVMFormat = true, bool WholeCompilation = false) {
+      void setToLoadRegions(std::string path, bool InLLVMFormat = true, bool WholeCompilation = false) {
         IsToLoadRegions = true;
         IsToDoWholeCompilation = WholeCompilation;
-        IsToLoadBCFormat = InLLVMFormat; 
+        IsToLoadBCFormat = InLLVMFormat;
+
+        RegionPath = path;
+        if(RegionPath.back() != '/')
+          RegionPath += '/';
       }
 
      bool addOIRegion(uint32_t, OIInstList);
@@ -211,7 +216,7 @@ namespace dbt {
             std::error_code EC;
             llvm::raw_fd_ostream OS("r"+std::to_string(M.first)+".bc", EC, llvm::sys::fs::F_None);
             WriteBitcodeToFile(M.second, OS);
-            OS.flush(); 
+            OS.flush();
           }
           if (MergeRegions) {
             std::cerr << "Merging OI regions!\n";
@@ -222,14 +227,14 @@ namespace dbt {
         for (auto OIRegion : CompiledOIRegions) {
           std::error_code EC;
           llvm::raw_fd_ostream OS("r"+std::to_string(OIRegion.first)+".oi", EC, llvm::sys::fs::F_None);
-          for (auto OIInsts : OIRegion.second) 
-            OS << OIInsts[0] << "\t" << OIInsts[1] << "\t" << OIPrinter::getString(OIDecoder::decode(OIInsts[1])) <<  "\n"; 
+          for (auto OIInsts : OIRegion.second)
+            OS << OIInsts[0] << "\t" << OIInsts[1] << "\t" << OIPrinter::getString(OIDecoder::decode(OIInsts[1])) <<  "\n";
           OS.flush();
         }
 
         std::error_code EC;
         llvm::raw_fd_ostream OS("regions.order", EC, llvm::sys::fs::F_None);
-        for (auto A : IRRegionsKey) 
+        for (auto A : IRRegionsKey)
           OS << A << "\n";
 
         OS.flush();
