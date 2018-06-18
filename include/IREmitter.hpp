@@ -108,6 +108,39 @@ namespace dbt {
     void generateRegionIR(std::vector<uint32_t>&, const OIInstList&, uint32_t, dbt::Machine&,
         llvm::TargetMachine&, volatile uint64_t* NativeRegions, llvm::Module*);
 
+    static size_t getAssemblySize(const void* func) {
+      char outline[1024];
+      size_t Size = 0;
+      uint64_t pc;
+      const uint64_t extent = 96*1024;
+      const uint8_t *bytes = (const uint8_t *) func;
+
+      //Initialize LLVM targets
+      LLVMInitializeNativeAsmParser();
+      LLVMInitializeNativeAsmPrinter();
+      LLVMInitializeNativeDisassembler();
+      LLVMInitializeNativeTarget();
+
+      LLVMDisasmContextRef D = LLVMCreateDisasm(LLVM_HOST_TRIPLE, NULL, 0, NULL, NULL);
+
+      for(pc = 0; pc<extent; pc+=Size) {
+        unsigned int i;
+        memset(outline, 0, sizeof(outline));
+        Size = LLVMDisasmInstruction(D, (uint8_t *)bytes + pc, extent - pc, 0, outline, sizeof (outline));
+        if (!Size) {
+          break;
+        }
+
+        if(static_cast<int>(bytes[pc]) == 0xc3) {
+          break;
+        }
+      }
+
+      LLVMDisasmDispose(D);
+
+      return pc;
+    }
+
     static size_t disassemble(const void* func, std::ostream &buffer) {
       char outline[1024];
       size_t Size = 0;

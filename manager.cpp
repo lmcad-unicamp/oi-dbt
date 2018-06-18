@@ -60,14 +60,6 @@ void Manager::loadRegionsFromFiles() {
 
     OIRegions[0] = OIAll;
 
-/*    std::ifstream infile2("regions.entries");
-    if (infile2.is_open()) {
-      OIRegionsKey.clear();
-      while (std::getline(infile, line)) {
-        OIRegionsKey.push_back(std::stoi(line));
-      }
-    }*/
-
     OIRegionsKey.insert(OIRegionsKey.begin(), 0);
   }
 
@@ -83,6 +75,8 @@ void Manager::runPipeline() {
     llvm::InitializeNativeTargetAsmParser();
     IRJIT = new llvm::orc::IRLazyJIT();
   }
+
+  PerfMapFile = new std::ofstream("/tmp/perf-"+std::to_string(getpid())+".map");
 
   IRE = llvm::make_unique<IREmitter>();
   IRO = llvm::make_unique<IROpt>();
@@ -190,6 +184,9 @@ void Manager::runPipeline() {
 
       auto Addr = IRJIT->findSymbol("r"+std::to_string(EntryAddress)).getAddress();
 
+      *PerfMapFile << std::hex << "0x" << *Addr << std::dec <<" " << IREmitter::getAssemblySize((const void*) *Addr) << " r" << EntryAddress << ".oi\n";
+      PerfMapFile->flush();
+
       if (Addr) {
         for (auto EA : EntryAddresses)
           NativeRegions[EA] = static_cast<intptr_t>(*Addr);
@@ -226,6 +223,7 @@ void Manager::runPipeline() {
 			return;
 		}
   }
+  PerfMapFile->close();
   isFinished = true;
 }
 

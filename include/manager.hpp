@@ -12,6 +12,7 @@
 #include <sparsepp/spp.h>
 #include <OIPrinter.hpp>
 #include <stack>
+#include <unistd.h>
 
 #include "llvm/Support/TargetSelect.h"
 #include "llvm/Bitcode/BitcodeWriter.h"
@@ -75,12 +76,15 @@ namespace dbt {
       llvm::Module* loadRegionFromFile(std::string);
       void loadRegionsFromFiles();
 
+      std::ofstream* PerfMapFile; 
+
       void runPipeline();
 
     public:
       Manager(uint32_t DMO, dbt::Machine& M, bool VO = false) : DataMemOffset(DMO), isRunning(true),
           isFinished(false), VerboseOutput(VO), TheMachine(M) {
         memset((void*) NativeRegions, 0, sizeof(NativeRegions));
+
       }
 
       void startCompilationThr() {
@@ -112,6 +116,7 @@ namespace dbt {
             if (ThreadPool[i].joinable())
               ThreadPool[i].join();
         }
+
       }
 
       void setOptPolicy(OptPolitic OM) {
