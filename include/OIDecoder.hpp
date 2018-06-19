@@ -173,7 +173,7 @@ namespace dbt {
           return EncodingType::PL20;
         case OIInstType::Ijmphi:
           return EncodingType::PL20i;
-        case OIInstType::Call:
+        case OIInstType::Call: 
           return EncodingType::PL26c;
         case OIInstType::Jumpr:
           return EncodingType::PL6;
@@ -319,8 +319,12 @@ namespace dbt {
       case 0b000000:
         I.Type = OIInstType::Jump;
         break;
-      case 0b000001:
+      case 0b000001: 
         I.Type = OIInstType::Call;
+        if ((I.Addrs << 2) == 0) { 
+          std::cerr << "Pay attention! Something have must be linked wrongly, a call 0 was found! Maybe a -lm missing?\n";
+          exit(1);
+        }
         break;
       case 0b000011:
         I.Type = OIInstType::Ldbu;
