@@ -10,7 +10,7 @@
 #include <memory>
 #include <machine.hpp>
 
-clarg::argString RFTFlag("-rft", "Region Formation Technique (net)", "net-r");
+clarg::argString RFTFlag("-rft", "Region Formation Technique (net)", "netplus-e-r");
 clarg::argInt    HotnessFlag("-hot", "Hotness threshold for the RFTs", 50);
 clarg::argString ReportFileFlag("-report", "Write down report to a file", "");
 clarg::argBool   InterpreterFlag("-interpret",  "Only interpret.");
