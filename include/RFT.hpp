@@ -126,26 +126,6 @@ namespace dbt {
     void onBranch(dbt::Machine&);
   };
 
-	class LEI : public RFT {
-    #define MAX_SIZE_BUFFER 2000
-
-		struct branch_t {
-			uint32_t src;
-			uint32_t tgt;
-		};
-
-		std::vector<branch_t> Buffer;
-    spp::sparse_hash_map<uint32_t, int> BufferHash;
-
-    void circularBufferInsert(uint32_t, uint32_t);
-    void formTrace(uint32_t, int, Machine& M);
-    bool isFollowedByExit(int);
-  public:
-    LEI(Manager& M) : RFT(M) {};
-
-    void onBranch(dbt::Machine&);
-  };
-
   class NullRFT : public RFT {
   public:
     NullRFT(Manager& M) : RFT(M) {};

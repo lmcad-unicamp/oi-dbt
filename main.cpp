@@ -10,7 +10,7 @@
 #include <memory>
 #include <machine.hpp>
 
-clarg::argString RFTFlag("-rft", "Region Formation Technique (net)", "net");
+clarg::argString RFTFlag("-rft", "Region Formation Technique (net)", "net-r");
 clarg::argInt    HotnessFlag("-hot", "Hotness threshold for the RFTs", 50);
 clarg::argString ReportFileFlag("-report", "Write down report to a file", "");
 clarg::argBool   InterpreterFlag("-interpret",  "Only interpret.");
@@ -196,9 +196,6 @@ int main(int argc, char** argv) {
     } else if (RFTName == "netplus-e-r") {
       std::cerr << "NETPlus-e-r RFT Selected\n";
       RftChosen = std::make_unique<dbt::NETPlus>(TheManager, true);
-    }else if (RFTName == "lei") {
-      std::cerr << "LEI rft selected\n";
-      RftChosen = std::make_unique<dbt::LEI>(TheManager);
     } else if (RFTName == "mb") {
       std::cerr << "MethodBased rft selected\n";
       if (ToCompileFlag.was_set())
