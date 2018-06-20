@@ -73,7 +73,7 @@ void Manager::runPipeline() {
     llvm::InitializeNativeTarget();
     llvm::InitializeNativeTargetAsmPrinter();
     llvm::InitializeNativeTargetAsmParser();
-    IRJIT = new llvm::orc::IRLazyJIT();
+    IRJIT = llvm::make_unique<llvm::orc::IRLazyJIT>();
   }
 
   PerfMapFile = new std::ofstream("/tmp/perf-"+std::to_string(getpid())+".map");
@@ -155,8 +155,8 @@ void Manager::runPipeline() {
       exit(1);
     }
 
-    auto Inst     = LLVMRegion->getEntryBlock().getFirstNonPHI();
-    bool IsRet    = Inst->getOpcode() == llvm::Instruction::Ret;
+    auto Inst    = LLVMRegion->getEntryBlock().getFirstNonPHI();
+    bool IsRet   = Inst->getOpcode() == llvm::Instruction::Ret;
     bool RetLoop = true;
     if (IsRet) {
       auto RetInst = llvm::dyn_cast<llvm::ReturnInst>(Inst);
@@ -211,6 +211,7 @@ void Manager::runPipeline() {
       }
     } else if (VerboseOutput) {
         std::cerr << "Giving up " << std::hex << EntryAddress << " compilation as it starts with a return!\n";
+				delete Module;
     }
 
     OIRegionsMtx.lock();

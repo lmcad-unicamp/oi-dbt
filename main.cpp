@@ -98,6 +98,8 @@ void  sigHandler(int sig) {
   exit(1);
 }
 
+void doNothingHandler(int sig) {}
+
 std::unordered_map<uint32_t, std::vector<std::string>>* loadCustomOpts(std::string CustomOptsPath) {
   auto CustomOpts = new std::unordered_map<uint32_t, std::vector<std::string>>;
 
@@ -261,6 +263,9 @@ int main(int argc, char** argv) {
 
   std::cerr.flush();
   std::cout.flush();
+
+  signal(SIGSEGV, doNothingHandler);
+  signal(SIGABRT, doNothingHandler);
 
   exit(SyscallM->getExitStatus());
 }

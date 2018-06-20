@@ -13,6 +13,7 @@
 #include <OIPrinter.hpp>
 #include <stack>
 #include <unistd.h>
+#include <chrono>
 
 #include "llvm/Support/TargetSelect.h"
 #include "llvm/Bitcode/BitcodeWriter.h"
@@ -53,7 +54,7 @@ namespace dbt {
 
       std::unique_ptr<IREmitter> IRE;
       std::unique_ptr<IROpt> IRO;
-      llvm::orc::IRLazyJIT* IRJIT;
+      std::unique_ptr<llvm::orc::IRLazyJIT> IRJIT;
 
       std::atomic<bool> isRegionRecorging;
       std::atomic<bool> isRunning;
@@ -84,7 +85,6 @@ namespace dbt {
       Manager(uint32_t DMO, dbt::Machine& M, bool VO = false) : DataMemOffset(DMO), isRunning(true),
           isFinished(false), VerboseOutput(VO), TheMachine(M) {
         memset((void*) NativeRegions, 0, sizeof(NativeRegions));
-
       }
 
       void startCompilationThr() {
@@ -104,7 +104,6 @@ namespace dbt {
       }
 
       ~Manager() {
-
         // Alert threads to stop
         isRunning = false;
 
@@ -112,11 +111,11 @@ namespace dbt {
         if (ThreadPool.size() != 0) {
           while (!isFinished) {}
 
-          for (unsigned i = 0; i < ThreadPool.size(); i++)
-            if (ThreadPool[i].joinable())
-              ThreadPool[i].join();
+          for (unsigned i = 0; i < ThreadPool.size(); i++) {
+            if (!ThreadPool[i].joinable()) 
+            	ThreadPool[i].join();
+					}
         }
-
       }
 
       void setOptPolicy(OptPolitic OM) {
@@ -162,13 +161,11 @@ namespace dbt {
           RegionPath += '/';
       }
 
-     bool addOIRegion(uint32_t, OIInstList);
+      bool addOIRegion(uint32_t, OIInstList);
 
       int32_t jumpToRegion(uint32_t);
 
       bool isRegionEntry(uint32_t EntryAddress) {
-//        std::shared_lock<std::shared_mutex> lockOI(OIRegionsMtx);
-//        std::shared_lock<std::shared_mutex> lockNative(NativeRegionsMtx);
         return OIRegions.count(EntryAddress) != 0 || NativeRegions[EntryAddress] != 0;
       }
 
