@@ -300,6 +300,7 @@ namespace dbt {
       }
     }
 
+    static bool CallZero = false;
     static OIInst decode(uint32_t CodedInst) {
       Word W;
       W.asI_ = CodedInst;
@@ -534,9 +535,9 @@ namespace dbt {
 
       fillFields(I, getEncodingType(I.Type), W);
 
-      if (I.Type == Call && (I.Addrs << 2) == 0) { 
+      if (!CallZero && I.Type == Call && (I.Addrs << 2) == 0) { 
           std::cerr << "Pay attention! Something have must be linked wrongly, a call 0 was found! Maybe a -lm missing?\n";
-          exit(1);
+          CallZero = true;
       }
 
       return I;
