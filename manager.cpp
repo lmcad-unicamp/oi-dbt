@@ -84,19 +84,21 @@ void Manager::runPipeline() {
   while (isRunning) {
     uint32_t EntryAddress;
     OIInstList OIRegion;
+    
+    std::unique_lock<std::mutex> lk(NR);
+    cv.wait(lk, [&]{ return getNumOfOIRegions() != 0; });
 
-    if (getNumOfOIRegions() > 0) {
-      OIRegionsMtx.lock_shared();
-      EntryAddress = OIRegionsKey.front();
-      OIRegion     = OIRegions[EntryAddress];
-      OIRegionsMtx.unlock_shared();
-    }
+    OIRegionsMtx.lock_shared();
+    EntryAddress = OIRegionsKey.front();
+    OIRegion     = OIRegions[EntryAddress];
+    OIRegionsMtx.unlock_shared();
 
     llvm::Module* Module = nullptr;
     unsigned Size  = 1;
     unsigned OSize = 1;
 
-    if (OIRegion.size() == 0) continue;
+    if (OIRegion.size() == 0) 
+      continue;
 
     if (IsToLoadRegions && IsToLoadBCFormat)
       Module = loadRegionFromFile("r"+std::to_string(EntryAddress)+".bc");
@@ -216,6 +218,7 @@ void Manager::runPipeline() {
 
     OIRegionsMtx.lock();
     OIRegions.erase(EntryAddress);
+    NumOfOIRegions -= 1;
     OIRegionsKey.erase(OIRegionsKey.begin());
     OIRegionsMtx.unlock();
 
@@ -234,6 +237,8 @@ bool Manager::addOIRegion(uint32_t EntryAddress, OIInstList OIRegion) {
     OIRegionsKey.push_back(EntryAddress);
     OIRegions[EntryAddress] = OIRegion;
     OIRegionsMtx.unlock();
+    NumOfOIRegions += 1;
+    cv.notify_all();
     return true;
   }
   return false;

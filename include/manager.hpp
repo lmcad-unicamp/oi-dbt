@@ -33,8 +33,11 @@ namespace dbt {
       dbt::Machine& TheMachine;
       std::string RegionPath;
 
-			std::vector<uint32_t> OIRegionsKey;
+      std::vector<uint32_t> OIRegionsKey;
       spp::sparse_hash_map<uint32_t, OIInstList> OIRegions;
+      std::mutex NR;
+      std::condition_variable cv;
+      std::atomic<size_t> NumOfOIRegions; 
       std::unordered_map<uint32_t, OIInstList> CompiledOIRegions;
       std::vector<uint32_t> IRRegionsKey;
       std::set<uint32_t> TouchedEntries;
@@ -83,7 +86,7 @@ namespace dbt {
 
     public:
       Manager(uint32_t DMO, dbt::Machine& M, bool VO = false) : DataMemOffset(DMO), isRunning(true),
-          isFinished(false), VerboseOutput(VO), TheMachine(M) {
+          isFinished(false), VerboseOutput(VO), TheMachine(M), NumOfOIRegions(0) {
         memset((void*) NativeRegions, 0, sizeof(NativeRegions));
       }
 
@@ -174,10 +177,7 @@ namespace dbt {
       }
 
       size_t getNumOfOIRegions() {
-        OIRegionsMtx.lock();
-        size_t R = OIRegions.size();
-        OIRegionsMtx.unlock();
-        return R;
+        return NumOfOIRegions;
       }
 
       float getAvgRegionsSize() {
