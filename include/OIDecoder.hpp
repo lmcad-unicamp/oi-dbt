@@ -321,10 +321,6 @@ namespace dbt {
         break;
       case 0b000001: 
         I.Type = OIInstType::Call;
-        if ((I.Addrs << 2) == 0) { 
-          std::cerr << "Pay attention! Something have must be linked wrongly, a call 0 was found! Maybe a -lm missing?\n";
-          exit(1);
-        }
         break;
       case 0b000011:
         I.Type = OIInstType::Ldbu;
@@ -537,6 +533,11 @@ namespace dbt {
       }
 
       fillFields(I, getEncodingType(I.Type), W);
+
+      if (I.Type == Call && (I.Addrs << 2) == 0) { 
+          std::cerr << "Pay attention! Something have must be linked wrongly, a call 0 was found! Maybe a -lm missing?\n";
+          exit(1);
+      }
 
       return I;
     }
