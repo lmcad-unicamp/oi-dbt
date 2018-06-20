@@ -24,6 +24,7 @@ add_library(dbt
   IREmitter.cpp 
   IRUtils.cpp 
   IROpt.cpp 
+  OIDecoder.cpp
   interpreter.cpp 
   machine.cpp 
   manager.cpp 

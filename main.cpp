@@ -220,7 +220,6 @@ int main(int argc, char** argv) {
   SyscallM = std::make_unique<dbt::LinuxSyscallManager>();
 
   if (PreheatFlag.was_set()) {
-	 if(ArgumentsFlag.was_set())
     if(M.setCommandLineArguments(ArgumentsFlag.get_value()) < 0)
       exit(1);
 
@@ -244,9 +243,8 @@ int main(int argc, char** argv) {
     M.setPreheating(false);
   }
 
-  if(ArgumentsFlag.was_set())
-    if(M.setCommandLineArguments(ArgumentsFlag.get_value()) < 0)
-      exit(1);
+  if(M.setCommandLineArguments(ArgumentsFlag.get_value()) < 0)
+    exit(1);
 
   GlobalTimer.startClock();
   dbt::ITDInterpreter I(*SyscallM.get(), *RftChosen.get());
