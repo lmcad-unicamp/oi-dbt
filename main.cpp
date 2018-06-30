@@ -5,13 +5,14 @@
 #include <syscall.hpp>
 #include <timer.hpp>
 #include <algorithm>
-
 #include <iostream>
 #include <memory>
 #include <machine.hpp>
 
 clarg::argString RFTFlag("-rft", "Region Formation Technique (net)", "netplus-e-r");
 clarg::argInt    HotnessFlag("-hot", "Hotness threshold for the RFTs", 50);
+clarg::argInt    DudectFlag("-dut-times", "Dudect Number of measures", 100);
+clarg::argString DudectReportFlag("-dut-report", "Dudect report path", "./dudect_output");
 clarg::argString ReportFileFlag("-report", "Write down report to a file", "");
 clarg::argBool   InterpreterFlag("-interpret",  "Only interpret.");
 clarg::argString BinaryFlag("-bin",  "Path to the binary which will should be emulated.", "");
@@ -76,10 +77,30 @@ int validateArguments() {
   return 0;
 }
 
+static void timeFunc(void)
+{
+    // current date/time based on current system
+  time_t now = time(0);
+
+  // convert now to string form
+  char* dt = ctime(&now);
+
+  cout << "Local time: " << dt << endl;
+
+  // convert now to tm struct for UTC
+  //tm *gmtm = gmtime(&now);
+  //dt = asctime(gmtm);
+  //cout << "The UTC date and time is:"<< dt << endl;
+}
+
+dbt::Timer GlobalTimer;
 std::unique_ptr<dbt::RFT> RftChosen;
 dbt::Machine M;
+extern std::ofstream DudectFile;
 
 void  sigHandler(int sig) {
+  GlobalTimer.stopClock();
+
   if (M.isOnNativeExecution()) {
     std::cerr << "Error while executing region " << std::hex << M.getRegionBeingExecuted() << "\n";
   } else {
@@ -89,9 +110,25 @@ void  sigHandler(int sig) {
   }
 
   if(sig == SIGABRT)
+  {
     std::cerr << "SIGABRT (" << sig << ") while emulating at PC: " << std::hex << M.getPC() << std::dec << "\n";
-  else
+      GlobalTimer.printReport("SIGABRT Time");
+  }
+  else if(sig == SIGSEGV)
+  {
     std::cerr << "SIGSEGV (" << sig << ") while emulating at PC: " << std::hex << M.getPC() << std::dec << "\n";
+    GlobalTimer.printReport("SIGSEGV Time");
+  }
+  else
+  {
+    std::cerr << "SIGINT (" << sig << ") while emulating at PC: " << std::hex << M.getPC() << std::dec << "\n";
+
+    if(DudectFile.is_open())
+      DudectFile.close();
+
+    GlobalTimer.printReport("Interrupted Time");
+  }
+
 
   std::cerr << "Last Machine state:";
 
@@ -124,10 +161,13 @@ std::unordered_map<uint32_t, std::vector<std::string>>* loadCustomOpts(std::stri
 }
 
 int main(int argc, char** argv) {
+  timeFunc();
+
   signal(SIGSEGV, sigHandler);
   signal(SIGABRT, sigHandler);
+  signal(SIGINT, sigHandler);
 
-  dbt::Timer GlobalTimer;
+
 
   // Parse the arguments
   if (clarg::parse_arguments(argc, argv)) {
@@ -153,7 +193,11 @@ int main(int argc, char** argv) {
     M.setHeapSize(HeapSizeFlag.get_value());
   }
 
+  //if (DudectReportFlag.was_set())
+  M.setDudect_ReportPath(DudectReportFlag.get_value());
+
   int LoadStatus = M.loadELF(BinaryFlag.get_value());
+  M.setDudectMeasures(DudectFlag.get_value());
 
   if (!LoadStatus) {
     std::cerr << "Can't find or process ELF file " << argv[1] << std::endl;

@@ -9,27 +9,32 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <ostream>
-
 #include <ctime>
 
+//#ifdef DUDECT
+#include <dudect.hpp>
+//#endif
+
 using namespace dbt;
+using namespace dut;
 
-static inline int64_t cpucycles(void) {
-  unsigned int hi, lo;
-  unsigned int eax = 0;
-  unsigned int ebx,ecx,edx;
-
-   asm volatile
-   ( "cpuid"
-          : "=a"(eax), "=b"(ebx), "=c"(ecx), "=d"(edx)
-          : "0"(0)
-  );
-
-  __asm__ volatile("rdtsc\n\t" : "=a"(lo), "=d"(hi));
-  return ((int64_t)lo) | (((int64_t)hi) << 32);
-}
+static Dudect* dudect = NULL;
+std::ofstream DudectFile;
 
 int LinuxSyscallManager::processSyscall(Machine& M) {
+
+  if(!dudect)
+  {
+    dudect = new Dudect(M.getDudectMeasures());
+    std::cout << "Dudect: Number of measures is set to " << M.getDudectMeasures() << std::endl;
+
+    DudectFile.open(M.getDudect_ReportPath(), std::ofstream::out | std::ofstream::app);
+
+    std::cout << "Dudect: Output Report Path " << M.getDudect_ReportPath() << std::endl;
+
+    DudectFile << "\nDUDECT INITIALIZING\n" << std::endl;
+  }
+
   SyscallType SysTy = static_cast<SyscallType>(M.getRegister(4) - 4000);
 
   switch (SysTy) {
@@ -63,9 +68,9 @@ int LinuxSyscallManager::processSyscall(Machine& M) {
 
     ssize_t r = -1;
     if (flags == 0 || flags == 1 || flags == 2)
-	r = open(filename, flags);
+      r = open(filename, flags);
     else
-	r = open(filename, flags | O_CREAT, S_IRWXU);
+	   r = open(filename, flags | O_CREAT, S_IRWXU);
 
     M.setRegister(2, r);
 
@@ -101,14 +106,53 @@ int LinuxSyscallManager::processSyscall(Machine& M) {
 
   //Hack for rtdsc instruction
   case SyscallType::Stat: {
-    static int64_t cpuc = 0;
+    static int64_t initialTime = 0, finalTime = 0;
+    static bool started = false, initialized = false;
     static uint32_t times = 0;
+    const char* classe = M.getByteMemoryPtr() + (M.getRegister(5) - M.getDataMemOffset());
 
-    std::cout << "[" << times++ << "]: " << (cpucycles()-cpuc) << std::endl;
-    cpuc = cpucycles();
+    finalTime = cpucycles();
+
+    if(classe[0] == 3)
+    {
+      //std::cout << "Class 3\n";
+      if(initialized)
+        dudect->doit();
+
+      initialized = true;
+
+      dudect->resetData();
+      initialTime = finalTime = started = 0x0;
+    }
+
+    else if(!started)
+    {
+      //std::cout << "Started\n";
+      started = true;
+    }
+
+    else if(initialTime == 0)
+    {
+      //std::cout << "Iniatialized!\n";
+      initialTime = finalTime;
+    }
+
+    else
+    {
+      //std::cout << "Measure\n";
+      if(dudect->measure(finalTime-initialTime, (uint8_t) classe[0]) == true)
+        times++;
+      else
+      {
+        dudect->doit();
+        dudect->resetData();
+      }
+        //std::cout << "[" << times << "]" <<  ": " << finalTime-initialTime << std::endl;
+      DudectFile << "[" << times << "]" <<  ": " << finalTime-initialTime << std::endl;
+    }
+
     return 0;
   }
-
   case SyscallType::Lseek: {
     //const char* filename = M.getByteMemoryPtr() + (M.getRegister(5) - M.getDataMemOffset());
     //const int flags = M.getRegister(6);

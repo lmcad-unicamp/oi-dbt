@@ -67,6 +67,7 @@ namespace dbt {
     uint32_t DataMemOffset;
     uint32_t CodeMemOffset;
     uint32_t DataMemTotalSize;
+    uint32_t Dudect_NumMeasures;
 
     uint32_t DataMemLimit;
     uint32_t CodeMemLimit;
@@ -78,6 +79,7 @@ namespace dbt {
     uint32_t RegionBeingExecuted;
 
     std::string BinPath;
+    std::string Dudect_ReportPath;
 
     std::unordered_map<uint32_t, std::pair<std::string, uint32_t>> Symbolls;
   public:
@@ -101,6 +103,11 @@ namespace dbt {
 
     void setStackSize(uint32_t size) { stackSize = size; };
     void setHeapSize(uint32_t size)  { heapSize = size;  };
+    void setDudectMeasures (uint32_t measures) { Dudect_NumMeasures = measures; };
+    uint32_t getDudectMeasures (void) { return Dudect_NumMeasures; };
+
+    std::string getDudect_ReportPath(void) { return Dudect_ReportPath; };
+    void setDudect_ReportPath(std::string path) { Dudect_ReportPath = path; };
 
     Word getInstAt(uint32_t);
     Word getInstAtPC();
