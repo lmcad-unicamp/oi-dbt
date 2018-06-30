@@ -26,21 +26,21 @@ void Manager::loadRegionsFromFiles() {
   std::ifstream infile(RegionPath + "regions.order");
   std::string line;
   std::cout << "Loading Regions from " << RegionPath << "regions.order\n";
-  OIRegionsMtx.lock();
   while (std::getline(infile, line)) {
     uint32_t Entry = std::stoi(line);
-    OIRegionsKey.push_back(Entry);
     if (!IsToLoadBCFormat) {
       std::ifstream infile(RegionPath + "r"+std::to_string(Entry)+".oi");
       std::string line;
+      OIInstList Insts;
       while (std::getline(infile, line)) {
         std::istringstream iss(line);
         uint32_t Addrs, Opcode;
         if (!(iss >> Addrs >> Opcode)) { break; }
-        OIRegions[Entry].push_back({Addrs, Opcode});
+        Insts.push_back({Addrs, Opcode});
       }
+      addOIRegion(Entry, Insts);
     } else {
-      OIRegions[Entry] = {{Entry,0}};
+      addOIRegion(Entry, {{Entry, 0}});
     }
   }
 
@@ -55,15 +55,18 @@ void Manager::loadRegionsFromFiles() {
         UniqInsts.insert(I[0]);
       }
     }
+
+    OIRegionsMtx.lock();
 		std::sort(OIAll.begin(), OIAll.end(), compInst);
     OIRegions.clear();
 
     OIRegions[0] = OIAll;
-
     OIRegionsKey.insert(OIRegionsKey.begin(), 0);
+    NumOfOIRegions = 1;
+    cv.notify_all();
+    OIRegionsMtx.unlock();
   }
 
-  OIRegionsMtx.unlock();
 }
 
 static unsigned int ModuleId = 0;
@@ -246,12 +249,10 @@ bool Manager::addOIRegion(uint32_t EntryAddress, OIInstList OIRegion) {
 
 int32_t Manager::jumpToRegion(uint32_t EntryAddress) {
   uint32_t JumpTo  = EntryAddress;
-  uint32_t LastTo  = JumpTo;
   int32_t* RegPtr  = TheMachine.getRegisterPtr();
   uint32_t* MemPtr = TheMachine.getMemoryPtr();
 
   while (isNativeRegionEntry(JumpTo)) {
-    LastTo = JumpTo;
     uint32_t (*FP)(int32_t*, uint32_t*, uint32_t) = (uint32_t (*)(int32_t*, uint32_t*, uint32_t)) NativeRegions[JumpTo];
     JumpTo = FP(RegPtr, MemPtr, EntryAddress);
   }
