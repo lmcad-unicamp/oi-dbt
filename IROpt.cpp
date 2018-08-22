@@ -43,9 +43,9 @@ void dbt::IROpt::populateFuncPassManager(llvm::legacy::FunctionPassManager* FPM,
       case str2int("dce"):
         FPM->add(llvm::createDeadCodeEliminationPass());
         break;
-      case str2int("mem2reg"):
-        FPM->add(llvm::createPromoteMemoryToRegisterPass());
-        break;
+//      case str2int("mem2reg"):
+//        FPM->add(llvm::createPromoteMemoryToRegisterPass());
+//        break;
       case str2int("licm"):
         FPM->add(llvm::createLICMPass());
         break;
@@ -91,7 +91,7 @@ void dbt::IROpt::optimizeIRFunction(llvm::Module *M, OptLevel Level) {
     if (!BasicPM) {
       BasicPM = std::make_unique<llvm::legacy::FunctionPassManager>(M);
       populateFuncPassManager(BasicPM.get(), 
-        {"instcombine", "simplifycfg", "reassociate", "gvn", "die", "dce", "mem2reg", "instcombine", "licm", 
+        {"instcombine", "simplifycfg", "reassociate", "gvn", "die", "dce", "instcombine", "licm", 
         "memcpyopt", "loop-unswitch", "instcombine", "indvars", "loop-deletion", "loop-predication", "loop-unroll",
         "simplifycfg", "instcombine", "licm", "gvn"});
       BasicPM->doInitialization();

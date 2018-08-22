@@ -76,7 +76,7 @@ void Manager::runPipeline() {
     llvm::InitializeNativeTarget();
     llvm::InitializeNativeTargetAsmPrinter();
     llvm::InitializeNativeTargetAsmParser();
-    IRJIT = llvm::make_unique<llvm::orc::IRLazyJIT>();
+    IRJIT = llvm::make_unique<llvm::orc::IRJIT>();
   }
 
   PerfMapFile = new std::ofstream("/tmp/perf-"+std::to_string(getpid())+".map");
@@ -174,7 +174,7 @@ void Manager::runPipeline() {
       if (VerboseOutput)
         Module->print(llvm::errs(), nullptr);
 
-      IRRegions[EntryAddress] = llvm::CloneModule(Module).release();
+      IRRegions[EntryAddress] = llvm::CloneModule(*Module).release();
       IRRegionsKey.push_back(EntryAddress);
 
       NativeRegionsMtx.lock();

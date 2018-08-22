@@ -3,7 +3,7 @@
 
 #include <IREmitter.hpp>
 #include <IROpt.hpp>
-#include <IRLazyJIT.hpp>
+#include <IRJIT.hpp>
 #include <machine.hpp>
 #include <thread>
 #include <mutex>
@@ -57,7 +57,7 @@ namespace dbt {
 
       std::unique_ptr<IREmitter> IRE;
       std::unique_ptr<IROpt> IRO;
-      std::unique_ptr<llvm::orc::IRLazyJIT> IRJIT;
+      std::unique_ptr<llvm::orc::IRJIT> IRJIT;
 
       std::atomic<bool> isRegionRecorging;
       std::atomic<bool> isRunning;
@@ -217,7 +217,7 @@ namespace dbt {
           for (auto& M : IRRegions) {
             std::error_code EC;
             llvm::raw_fd_ostream OS("r"+std::to_string(M.first)+".bc", EC, llvm::sys::fs::F_None);
-            WriteBitcodeToFile(M.second, OS);
+            WriteBitcodeToFile(*M.second, OS);
             OS.flush();
           }
           if (MergeRegions) {
