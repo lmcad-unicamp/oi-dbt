@@ -1,10 +1,10 @@
 # OI-DBT: The OpenISA Dynamic Binary Translator
 
-OI-DBT implements a fast OpenISA interpreter with support to several techniques for region selection, dynamic compilation using the LLVM (6.0) infrastructure and a multilevel profile guided optimization pipeline; all of them which can be applied in parallel.
+OI-DBT implements a fast OpenISA interpreter with support for several region formation techniques. It dynamicly compiles OI instructions into target instructions using the LLVM (7.0) infrastructure. Moreover, OI-DBT do the OI instructions translation  in parallel to the emulation. All to achieve a high-performance emulation of OpenISA binaries.
 
 ## Bulding it
 
-To build OI-DBT, you are going to need g++7.1 or later with C++17 support, CMake 2.8 or later, PAPI and LLVM 6.0. After installing all dependencies, it is a simple cmake/make usage:
+To build OI-DBT, you are going to need g++7.1 or later with C++17 support, CMake 2.8 or later, PAPI and LLVM 7.0. After installing all dependencies, it is a simple cmake/make usage:
 
 ```
 cd dbt-openisa
