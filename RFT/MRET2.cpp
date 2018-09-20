@@ -62,7 +62,7 @@ void MRET2::finishPhase() {
 void MRET2::onBranch(Machine& M) {
   if (Recording) { 
     for (uint32_t I = LastTarget; I <= M.getLastPC(); I += 4) {
-      if (TheManager.isRegionEntry(I)) {
+      if (isBackwardLoop(I) || TheManager.isRegionEntry(I)) { 
         finishRegionFormation(); 
         break;
       }
@@ -86,7 +86,7 @@ void MRET2::onBranch(Machine& M) {
     }
   } 
 
-  if (abs(M.getPC() - M.getLastPC()) > 4) {
+  if (M.getPC() < M.getLastPC()) {
     if (!Recording) { 
       ++ExecFreq[M.getPC()];
       if (!TheManager.isRegionEntry(M.getPC()) && ExecFreq[M.getPC()] > HotnessThreshold/2) { 

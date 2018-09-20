@@ -18,15 +18,11 @@ void NET::onBranch(Machine &M) {
 #endif
 
       for (uint32_t I = LastTarget; I <= M.getLastPC(); I += 4) {
-        if ((IsRelaxed && hasRecordedAddrs(I)) 
-            || (!IsRelaxed && (M.getPC() < M.getLastPC())) || TheManager.isRegionEntry(I)) { 
-
+        if ((IsRelaxed ? hasRecordedAddrs(I) : isBackwardLoop(I)) || TheManager.isRegionEntry(I)) { 
           finishRegionFormation(); 
           break;
         }
-
         auto Type = OIDecoder::decode(M.getInstAt(I).asI_).Type;
-
 
 #ifdef LIMITED      
         if (TotalInst1 < RegionLimitSize) {
@@ -48,7 +44,7 @@ void NET::onBranch(Machine &M) {
 #ifdef LIMITED
     }
 #endif
-  } else if (/*abs(M.getPC() - M.getLastPC()) > 4*/M.getPC() < M.getLastPC() && !TheManager.isRegionEntry(M.getPC())) {
+  } else if (M.getPC() < M.getLastPC() && !TheManager.isRegionEntry(M.getPC())) {
     ++ExecFreq[M.getPC()];
     if (ExecFreq[M.getPC()] > HotnessThreshold) 
       startRegionFormation(M.getPC());

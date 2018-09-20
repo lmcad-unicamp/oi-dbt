@@ -37,6 +37,7 @@ namespace dbt {
 
     void startRegionFormation(uint32_t); 
     bool finishRegionFormation(); 
+    bool isBackwardLoop(uint32_t); 
     void insertInstruction(uint32_t, uint32_t);
     void insertInstruction(std::array<uint32_t, 2>&);
     bool hasRecordedAddrs(uint32_t);

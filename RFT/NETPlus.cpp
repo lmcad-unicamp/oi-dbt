@@ -137,9 +137,7 @@ static unsigned int regionFrequency= 0;
 void NETPlus::onBranch(Machine& M) {
   if (Recording) {
     for (uint32_t I = LastTarget; I <= M.getLastPC(); I += 4) {
-      if (OIRegion.size() > RegionMaxSize 
-          || (IsExtendedRelaxed && hasRecordedAddrs(I))
-          || (!IsExtendedRelaxed && (M.getPC() < M.getLastPC())) || TheManager.isRegionEntry(I)) { 
+      if ((IsExtendedRelaxed ? hasRecordedAddrs(I) : isBackwardLoop(I)) || TheManager.isRegionEntry(I)) { 
         expandAndFinish(M);
         break;
       }
