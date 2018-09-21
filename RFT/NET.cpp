@@ -41,6 +41,10 @@ void NET::onBranch(Machine &M) {
         insertInstruction(I, M.getInstAt(I).asI_);
 #endif      
       }
+
+      if (TheManager.isNativeRegionEntry(M.getPC())) 
+        finishRegionFormation(); 
+
 #ifdef LIMITED
     }
 #endif
@@ -51,9 +55,6 @@ void NET::onBranch(Machine &M) {
   }
 
   if (TheManager.isNativeRegionEntry(M.getPC())) {
-    if (Recording) 
-      finishRegionFormation(); 
-
     auto Next = TheManager.jumpToRegion(M.getPC()); 
     M.setPC(Next);
 

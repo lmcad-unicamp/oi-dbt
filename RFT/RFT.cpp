@@ -24,10 +24,12 @@ bool dbt::RFT::isBackwardLoop(uint32_t PC) {
 }
 
 void dbt::RFT::startRegionFormation(uint32_t PC) {
-  Recording = true;
-  RecordingEntry = PC;
-  OIRegion.clear();
-  ExecFreq[PC] = 0;
+  if (TheManager.getNumOfOIRegions() == 0) {
+    Recording = true;
+    RecordingEntry = PC;
+    OIRegion.clear();
+    ExecFreq[PC] = 0;
+  }
 }
 
 bool dbt::RFT::hasRecordedAddrs(uint32_t Addrs) {

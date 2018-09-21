@@ -68,12 +68,12 @@ void MRET2::onBranch(Machine& M) {
       }
       RecordingBufferTmp1.push_back({I, M.getInstAt(I).asI_});
     }
+
+    if (TheManager.isNativeRegionEntry(M.getPC()))
+      finishPhase();
   }
 
   if (TheManager.isNativeRegionEntry(M.getPC())) {
-    if (Recording) 
-      finishPhase();
-
     auto Next = TheManager.jumpToRegion(M.getPC()); 
     M.setPC(Next);
 
