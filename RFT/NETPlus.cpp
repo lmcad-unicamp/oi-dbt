@@ -16,9 +16,9 @@ using namespace dbt;
 unsigned TotalInst = 0;
 #endif
 
-bool isControlFlowInst(uint32_t Opcode) {
+bool isControlFlowInst(uint32_t Opcode, bool IsCallExtended) {
   OIDecoder::OIInst Inst = OIDecoder::decode(Opcode);
-  return OIDecoder::isControlFlowInst(Inst);
+  return OIDecoder::isControlFlowInst(Inst) || (IsCallExtended && Inst.Type == Jumpr);
 }
 
 std::array<uint32_t, 2> getPossibleNextAddrs(InstPair Branch) {
@@ -52,7 +52,7 @@ void NETPlus::expand(unsigned Deepness, Machine& M) {
 
   std::queue<InstPair> S;
   spp::sparse_hash_map<uint32_t, unsigned> Distance;
-  spp::sparse_hash_map<uint32_t, InstPair> Next, Parent;
+  spp::sparse_hash_map<uint32_t, InstPair> Next, Parent, CallStack;
   std::set<uint32_t> LoopEntries;
 
   // Init BFS frontier
@@ -64,7 +64,7 @@ void NETPlus::expand(unsigned Deepness, Machine& M) {
       LoopEntries.insert(Addrs);
       First = false;
     } else {
-      if (isControlFlowInst(I[1])) {
+      if (isControlFlowInst(I[1], IsCallExtended)) {
         S.push(I);
         Distance[Addrs] = 0;
         Parent[Addrs] = {0, 0};
@@ -78,7 +78,27 @@ void NETPlus::expand(unsigned Deepness, Machine& M) {
 
     if (Distance[Current[0]] < Deepness) {
 
-      for (auto Target : getPossibleNextAddrs(Current)) {
+      std::array<uint32_t, 2> NextAddrs = {0, 0};
+      if (OIDecoder::decode(Current[1]).Type == Jumpr) {
+            uint32_t Begin = Current[0];
+            uint32_t Prev = Next[Begin][0];
+            while (true) {
+              if (OIDecoder::decode(Parent[Prev][1]).Type == Call) {
+                NextAddrs = {Parent[Prev][0]+4, 0};
+                break;
+              }
+
+              Begin = Parent[Prev][0];
+              Prev  = Next[Begin][0];
+              if (Prev == 0) {
+                break;
+              }
+            }
+      } else {
+        NextAddrs = getPossibleNextAddrs(Current);
+      }
+
+      for (auto Target : NextAddrs) {
         if (Target == 0 || Parent.count(Target) != 0) continue;
 
         Parent[Target] = Current;
@@ -86,8 +106,7 @@ void NETPlus::expand(unsigned Deepness, Machine& M) {
         InstPair it = {Target, M.getInstAt(Target).asI_};
 
         while (it[0] < M.getCodeEndAddrs()) {
-          bool IsCycle = ((hasRecordedAddrs(it[0]) && IsExtendedRelaxed) 
-              || (OIRegion[0][0] == it[0] && !IsExtendedRelaxed));
+          bool IsCycle = (hasRecordedAddrs(it[0]) && IsExtendedRelaxed) || (OIRegion[0][0] == it[0] && !IsExtendedRelaxed);
 
           if (IsCycle && Distance[Current[0]] > 0) {
             OIInstList NewPath;
@@ -111,10 +130,11 @@ void NETPlus::expand(unsigned Deepness, Machine& M) {
             break;
           }
 
-          if (TheManager.isRegionEntry(it[0])) 
+          OIDecoder::OIInst Inst = OIDecoder::decode(it[1]);
+          if (TheManager.isRegionEntry(it[0]) || Inst.Type == Ijmp || Inst.Type == Callr) 
             break;
 
-          if (isControlFlowInst(it[1]) && Distance.count(it[0]) == 0) {
+          if (isControlFlowInst(it[1], IsCallExtended) && Distance.count(it[0]) == 0) {
             S.push(it);
             Distance[it[0]] = Distance[Current[0]] + 1;
             Next[it[0]] = { Target, M.getInstAt(Target).asI_ };

@@ -11,6 +11,12 @@
 
 using namespace dbt;
 
+bool hasAddr(const OIInstList& OIRegion, uint32_t Addr) {
+  for (auto Pair : OIRegion) 
+    if (Pair[0] == Addr) return true;
+  return false;
+}
+
 llvm::Module* Manager::loadRegionFromFile(std::string Path) {
   llvm::SMDiagnostic error;
   auto M = llvm::parseIRFile(RegionPath+Path, error, TheContext).release();
@@ -71,6 +77,21 @@ void Manager::loadRegionsFromFiles() {
 
 static unsigned int ModuleId = 0;
 
+void Manager::
+inlineCall(uint32_t CallSite, uint32_t Target, OIInstList& OIRegion, std::set<uint32_t>& Inlined, llvm::Module* Module) {
+  if (Target != TheMachine.findMethod(CallSite) && hasAddr(OIRegion, Target) && Inlined.count(Target) == 0) {
+    OIInstList NewMethod;
+    for (auto Pair : OIRegion) {
+      if (Pair[0] >= Target && Pair[0] <= TheMachine.getMethodEnd(Target)) {
+        NewMethod.push_back(Pair);
+        dbt::OIDecoder::OIInst MInst = dbt::OIDecoder::decode(Pair[1]);  
+      }
+    }
+    IRE->generateRegionIR({Target}, NewMethod, DataMemOffset, TheMachine, IRJIT->getTargetMachine(), NativeRegions, Module);
+    Inlined.insert(Target);
+  }
+}
+
 void Manager::runPipeline() {
   if (!IRE) {
     llvm::InitializeNativeTarget();
@@ -123,6 +144,18 @@ void Manager::runPipeline() {
         OIRegionsKey.erase(OIRegionsKey.begin());
         EntryAddresses = OIRegionsKey;
       }
+
+      if (IsToInline) {
+        std::set<uint32_t> Inlined;
+        for (auto Pair : OIRegion) {
+          dbt::OIDecoder::OIInst Inst = dbt::OIDecoder::decode(Pair[1]);  
+          if (Inst.Type == Call) {
+            uint32_t Target = (Inst.Addrs << 2); 
+            inlineCall(Pair[0], Target, OIRegion, Inlined, Module);
+          }
+        }
+      }
+
       IRE->generateRegionIR(EntryAddresses, OIRegion, DataMemOffset, TheMachine, IRJIT->getTargetMachine(),
                           NativeRegions, Module);
 

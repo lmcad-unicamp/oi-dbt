@@ -76,17 +76,20 @@ namespace dbt {
       bool IsToLoadRegions = false;
       bool IsToDoWholeCompilation = false;
       bool IsToLoadBCFormat = true;
+      bool IsToInline = false;
 
       llvm::Module* loadRegionFromFile(std::string);
       void loadRegionsFromFiles();
 
       std::ofstream* PerfMapFile; 
 
+      void inlineCall(uint32_t, uint32_t, OIInstList&, std::set<uint32_t>&, llvm::Module*);
+
       void runPipeline();
 
     public:
-      Manager(uint32_t DMO, dbt::Machine& M, bool VO = false) : DataMemOffset(DMO), isRunning(true),
-          isFinished(false), VerboseOutput(VO), TheMachine(M), NumOfOIRegions(0) {
+      Manager(uint32_t DMO, dbt::Machine& M, bool VO = false, bool Inline = false) : DataMemOffset(DMO), isRunning(true),
+          isFinished(false), VerboseOutput(VO), TheMachine(M), NumOfOIRegions(0), IsToInline(Inline) {
         memset((void*) NativeRegions, 0, sizeof(NativeRegions));
       }
 

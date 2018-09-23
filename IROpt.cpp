@@ -18,6 +18,8 @@
 #include "llvm/Transforms/IPO/PassManagerBuilder.h"
 #include "timer.hpp"
 
+#include "llvm/Transforms/IPO.h"
+
 constexpr unsigned int str2int(const char* str, int h = 0) {
     return !str[h] ? 5381 : (str2int(str, h+1) * 33) ^ str[h];
 }
@@ -95,6 +97,12 @@ void dbt::IROpt::optimizeIRFunction(llvm::Module *M, OptLevel Level) {
         "memcpyopt", "loop-unswitch", "instcombine", "indvars", "loop-deletion", "loop-predication", "loop-unroll",
         "simplifycfg", "instcombine", "licm", "gvn"});
       BasicPM->doInitialization();
+
+      auto MPM = std::make_unique<llvm::legacy::PassManager>();
+      MPM->add(llvm::createIPSCCPPass());
+      MPM->add(llvm::createFunctionInliningPass());
+      MPM->add(llvm::createPartialInliningPass());
+      MPM->run(*M);
     }
     for (auto &F : *M)
       BasicPM->run(F);

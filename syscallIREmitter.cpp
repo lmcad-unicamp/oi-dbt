@@ -32,7 +32,7 @@ extern dbt::Machine M;
 //LSeek **
 //Fstat **
 
-static Function* exit_prototype(LLVMContext& C, Module* mod)
+/*static Function* exit_prototype(LLVMContext& C, Module* mod)
 {
   std::array<Type*, 1> ArgsType = {Type::getInt32Ty(C)};
   FunctionType *FT = FunctionType::get(Type::getVoidTy(C), ArgsType, false);
@@ -173,7 +173,7 @@ void SyscallIREmitter::generateSyscallIR(LLVMContext& TheContext, Function* Func
   BasicBlock* BBcreat   = BasicBlock::Create(TheContext, "creat_syscall", Func);
   BasicBlock* BBfstat   = BasicBlock::Create(TheContext, "fstat_syscall", Func);
   BasicBlock* BBlseek   = BasicBlock::Create(TheContext, "lseek_syscall", Func);
-  */BasicBlock* BBelse    = BasicBlock::Create(TheContext, "interpret_syscall", Func);
+  *//*BasicBlock* BBelse    = BasicBlock::Create(TheContext, "interpret_syscall", Func);
   BasicBlock* MergeBB   = BasicBlock::Create(TheContext, "continue_syscall", Func);
 
 
@@ -295,7 +295,7 @@ void SyscallIREmitter::generateSyscallIR(LLVMContext& TheContext, Function* Func
     Value* Ret              =   Builder->CreateCall(lseek_func, {R5, R6, R7});
     emitter.genStoreRegister(2, Ret, Func, emitter.RegType::Int);
     Builder->CreateBr(MergeBB);
-  }*/
+  }
 
   //Interpret Syscall
   Builder->SetInsertPoint(BBelse);
@@ -312,4 +312,4 @@ void SyscallIREmitter::generateSyscallIR(LLVMContext& TheContext, Function* Func
 
   //End of block
   Builder->SetInsertPoint(MergeBB);
-}
+}*/

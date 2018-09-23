@@ -2,7 +2,6 @@
 #include <machine.hpp>
 #include <syscall.hpp>
 
-
 namespace dbt {
   class Interpreter {
 

@@ -30,9 +30,6 @@ namespace dbt {
 
     uint32_t LastTarget;
 
-    unsigned RegionLimitSize = -1;
-    unsigned RegionMaxSize = 1000;
-    
     Manager& TheManager;
 
     void startRegionFormation(uint32_t); 
@@ -53,7 +50,6 @@ namespace dbt {
     };
 
     void setRegionLimitSize(unsigned Limit) {
-      RegionLimitSize = Limit;
     };
 
     virtual void onBranch(dbt::Machine&) = 0;
@@ -64,30 +60,6 @@ namespace dbt {
   public:
     NET(Manager& M, bool Relaxed = false) : RFT(M), IsRelaxed(Relaxed) {};
 
-    void onBranch(dbt::Machine&);
-  };
-
-  class MethodBased : public RFT {
-    std::set<std::string> ToCompile;
-    bool CompileOnlyHot = false;
-   public:
-    MethodBased(Manager& M, std::string PathToTCList = "") : RFT(M) {
-      if (PathToTCList != "") {
-        std::ifstream infile(PathToTCList);
-        double FuncCoverage;
-        std::string FuncName;
-        double TotalCoverage = 0;
-        while (infile >> FuncCoverage >> FuncName)  {
-          ToCompile.insert(FuncName);
-          CompileOnlyHot = true;
-          TotalCoverage += FuncCoverage;
-          if (TotalCoverage > 98) 
-            break;
-        } 
-      }
-    };
-
-    void addFunctionToCompile(uint32_t, Machine&);
     void onBranch(dbt::Machine&);
   };
 
@@ -119,10 +91,12 @@ namespace dbt {
     void expandAndFinish(Machine&);
 
     bool IsExtendedRelaxed;
+    bool IsCallExtended;
 
     std::vector<uint32_t> ShadowStack;
   public:
-    NETPlus(Manager& M, bool ExtRelaxed = false) : RFT(M), IsExtendedRelaxed(ExtRelaxed) {};
+    NETPlus(Manager& M, bool ExtRelaxed = false, bool CallExtend = false) : 
+      RFT(M), IsExtendedRelaxed(ExtRelaxed), IsCallExtended(CallExtend) {};
 
     void onBranch(dbt::Machine&);
   };

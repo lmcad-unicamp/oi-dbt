@@ -6,11 +6,6 @@
 
 unsigned Total = 0;
 void dbt::RFT::insertInstruction(uint32_t Addrs, uint32_t Opcode) {
-  if (Total > RegionLimitSize) {
-    finishRegionFormation();
-    return;
-  }
-
   if (!hasRecordedAddrs(Addrs))
     OIRegion.push_back({Addrs, Opcode});
 }

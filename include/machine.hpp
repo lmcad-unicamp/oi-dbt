@@ -114,7 +114,7 @@ namespace dbt {
 
     int32_t*  getRegisterPtr();
     uint32_t* getMemoryPtr();
-    char* getByteMemoryPtr();
+    char*     getByteMemoryPtr();
 
     uint32_t getNumInst();
     uint32_t getCodeStartAddrs();

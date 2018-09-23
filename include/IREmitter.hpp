@@ -35,7 +35,12 @@
 namespace dbt {
   class Machine;
   class IREmitter {
+
   private:
+    enum RegType {
+      Int, Float, Double, Int64
+    };
+
 		llvm::LLVMContext TheContext;
 		spp::sparse_hash_map<std::string, llvm::Value*> NamedValues;
 		std::unique_ptr<llvm::IRBuilder<>> Builder;
@@ -71,10 +76,7 @@ namespace dbt {
     spp::sparse_hash_map<uint32_t, llvm::Value*> IRMemoryMap;
     spp::sparse_hash_map<uint32_t, llvm::BranchInst*> IRBranchMap;
     spp::sparse_hash_map<uint32_t, llvm::ReturnInst*> IRIBranchMap;
-  public:
-    enum RegType {
-      Int, Float, Double, Int64
-    };
+
     void setIfNotTheFirstInstGen(llvm::Value*);
 
     void cleanCFG();
@@ -101,11 +103,12 @@ namespace dbt {
 
     void insertDirectExit(uint32_t);
 
+  public:
 		IREmitter() {
 			Builder = std::make_unique<llvm::IRBuilder<>>(TheContext);
     };
 
-    void generateRegionIR(std::vector<uint32_t>&, const OIInstList&, uint32_t, dbt::Machine&,
+    void generateRegionIR(std::vector<uint32_t>, const OIInstList&, uint32_t, dbt::Machine&,
         llvm::TargetMachine&, volatile uint64_t* NativeRegions, llvm::Module*);
 
     static size_t getAssemblySize(const void* func) {

@@ -25,6 +25,7 @@ clarg::argInt	   StackSizeFlag("-stack", "Set new stack size. (Default: 128mb)" 
 clarg::argInt	   HeapSizeFlag ("-heap", "Set new heap size (Default: 128mb)", HEAP_SIZE);
 clarg::argInt	   NumThreadsFlag ("-threads", "Number of compilation threads (min 1)", 1);
 clarg::argString RegionPath ("-reg", "Set default path to load region files", "./");
+clarg::argBool   InlineFlag ("-inline", "Set the compiler to emit a LLVM function to each called function", "./");
 
 clarg::argBool   WholeCompilationFlag("-wc",  "load .bc files and compile them all as one region (whole compilation).");
 
@@ -160,7 +161,7 @@ int main(int argc, char** argv) {
     return 2;
   }
 
-  dbt::Manager TheManager(M.getDataMemOffset(), M, VerboseFlag.was_set());
+  dbt::Manager TheManager(M.getDataMemOffset(), M, VerboseFlag.was_set(), InlineFlag.was_set());
 
   if (LoadRegionsFlag.was_set() || LoadOIFlag.was_set() || WholeCompilationFlag.was_set())
     TheManager.setToLoadRegions(RegionPath.get_value(), (!LoadOIFlag.was_set() && !WholeCompilationFlag.was_set()), WholeCompilationFlag.was_set());
@@ -195,15 +196,15 @@ int main(int argc, char** argv) {
     } else if (RFTName == "netplus") {
       std::cerr << "NETPlus RFT Selected\n";
       RftChosen = std::make_unique<dbt::NETPlus>(TheManager);
+    } else if (RFTName == "netplus-c") {
+      std::cerr << "NETPlus-c RFT Selected\n";
+      RftChosen = std::make_unique<dbt::NETPlus>(TheManager, false, true);
     } else if (RFTName == "netplus-e-r") {
       std::cerr << "NETPlus-e-r RFT Selected\n";
       RftChosen = std::make_unique<dbt::NETPlus>(TheManager, true);
-    } else if (RFTName == "mb") {
-      std::cerr << "MethodBased rft selected\n";
-      if (ToCompileFlag.was_set())
-        RftChosen = std::make_unique<dbt::MethodBased>(TheManager, ToCompileFlag.get_value());
-      else
-        RftChosen = std::make_unique<dbt::MethodBased>(TheManager);
+    } else if (RFTName == "netplus-e-r-c") {
+      std::cerr << "NETPlus-e-r-c RFT Selected\n";
+      RftChosen = std::make_unique<dbt::NETPlus>(TheManager, true, true);
     } else {
       std::cerr << "You should select a valid RFT!\n";
       return 1;
