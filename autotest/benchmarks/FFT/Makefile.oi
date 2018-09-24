@@ -1,0 +1,15 @@
+OBJ = main.o fftmisc.o  fourierf.o
+FILE = main.c fftmisc.c  fourierf.c
+CFLAGS = -static -O3 -g
+
+fft.oi: ${OBJ} Makefile
+	~/dev/mestrado/openisa/oi-toolchain/bin/clang  ${CFLAGS} ${OBJ} -o fft.oi -lm
+fftmisc.o: fftmisc.c
+	~/dev/mestrado/openisa/oi-toolchain/bin/clang ${CFLAGS} -c fftmisc.c
+fourierf.o: fourierf.c
+	~/dev/mestrado/openisa/oi-toolchain/bin/clang ${CFLAGS} -c fourierf.c
+main.o: main.c
+	~/dev/mestrado/openisa/oi-toolchain/bin/clang ${CFLAGS} -c main.c
+
+clean:
+	rm -rf *.o fft output*
