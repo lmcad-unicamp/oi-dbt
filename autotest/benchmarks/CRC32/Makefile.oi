@@ -1,5 +1,0 @@
-crc.oi: crc_32.c Makefile
-	~/dev/mestrado/openisa/oi-toolchain/bin/clang -static crc_32.c -O3 -o crc.oi 
-
-clean:
-	rm -rf crc.oi output*
