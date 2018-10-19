@@ -172,7 +172,14 @@ namespace dbt {
       int32_t jumpToRegion(uint32_t);
 
       bool isRegionEntry(uint32_t EntryAddress) {
-        return OIRegions.count(EntryAddress) != 0 || NativeRegions[EntryAddress] != 0;
+        if (NativeRegions[EntryAddress] != 0)
+          return true;
+        else {
+          OIRegionsMtx.lock_shared();
+          bool hasRegion = OIRegions.count(EntryAddress) != 0;
+          OIRegionsMtx.unlock_shared();
+          return hasRegion;
+        }
       }
 
       inline bool isNativeRegionEntry(uint32_t EntryAddress) {

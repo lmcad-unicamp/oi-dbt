@@ -1343,7 +1343,7 @@ void dbt::IREmitter::generateRegionIR(std::vector<uint32_t> EntryAddresses, cons
   CurrentNativeRegions = NativeRegions;
   LastEmittedAddrs = 0;
   TheModule->setDataLayout(TM.createDataLayout());
-  TheModule->setTargetTriple(TM.getTargetTriple().str());
+  TheModule->setTargetTriple("i686-unkown-linux");//TM.getTargetTriple().str());
 
   IRMemoryMap.clear();
   IRBranchMap.clear();
