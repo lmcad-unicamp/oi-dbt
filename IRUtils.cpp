@@ -16,8 +16,21 @@
 
 using namespace llvm;
 
-void dbt::IREmitter::insertDirectExit(uint32_t ExitAddrs) {
-  Builder->CreateRet(genImm(ExitAddrs));
+void dbt::IREmitter::emmitExit(Function* Func) {
+  auto IP = Builder->saveIP();
+  Builder->SetInsertPoint(RegionExit);
+  for (auto P : VolatileRegisters) {
+    if (VolatileRegisterModified.count(P.first) != 0) 
+      Builder->CreateStore(Builder->CreateLoad(P.second), Builder->CreateGEP(&*Func->arg_begin(), genImm(P.first)));
+  }
+  Builder->CreateRet(Builder->CreateLoad(ReturnAddrs));
+  Builder->restoreIP(IP);
+}
+
+llvm::Value* dbt::IREmitter::insertDirectExit(llvm::Value* ExitAddrs) {
+  auto First = Builder->CreateStore(ExitAddrs, ReturnAddrs);
+  Builder->CreateBr(RegionExit);
+  return First;
 }
 
 void dbt::IREmitter::addFirstInstToMap(uint32_t GuestAddrs) {
@@ -73,12 +86,14 @@ Value *dbt::IREmitter::genRegisterVecPtr(Value *RegNum, Function *Func, RegType 
 }
 
 Value *dbt::IREmitter::genRegisterVecPtr(uint16_t RegNum, Function *Func, RegType Type) {
+
   return genRegisterVecPtr(ConstantInt::get(Type::getInt32Ty(TheContext), RegNum), Func, Type);
 }
 
 /********************************** Register Bank Interface *****************************************/ 
 
 Value *dbt::IREmitter::genLoadRegister(uint16_t RegNum, Function *Func, RegType Type) {
+
   auto BB = Builder->GetInsertBlock();
   uint16_t Right = RegNum;
   if (Type == RegType::Float) 
@@ -86,12 +101,28 @@ Value *dbt::IREmitter::genLoadRegister(uint16_t RegNum, Function *Func, RegType 
   else if (Type == RegType::Double || Type == RegType::Int64) 
     Right += 65;  
 
-
   if (Right == 0)
     return genImm(0);
 
-  Value *Ptr = genRegisterVecPtr(Right, Func, Type);
-  return Builder->CreateLoad(Ptr);
+  Value *Ptr = nullptr;   // Volatile Registers
+  if (Type == RegType::Int) {
+    if ((RegNum >= 8 && RegNum <= 15) || (RegNum == 24) || (RegNum == 25) || (RegNum >= 32 && RegNum <= 63)) {
+      if (VolatileRegisters.count(RegNum) == 0) {
+        auto IP = Builder->saveIP();
+        Builder->SetInsertPoint(RegionEntry);
+        VolatileRegisters[RegNum] = Builder->CreateAlloca(Type::getInt32Ty(TheContext));
+        Builder->CreateStore(Builder->CreateLoad(Builder->CreateGEP(&*Func->arg_begin(), genImm(RegNum))), VolatileRegisters[RegNum]);
+        Builder->restoreIP(IP);
+      }
+      Ptr = VolatileRegisters[RegNum];
+    } 
+  }
+
+  if (!Ptr) Ptr = genRegisterVecPtr(Right, Func, Type);
+
+  Value *LD  = Builder->CreateLoad(Ptr);
+  setIfNotTheFirstInstGen(LD);
+  return LD;
 }
 
 Value *dbt::IREmitter::genStoreRegister(uint16_t RegNum, Value *V, Function *Func, RegType Type) {
@@ -102,8 +133,25 @@ Value *dbt::IREmitter::genStoreRegister(uint16_t RegNum, Value *V, Function *Fun
   else if (Type == RegType::Double || Type == RegType::Int64) 
     Right += 65;  
 
-  Value *Ptr = genRegisterVecPtr(Right, Func, Type);
-  return Builder->CreateStore(V, Ptr);
+  Value *Ptr = nullptr;   // Volatile Registers
+  if (Type == RegType::Int) {
+    if ((RegNum >= 8 && RegNum <= 15) || (RegNum == 24) || (RegNum == 25) || (RegNum >= 32 && RegNum <= 63)) {
+      VolatileRegisterModified[RegNum] = true;
+      if (VolatileRegisters.count(RegNum) == 0) {
+        auto IP = Builder->saveIP();
+        Builder->SetInsertPoint(RegionEntry);
+        VolatileRegisters[RegNum] = Builder->CreateAlloca(Type::getInt32Ty(TheContext));
+        Builder->restoreIP(IP);
+      }
+      Ptr = VolatileRegisters[RegNum];
+    } 
+  }
+
+  if (!Ptr) Ptr = genRegisterVecPtr(Right, Func, Type);
+
+  Value *ST  = Builder->CreateStore(V, Ptr);
+  setIfNotTheFirstInstGen(ST);
+  return ST;
 }
 
 /********************************************************************************************/ 

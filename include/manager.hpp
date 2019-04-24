@@ -19,7 +19,7 @@
 #include "llvm/Bitcode/BitcodeWriter.h"
 
 #define OIInstList std::vector<std::array<uint32_t,2>>
-#define NATIVE_REGION_SIZE 1000000
+#define NATIVE_REGION_SIZE 100000000
 
 namespace dbt {
   class IREmitter;
@@ -42,7 +42,7 @@ namespace dbt {
       std::vector<uint32_t> IRRegionsKey;
       std::set<uint32_t> TouchedEntries;
       spp::sparse_hash_map<uint32_t, llvm::Module*> IRRegions;
-      volatile uint64_t NativeRegions[NATIVE_REGION_SIZE];
+      volatile uint64_t* NativeRegions;
 
       mutable std::shared_mutex OIRegionsMtx, IRRegionsMtx, NativeRegionsMtx, CompiledOIRegionsMtx;
 
@@ -90,6 +90,7 @@ namespace dbt {
     public:
       Manager(uint32_t DMO, dbt::Machine& M, bool VO = false, bool Inline = false) : DataMemOffset(DMO), isRunning(true),
           isFinished(false), VerboseOutput(VO), TheMachine(M), NumOfOIRegions(0), IsToInline(Inline) {
+        NativeRegions = new uint64_t[NATIVE_REGION_SIZE];
         memset((void*) NativeRegions, 0, sizeof(NativeRegions));
       }
 
@@ -117,10 +118,8 @@ namespace dbt {
         if (ThreadPool.size() != 0) {
           while (!isFinished) {}
 
-          for (unsigned i = 0; i < ThreadPool.size(); i++) {
-            if (!ThreadPool[i].joinable()) 
-            	ThreadPool[i].join();
-					}
+          for (unsigned i = 0; i < ThreadPool.size(); i++) 
+            	ThreadPool[i].detach();
         }
       }
 
@@ -239,8 +238,9 @@ namespace dbt {
         for (auto OIRegion : CompiledOIRegions) {
           std::error_code EC;
           llvm::raw_fd_ostream OS("r"+std::to_string(OIRegion.first)+".oi", EC, llvm::sys::fs::F_None);
-          for (auto OIInsts : OIRegion.second)
-            OS << OIInsts[0] << "\t" << OIInsts[1] << "\t" << OIPrinter::getString(OIDecoder::decode(OIInsts[1])) <<  "\n";
+          for (auto OIInsts : OIRegion.second) {
+            OS << "\t" << OIInsts[0] << "\t" << OIInsts[1] << "\t" << OIPrinter::getString(OIDecoder::decode(OIInsts[1])) <<  "\n";
+          }
           OS.flush();
         }
 

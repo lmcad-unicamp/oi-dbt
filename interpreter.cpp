@@ -22,7 +22,7 @@ uint64_t instacc = 0;
 //#define DEBUG_PRINT(Addr, Inst) std::cerr << OIPrinter::getString(Inst) << "\n";
 //#define DEBUG_PRINT(Addr, Inst) std::cerr << /*std::dec << (++instacc) <<" -- "<<*/ std::hex << Addr << "\t" << OIPrinter::getString(Inst) << std::dec << "\n";
 //#define DEBUG_PRINT(Addr, Inst) std::cerr << "\n" << COLOR_CYAN <<  std::dec << (++instacc) <<" -- "<< std::hex << Addr << "\t" << OIPrinter::getString(Inst) << std::dec << COLOR_NONE << "\t";
-//#define DEBUG_PRINT(Addr, Inst) std::cerr << "\n" << COLOR_CYAN <<  std::dec << (++instacc) <<" -- "<< std::hex << Addr << "\t" << OIPrinter::getString(Inst) << std::dec << COLOR_NONE << "\t";
+#define DEBUG_PRINT(Addr, Inst) std::cerr << "\n" << COLOR_CYAN <<  std::dec << (++instacc) <<" -- "<< std::hex << Addr << "\t" << OIPrinter::getString(Inst) << std::dec << COLOR_NONE << "\t";
 #else
 #define DEBUG_PRINT(Addr, Inst)
 #endif
@@ -848,9 +848,6 @@ void ITDInterpreter::dispatch(Machine& M, uint32_t StartAddrs, uint32_t EndAddrs
   IMPLEMENT_JMP(call,
       M.setRegister(31, M.getPC()+4);
       M.setPC((M.getPC() & 0xF0000000) | (I.Addrs << 2));
-      //#ifdef DEBUG
-      //std::cerr << "Call to " << std::hex << M.getPC() <<
-      //#endif
     );
 
   IMPLEMENT_JMP(callr,

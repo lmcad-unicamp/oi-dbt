@@ -87,7 +87,7 @@ void dbt::IROpt::customOptimizeIRFunction(llvm::Module* M, std::vector<std::stri
     PM->run(F);
 }
 
-void dbt::IROpt::optimizeIRFunction(llvm::Module *M, OptLevel Level) {
+void dbt::IROpt::optimizeIRFunction(llvm::Module *M, OptLevel Level, uint32_t EntryAddress) {
   // Lazy initialization
   if (Level == OptLevel::Basic) {
     if (!BasicPM) {
@@ -98,13 +98,12 @@ void dbt::IROpt::optimizeIRFunction(llvm::Module *M, OptLevel Level) {
         "simplifycfg", "instcombine", "licm", "gvn"});
       BasicPM->doInitialization();
 
-      auto MPM = std::make_unique<llvm::legacy::PassManager>();
-      MPM->add(llvm::createIPSCCPPass());
-      MPM->add(llvm::createFunctionInliningPass());
-      MPM->add(llvm::createPartialInliningPass());
-      MPM->run(*M);
     }
-    for (auto &F : *M)
+/*    auto MPM = std::make_unique<llvm::legacy::PassManager>();
+    MPM->add(llvm::createFunctionInliningPass());
+    MPM->run(*M);*/
+
+    for (auto& F : *M)
       BasicPM->run(F);
   } 
 }

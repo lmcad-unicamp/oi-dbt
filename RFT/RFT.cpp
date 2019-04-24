@@ -19,6 +19,7 @@ bool dbt::RFT::isBackwardLoop(uint32_t PC) {
 }
 
 void dbt::RFT::startRegionFormation(uint32_t PC) {
+  while(TheManager.getNumOfOIRegions() != 0);
   if (TheManager.getNumOfOIRegions() == 0) {
     Recording = true;
     RecordingEntry = PC;
@@ -38,7 +39,7 @@ bool dbt::RFT::hasRecordedAddrs(uint32_t Addrs) {
 bool dbt::RFT::finishRegionFormation() {
   bool Added = false;
 
-  if (OIRegion.size() > 0 && hasRecordedAddrs(RecordingEntry) && AlreadyCompiled.count(RecordingEntry) == 0) {
+  if (OIRegion.size() != 0 && hasRecordedAddrs(RecordingEntry) && AlreadyCompiled.count(RecordingEntry) == 0) {
     Added = TheManager.addOIRegion(RecordingEntry, OIRegion);
     if (Added) {
       Total += OIRegion.size();

@@ -72,25 +72,9 @@ void Manager::loadRegionsFromFiles() {
     cv.notify_all();
     OIRegionsMtx.unlock();
   }
-
 }
 
 static unsigned int ModuleId = 0;
-
-void Manager::
-inlineCall(uint32_t CallSite, uint32_t Target, OIInstList& OIRegion, std::set<uint32_t>& Inlined, llvm::Module* Module) {
-  if (Target != TheMachine.findMethod(CallSite) && hasAddr(OIRegion, Target) && Inlined.count(Target) == 0) {
-    OIInstList NewMethod;
-    for (auto Pair : OIRegion) {
-      if (Pair[0] >= Target && Pair[0] <= TheMachine.getMethodEnd(Target)) {
-        NewMethod.push_back(Pair);
-        dbt::OIDecoder::OIInst MInst = dbt::OIDecoder::decode(Pair[1]);  
-      }
-    }
-    IRE->generateRegionIR({Target}, NewMethod, DataMemOffset, TheMachine, IRJIT->getTargetMachine(), NativeRegions, Module);
-    Inlined.insert(Target);
-  }
-}
 
 void Manager::runPipeline() {
   if (!IRE) {
@@ -130,37 +114,14 @@ void Manager::runPipeline() {
     std::vector<uint32_t> EntryAddresses = {EntryAddress};
 
     if (Module == nullptr) {
+      if (!isRunning) return;
+
       CompiledOIRegionsMtx.lock();
       CompiledOIRegions[EntryAddress] = OIRegion;
       CompiledOIRegionsMtx.unlock();
 
       if (VerboseOutput)
         std::cerr << "Trying to compile: " << std::hex <<  EntryAddress  << "...";
-
-      OICompiled += OIRegion.size();
-
-      Module = new llvm::Module(std::to_string(++ModuleId), TheContext);
-      if (IsToDoWholeCompilation) {
-        OIRegionsKey.erase(OIRegionsKey.begin());
-        EntryAddresses = OIRegionsKey;
-      }
-
-      if (IsToInline) {
-        std::set<uint32_t> Inlined;
-        for (auto Pair : OIRegion) {
-          dbt::OIDecoder::OIInst Inst = dbt::OIDecoder::decode(Pair[1]);  
-          if (Inst.Type == Call) {
-            uint32_t Target = (Inst.Addrs << 2); 
-            inlineCall(Pair[0], Target, OIRegion, Inlined, Module);
-          }
-        }
-      }
-
-      IRE->generateRegionIR(EntryAddresses, OIRegion, DataMemOffset, TheMachine, IRJIT->getTargetMachine(),
-                          NativeRegions, Module);
-
-      if (VerboseOutput)
-        std::cerr << "OK" << std::endl;
 
       if (VerboseOutput) {
         std::cerr << "---------------------- Printing OIRegion (OpenISA instr.) --------------------" << std::endl;
@@ -171,14 +132,37 @@ void Manager::runPipeline() {
         std::cerr << "\n" << std::endl;
       }
 
+      OICompiled += OIRegion.size();
+
+      Module = new llvm::Module(std::to_string(++ModuleId), TheContext);
+      if (IsToDoWholeCompilation) {
+        OIRegionsKey.erase(OIRegionsKey.begin());
+        EntryAddresses = OIRegionsKey;
+      }
+
+      if (VerboseOutput)
+        std::cerr << "Generating IR for: " << std::hex <<  EntryAddress  << "...";
+
+      IRE->generateRegionIR(EntryAddresses, OIRegion, DataMemOffset, TheMachine, IRJIT->getTargetMachine(),
+                          NativeRegions, Module);
+
+      if (VerboseOutput)
+        std::cerr << "OK" << std::endl;
+
       for (auto& F : *Module)
         for (auto& BB : F)
           Size += BB.size();
 
+      if (!isRunning) return;
+
+
       if (OptMode != OptPolitic::Custom)
-        IRO->optimizeIRFunction(Module, IROpt::OptLevel::Basic);
+        IRO->optimizeIRFunction(Module, IROpt::OptLevel::Basic, EntryAddress);
       else if (CustomOpts->count(EntryAddress) != 0)
         IRO->customOptimizeIRFunction(Module, (*CustomOpts)[EntryAddress]);
+
+      if (VerboseOutput)
+        Module->print(llvm::errs(), nullptr);
 
       for (auto& F : *Module)
         for (auto& BB : F)
@@ -204,8 +188,7 @@ void Manager::runPipeline() {
     }
 
     if (!IsRet || !RetLoop) {
-      if (VerboseOutput)
-        Module->print(llvm::errs(), nullptr);
+      if (!isRunning) return;
 
       IRRegions[EntryAddress] = llvm::CloneModule(*Module).release();
       IRRegionsKey.push_back(EntryAddress);
@@ -226,8 +209,12 @@ void Manager::runPipeline() {
       PerfMapFile->flush();
 
       if (Addr) {
-        for (auto EA : EntryAddresses)
-          NativeRegions[EA] = static_cast<intptr_t>(*Addr);
+        for (auto EA : EntryAddresses) 
+          if (EA < NATIVE_REGION_SIZE) {
+            NativeRegions[EA] = static_cast<intptr_t>(*Addr);
+          } else {
+            std::cerr << EntryAddress << " is out of NativeRegion entries range!\n";
+          }
       } else {
         std::cerr << EntryAddress << " was not successfully compiled!\n";
       }
@@ -286,8 +273,7 @@ int32_t Manager::jumpToRegion(uint32_t EntryAddress) {
   uint32_t* MemPtr = TheMachine.getMemoryPtr();
 
   while (isNativeRegionEntry(JumpTo)) {
-    uint32_t (*FP)(int32_t*, uint32_t*, uint32_t) = (uint32_t (*)(int32_t*, uint32_t*, uint32_t)) NativeRegions[JumpTo];
-    JumpTo = FP(RegPtr, MemPtr, EntryAddress);
+    JumpTo = ((uint32_t (*)(int32_t*, uint32_t*, uint32_t)) NativeRegions[JumpTo])(RegPtr, MemPtr, EntryAddress);
   }
 
   return JumpTo;

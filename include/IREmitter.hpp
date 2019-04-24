@@ -42,19 +42,19 @@ namespace dbt {
     };
 
 		llvm::LLVMContext TheContext;
-		spp::sparse_hash_map<std::string, llvm::Value*> NamedValues;
 		std::unique_ptr<llvm::IRBuilder<>> Builder;
     volatile uint64_t* CurrentNativeRegions;
 
     uint16_t ldireg;
-    llvm::Value* IntRegisterBank[64];
-    llvm::Value* FloatRegisterBank[64];
-    llvm::Value* DoubleRegisterBank[64];
 
     llvm::BasicBlock* RegionEntry = nullptr;
+    llvm::BasicBlock* RegionExit = nullptr;
 
     spp::sparse_hash_map<uint32_t, std::set<uint32_t>> CallTargetList;
     std::set<uint32_t> ReturnPoints;
+
+    spp::sparse_hash_map<uint16_t, llvm::Value*> VolatileRegisters;
+    spp::sparse_hash_map<uint16_t, bool> VolatileRegisterModified;
 
     llvm::Module* Mod;
 
@@ -75,7 +75,6 @@ namespace dbt {
 
     spp::sparse_hash_map<uint32_t, llvm::Value*> IRMemoryMap;
     spp::sparse_hash_map<uint32_t, llvm::BranchInst*> IRBranchMap;
-    spp::sparse_hash_map<uint32_t, llvm::ReturnInst*> IRIBranchMap;
 
     void setIfNotTheFirstInstGen(llvm::Value*);
 
@@ -101,14 +100,18 @@ namespace dbt {
     llvm::Value* genLogicalOr(llvm::Value*, llvm::Value*, llvm::Function*);
     llvm::Value* genLogicalAnd(llvm::Value*, llvm::Value*, llvm::Function*);
 
-    void insertDirectExit(uint32_t);
+    void emmitExit(llvm::Function*);
+    llvm::Value* insertDirectExit(llvm::Value*);
+
+    llvm::Function* createFunctionPrototype(uint32_t);
+    void generateFunctionIR(uint32_t, const OIInstList&);
 
   public:
 		IREmitter() {
 			Builder = std::make_unique<llvm::IRBuilder<>>(TheContext);
     };
 
-    void generateRegionIR(std::vector<uint32_t>, const OIInstList&, uint32_t, dbt::Machine&,
+    void generateRegionIR(std::vector<uint32_t>, OIInstList&, uint32_t, dbt::Machine&,
         llvm::TargetMachine&, volatile uint64_t* NativeRegions, llvm::Module*);
 
     static size_t getAssemblySize(const void* func) {

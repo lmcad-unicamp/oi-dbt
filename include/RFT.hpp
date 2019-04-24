@@ -20,7 +20,7 @@ namespace dbt {
   class RFT {
   protected:
     std::set<uint32_t> AlreadyCompiled;
-    unsigned HotnessThreshold = 50;
+    unsigned HotnessThreshold = 128;
     uint8_t ExecFreq[1000000];
     bool isEntry[1000000];
     OIInstList OIRegion;

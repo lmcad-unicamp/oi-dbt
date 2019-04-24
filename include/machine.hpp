@@ -59,6 +59,7 @@ namespace dbt {
     // Float Regs   66  -  129
     // Double Regs  130 -  256
     // CC           257
+    // Temp: 8-15, 24-25
     int32_t Register[258] __attribute__ ((aligned (16)));
 
     uptr<char[]> DataMemory;
