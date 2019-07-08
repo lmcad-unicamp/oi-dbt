@@ -50,7 +50,7 @@ void NET::onBranch(Machine &M) {
 #endif
   } else if (M.getPC() < M.getLastPC() && !TheManager.isRegionEntry(M.getPC())) {
     ++ExecFreq[M.getPC()];
-    if (ExecFreq[M.getPC()] > HotnessThreshold) 
+    if (ExecFreq[M.getPC()] > HotnessThreshold && isAllowedInstToStart(M.getPC(), M)) 
       startRegionFormation(M.getPC());
   }
 
@@ -59,7 +59,7 @@ void NET::onBranch(Machine &M) {
     M.setPC(Next);
 
     ++ExecFreq[Next];
-    if (ExecFreq[M.getPC()] > HotnessThreshold) 
+    if (ExecFreq[Next] > HotnessThreshold && isAllowedInstToStart(Next, M)) 
       startRegionFormation(Next);
   } 
 

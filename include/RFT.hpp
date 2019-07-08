@@ -38,6 +38,7 @@ namespace dbt {
     void insertInstruction(uint32_t, uint32_t);
     void insertInstruction(std::array<uint32_t, 2>&);
     bool hasRecordedAddrs(uint32_t);
+    bool isAllowedInstToStart(unsigned, Machine&);
   public:
     RFT(Manager& M) : TheManager(M) {};
 

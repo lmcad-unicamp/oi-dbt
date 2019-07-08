@@ -78,7 +78,7 @@ void MRET2::onBranch(Machine& M) {
     M.setPC(Next);
 
     ++ExecFreq[M.getPC()];
-    if (ExecFreq[M.getPC()] > HotnessThreshold) {
+    if (ExecFreq[M.getPC()] > HotnessThreshold/2 && isAllowedInstToStart(M.getPC(), M)) {
       startRegionFormation(M.getPC());
       RecordingBufferTmp1.clear();
       if (getPhase(M.getPC()) == 1)
@@ -89,7 +89,8 @@ void MRET2::onBranch(Machine& M) {
   if (M.getPC() < M.getLastPC()) {
     if (!Recording) { 
       ++ExecFreq[M.getPC()];
-      if (!TheManager.isRegionEntry(M.getPC()) && ExecFreq[M.getPC()] > HotnessThreshold/2) { 
+      if (!TheManager.isRegionEntry(M.getPC()) && ExecFreq[M.getPC()] > HotnessThreshold/2 
+            && isAllowedInstToStart(M.getPC(), M)) { 
         startRegionFormation(M.getPC());
         RecordingBufferTmp1.clear();
         if (getPhase(M.getPC()) == 1)
