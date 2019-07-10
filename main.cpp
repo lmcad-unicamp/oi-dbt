@@ -29,7 +29,6 @@ clarg::argBool   InlineFlag ("-inline", "Set the compiler to emit a LLVM functio
 
 clarg::argBool   WholeCompilationFlag("-wc",  "load .bc files and compile them all as one region (whole compilation).");
 
-
 /* Iterative Compiler Tools */
 clarg::argBool   DumpRegionsFlag("-dr", "Dump Regions (llvm ir and OI) to files");
 clarg::argBool   DumpOIRegionsFlag("-doi", "Dump OI Regions to files");
@@ -38,6 +37,7 @@ clarg::argBool   LoadOIFlag("-loi", "Load Regions (.oi) from files");
 clarg::argBool   MergeOIFlag("-moi", "Merge OI Regions before dumping");
 clarg::argString CustomOptsFlag("-opts", "path to regions optimization list file", "");
 clarg::argInt    ExecsFlag("-execs",  "number of times to execute a binary.", 1);
+clarg::argString BinariesFlag("-bins",  "File with list of binaries to be executed.", "");
 
 #ifdef DEBUG
 clarg::argInt debugFlag ("-d", "Set Debug Level. This value can be 1 or 2 (1 - Less verbosive; 2 - More Verbosive)", 1);
@@ -66,13 +66,18 @@ int validateArguments() {
     return 1;
   }
 
-  if (!BinaryFlag.was_set()) {
+  if (!BinaryFlag.was_set() && !BinariesFlag.was_set()) {
     cerr << "You must set the path of the binary which will be emulated!\n";
     return 1;
   }
 
   if (LoadRegionsFlag.was_set() && LoadOIFlag.was_set()) {
     cerr << "You cannot use -lr and -loi together!\n";
+    return 1;
+  }
+
+  if (BinaryFlag.was_set() && BinariesFlag.was_set()) {
+    cerr << "You cannot use -bin and -bins at the same time!\n";
     return 1;
   }
 
@@ -103,6 +108,72 @@ void  sigHandler(int sig) {
 
 void doNothingHandler(int sig) {}
 
+void 
+emulateBinary(std::string file, uint32_t NumExecs, dbt::SyscallManager *SyscallM, dbt::Manager &TheManager, 
+                dbt::Machine &M, dbt::RFT *RftChosen) {
+
+  int LoadStatus = M.loadELF(file);
+
+  if (!LoadStatus) {
+    std::cerr << "Can't find or process ELF file " << file << std::endl;
+    exit(2);
+  }
+
+  TheManager.setDataMemOffset(M.getDataMemOffset());
+
+  dbt::Timer GlobalTimer;
+
+  if (PreheatFlag.was_set()) {
+    if(M.setCommandLineArguments(ArgumentsFlag.get_value()) < 0)
+      exit(1);
+
+    M.setPreheating(true);
+    std::cerr << "Preheating...\n";
+
+    GlobalTimer.startClock();
+    dbt::ITDInterpreter I(*SyscallM, *RftChosen);
+    I.executeAll(M);
+    GlobalTimer.stopClock();
+
+    std::cerr << "done\n";
+    std::cerr << "Cleaning VM... ";
+    M.reset();
+    std::cerr << "done\n";
+
+    RftChosen = new dbt::PreheatRFT(TheManager);
+    GlobalTimer.printReport("Preheat");
+
+    while (TheManager.getNumOfOIRegions() != 0) {}
+    M.setPreheating(false);
+  }
+
+  for (int E = 0; E < NumExecs; E++) {
+    if(M.setCommandLineArguments(ArgumentsFlag.get_value()) < 0)
+        exit(1);
+
+    dbt::ITDInterpreter I(*SyscallM, *RftChosen);
+    TheManager.incExecCount();
+    std::cerr << "Starting execution:\n";
+
+    GlobalTimer.startClock();
+    I.executeAll(M);
+    GlobalTimer.stopClock();
+
+    if (DumpRegionsFlag.was_set() || DumpOIRegionsFlag.was_set())
+        TheManager.dumpRegions(MergeOIFlag.was_set(), DumpOIRegionsFlag.was_set());
+
+    TheManager.dumpStats();
+    GlobalTimer.printReport("Global");
+    RftChosen->reset();
+    M.reset();
+    TheManager.reset();
+  }
+
+  if (PreheatFlag.was_set()) {
+      delete RftChosen;
+  }
+}
+
 std::unordered_map<uint32_t, std::vector<std::string>>* loadCustomOpts(std::string CustomOptsPath) {
   auto CustomOpts = new std::unordered_map<uint32_t, std::vector<std::string>>;
 
@@ -130,7 +201,6 @@ int main(int argc, char** argv) {
   signal(SIGSEGV, sigHandler);
   signal(SIGABRT, sigHandler);
 
-  dbt::Timer GlobalTimer;
 
   // Parse the arguments
   if (clarg::parse_arguments(argc, argv)) {
@@ -156,14 +226,7 @@ int main(int argc, char** argv) {
     M.setHeapSize(HeapSizeFlag.get_value());
   }
 
-  int LoadStatus = M.loadELF(BinaryFlag.get_value());
-
-  if (!LoadStatus) {
-    std::cerr << "Can't find or process ELF file " << argv[1] << std::endl;
-    return 2;
-  }
-
-  dbt::Manager TheManager(M.getDataMemOffset(), M, VerboseFlag.was_set(), InlineFlag.was_set());
+  dbt::Manager TheManager(M, VerboseFlag.was_set(), InlineFlag.was_set());
 
   if (LoadRegionsFlag.was_set() || LoadOIFlag.was_set() || WholeCompilationFlag.was_set())
     TheManager.setToLoadRegions(RegionPath.get_value(), (!LoadOIFlag.was_set() && !WholeCompilationFlag.was_set()), WholeCompilationFlag.was_set());
@@ -224,51 +287,15 @@ int main(int argc, char** argv) {
   std::unique_ptr<dbt::SyscallManager> SyscallM;
   SyscallM = std::make_unique<dbt::LinuxSyscallManager>();
 
-  if (PreheatFlag.was_set()) {
-    if(M.setCommandLineArguments(ArgumentsFlag.get_value()) < 0)
-      exit(1);
-
-    M.setPreheating(true);
-    std::cerr << "Preheating...\n";
-
-    GlobalTimer.startClock();
-    dbt::ITDInterpreter I(*SyscallM.get(), *RftChosen.get());
-    I.executeAll(M);
-    GlobalTimer.stopClock();
-
-    std::cerr << "done\n";
-    std::cerr << "Cleaning VM... ";
-    M.reset();
-    std::cerr << "done\n";
-
-    RftChosen = std::make_unique<dbt::PreheatRFT>(TheManager);
-    GlobalTimer.printReport("Preheat");
-
-    while (TheManager.getNumOfOIRegions() != 0) {}
-    M.setPreheating(false);
-  }
-
-
-  for (int E = 0; E < ExecsFlag.get_value(); E++) {
-    if(M.setCommandLineArguments(ArgumentsFlag.get_value()) < 0)
-        exit(1);
-
-    dbt::ITDInterpreter I(*SyscallM.get(), *RftChosen.get());
-    TheManager.incExecCount();
-    std::cerr << "Starting execution:\n";
-
-    GlobalTimer.startClock();
-    I.executeAll(M);
-    GlobalTimer.stopClock();
-
-    if (DumpRegionsFlag.was_set() || DumpOIRegionsFlag.was_set())
-        TheManager.dumpRegions(MergeOIFlag.was_set(), DumpOIRegionsFlag.was_set());
-
-    TheManager.dumpStats();
-    GlobalTimer.printReport("Global");
-    RftChosen->reset();
-    M.reset();
-    TheManager.reset();
+  if (BinaryFlag.was_set()) {
+    emulateBinary(BinaryFlag.get_value(), ExecsFlag.get_value(), SyscallM.get(), TheManager, M, RftChosen.get());
+  } else if (BinariesFlag.was_set()) {
+    ifstream is(BinariesFlag.get_value());
+    string str;
+    while(getline(is, str)) {
+        std::cout << "Starting emulations of " << BinaryFlag.get_value() << "\n"; 
+        emulateBinary(str, ExecsFlag.get_value(), SyscallM.get(), TheManager, M, RftChosen.get());
+    }
   }
 
   std::cerr.flush();

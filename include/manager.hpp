@@ -1,6 +1,7 @@
 #define OIInstList std::vector<std::array<uint32_t,2>>
 #define NATIVE_REGION_SIZE 100000000
 
+
 #ifndef MANAGER_HPP
 #define MANAGER_HPP
 
@@ -24,6 +25,7 @@
 namespace dbt {
   class IREmitter;
   class Machine;
+
   class Manager {
     public:
       enum OptPolitic { None, Normal, Aggressive, Custom };
@@ -90,7 +92,7 @@ namespace dbt {
       void runPipeline();
 
     public:
-      Manager(uint32_t DMO, dbt::Machine& M, bool VO = false, bool Inline = false) : DataMemOffset(DMO), isRunning(true),
+      Manager(dbt::Machine& M, bool VO = false, bool Inline = false) : isRunning(true),
           isFinished(false), VerboseOutput(VO), TheMachine(M), NumOfOIRegions(0), IsToInline(Inline) {
         NativeRegions = new uint64_t[NATIVE_REGION_SIZE];
         memset((void*) NativeRegions, 0, sizeof(NativeRegions));
@@ -123,6 +125,10 @@ namespace dbt {
           for (unsigned i = 0; i < ThreadPool.size(); i++) 
             	ThreadPool[i].detach();
         }
+      }
+
+      void setDataMemOffset(uint32_t DMO) {
+        DataMemOffset = DMO;
       }
 
       void setOptPolicy(OptPolitic OM) {

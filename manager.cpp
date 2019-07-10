@@ -155,7 +155,6 @@ void Manager::runPipeline() {
 
       if (!isRunning) return;
 
-
       if (OptMode != OptPolitic::Custom)
         IRO->optimizeIRFunction(Module, IROpt::OptLevel::Basic, EntryAddress, 1);
       else if (CustomOpts->count(EntryAddress) != 0)
@@ -280,6 +279,8 @@ int32_t Manager::jumpToRegion(uint32_t EntryAddress) {
 }
 
 void Manager::reset() {  
+    while (NumOfOIRegions != 0); 
+
     OIRegionsKey.clear();
     OIRegions.clear();
     CompiledOIRegions.clear();
