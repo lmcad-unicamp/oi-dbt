@@ -156,7 +156,7 @@ void Manager::runPipeline() {
       if (!isRunning) return;
 
       if (OptMode != OptPolitic::Custom)
-        IRO->optimizeIRFunction(Module, IROpt::OptLevel::Basic, EntryAddress, 1);
+        IRO->optimizeIRFunction(Module, IROpt::OptLevel::Basic, EntryAddress, 1, TheMachine.getBinPath());
       else if (CustomOpts->count(EntryAddress) != 0)
         IRO->customOptimizeIRFunction(Module, (*CustomOpts)[EntryAddress]);
 

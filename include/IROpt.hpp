@@ -14,7 +14,7 @@ namespace dbt {
 
     enum OptLevel { Basic, Soft, Medium, Hard, Custom };
 
-    void optimizeIRFunction(llvm::Module*, OptLevel, uint32_t, uint32_t);
+    void optimizeIRFunction(llvm::Module*, OptLevel, uint32_t, uint32_t, std::string);
     void customOptimizeIRFunction(llvm::Module*, std::vector<std::string>);
   };
 }

@@ -143,6 +143,8 @@ namespace dbt {
 
     int loadELF(const std::string);
 
+    std::string getBinPath() { return BinPath; };
+
     //#ifdef DEBUG
     void dumpRegisters(void);
     //#endif
