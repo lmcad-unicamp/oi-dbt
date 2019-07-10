@@ -87,12 +87,12 @@ void dbt::IROpt::customOptimizeIRFunction(llvm::Module* M, std::vector<std::stri
     PM->run(F);
 }
 
-void dbt::IROpt::optimizeIRFunction(llvm::Module *M, OptLevel Level, uint32_t EntryAddress) {
+void dbt::IROpt::optimizeIRFunction(llvm::Module *M, OptLevel Level, uint32_t EntryAddress, uint32_t ExecNumber) {
   // Lazy initialization
   if (Level == OptLevel::Basic) {
     if (!BasicPM) {
       BasicPM = std::make_unique<llvm::legacy::FunctionPassManager>(M);
-      populateFuncPassManager(BasicPM.get(), 
+      populateFuncPassManager(BasicPM.get(),  
         {"instcombine", "simplifycfg", "reassociate", "gvn", "die", "dce", "instcombine", "licm", 
         "memcpyopt", "loop-unswitch", "instcombine", "indvars", "loop-deletion", "loop-predication", "loop-unroll",
         "simplifycfg", "instcombine", "licm", "gvn"});

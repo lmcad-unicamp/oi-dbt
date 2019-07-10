@@ -1,3 +1,6 @@
+#define OIInstList std::vector<std::array<uint32_t,2>>
+#define NATIVE_REGION_SIZE 100000000
+
 #ifndef MANAGER_HPP
 #define MANAGER_HPP
 
@@ -17,9 +20,6 @@
 
 #include "llvm/Support/TargetSelect.h"
 #include "llvm/Bitcode/BitcodeWriter.h"
-
-#define OIInstList std::vector<std::array<uint32_t,2>>
-#define NATIVE_REGION_SIZE 100000000
 
 namespace dbt {
   class IREmitter;
@@ -53,6 +53,8 @@ namespace dbt {
       std::vector<std::vector<uint32_t>> OIFuncsEntries;
       uint32_t NumFuncs = 0;
 
+      uint32_t ExecCount = 0;
+
       uint32_t DataMemOffset;
 
       std::unique_ptr<IREmitter> IRE;
@@ -72,7 +74,7 @@ namespace dbt {
 
       bool VerboseOutput = false;
 
-			std::unordered_map<uint32_t, llvm::Module*> ModulesLoaded;
+      std::unordered_map<uint32_t, llvm::Module*> ModulesLoaded;
       bool IsToLoadRegions = false;
       bool IsToDoWholeCompilation = false;
       bool IsToLoadBCFormat = true;
@@ -156,6 +158,10 @@ namespace dbt {
         return AvgOptCodeSize;
       }
 
+      void incExecCount() {
+        ++ExecCount;
+      }
+
       void setToLoadRegions(std::string path, bool InLLVMFormat = true, bool WholeCompilation = false) {
         IsToLoadRegions = true;
         IsToDoWholeCompilation = WholeCompilation;
@@ -215,9 +221,11 @@ namespace dbt {
         return CompiledOIRegions[EntryAddrs];
       }
 
-			void loadOIRegionsFromFiles();
+      void loadOIRegionsFromFiles();
 
       void mergeOIRegions();
+
+      void reset();
 
       void dumpRegions(bool MergeRegions = false, bool OnlyOI = false) {
         while (getNumOfOIRegions() != 0) {}

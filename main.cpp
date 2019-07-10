@@ -21,13 +21,14 @@ clarg::argBool   HelpFlag("-h",  "display the help message");
 clarg::argInt    RegionLimitSize("-l", "region size limit", 0);
 clarg::argString ToCompileFlag("-tc", "Functions to compile", "");
 clarg::argString ArgumentsFlag("-args", "Pass Parameters to binary file (as string)", "");
-clarg::argInt	   StackSizeFlag("-stack", "Set new stack size. (Default: 128mb)" , STACK_SIZE);
-clarg::argInt	   HeapSizeFlag ("-heap", "Set new heap size (Default: 128mb)", HEAP_SIZE);
-clarg::argInt	   NumThreadsFlag ("-threads", "Number of compilation threads (min 1)", 1);
+clarg::argInt	 StackSizeFlag("-stack", "Set new stack size. (Default: 128mb)" , STACK_SIZE);
+clarg::argInt	 HeapSizeFlag ("-heap", "Set new heap size (Default: 128mb)", HEAP_SIZE);
+clarg::argInt	 NumThreadsFlag ("-threads", "Number of compilation threads (min 1)", 1);
 clarg::argString RegionPath ("-reg", "Set default path to load region files", "./");
 clarg::argBool   InlineFlag ("-inline", "Set the compiler to emit a LLVM function to each called function", "./");
 
 clarg::argBool   WholeCompilationFlag("-wc",  "load .bc files and compile them all as one region (whole compilation).");
+
 
 /* Iterative Compiler Tools */
 clarg::argBool   DumpRegionsFlag("-dr", "Dump Regions (llvm ir and OI) to files");
@@ -36,6 +37,7 @@ clarg::argBool   LoadRegionsFlag("-lr", "Load Regions (.bc) from files");
 clarg::argBool   LoadOIFlag("-loi", "Load Regions (.oi) from files");
 clarg::argBool   MergeOIFlag("-moi", "Merge OI Regions before dumping");
 clarg::argString CustomOptsFlag("-opts", "path to regions optimization list file", "");
+clarg::argInt    ExecsFlag("-execs",  "number of times to execute a binary.", 1);
 
 #ifdef DEBUG
 clarg::argInt debugFlag ("-d", "Set Debug Level. This value can be 1 or 2 (1 - Less verbosive; 2 - More Verbosive)", 1);
@@ -246,21 +248,28 @@ int main(int argc, char** argv) {
     M.setPreheating(false);
   }
 
-  if(M.setCommandLineArguments(ArgumentsFlag.get_value()) < 0)
-    exit(1);
 
-  GlobalTimer.startClock();
-  dbt::ITDInterpreter I(*SyscallM.get(), *RftChosen.get());
-  std::cerr << "Starting execution:\n";
+  for (int E = 0; E < ExecsFlag.get_value(); E++) {
+    if(M.setCommandLineArguments(ArgumentsFlag.get_value()) < 0)
+        exit(1);
 
-  I.executeAll(M);
+    dbt::ITDInterpreter I(*SyscallM.get(), *RftChosen.get());
+    TheManager.incExecCount();
+    std::cerr << "Starting execution:\n";
 
-  if (DumpRegionsFlag.was_set() || DumpOIRegionsFlag.was_set())
-    TheManager.dumpRegions(MergeOIFlag.was_set(), DumpOIRegionsFlag.was_set());
+    GlobalTimer.startClock();
+    I.executeAll(M);
+    GlobalTimer.stopClock();
 
-  GlobalTimer.stopClock();
-  TheManager.dumpStats();
-  GlobalTimer.printReport("Global");
+    if (DumpRegionsFlag.was_set() || DumpOIRegionsFlag.was_set())
+        TheManager.dumpRegions(MergeOIFlag.was_set(), DumpOIRegionsFlag.was_set());
+
+    TheManager.dumpStats();
+    GlobalTimer.printReport("Global");
+    RftChosen->reset();
+    M.reset();
+    TheManager.reset();
+  }
 
   std::cerr.flush();
   std::cout.flush();
